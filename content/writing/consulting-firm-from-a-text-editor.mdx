@@ -1,0 +1,73 @@
+---
+title: "Running a Consulting Firm From a Text Editor"
+date: "2026-04-18"
+summary: "What it's actually like to build an institution with a full-time job, a laptop, and an AI pair programmer."
+tags: ["building", "ai", "consulting"]
+---
+
+I started Diallo Group the way a lot of people start things now: in a VS Code window, at night, with Claude open in a split pane.
+
+A year in, I have a legal entity, a real website, a client portal with passkeys and an audit log, a small book of advisory engagements, and most of the operational scaffolding you'd expect from a boutique firm three times my age. I did not hire anyone to build any of it. I did not raise a round. I have a full-time job I am not leaving.
+
+I want to write this down because the genre of "founder story" I see online is mostly two things — a heroic origin, or a weary complaint about how hard everything is — and neither is what this actually felt like.
+
+## The realistic version
+
+What it mostly felt like was two-week sprints.
+
+I ran Diallo Group the way I run security work: sprints, trackers, session notes, definition-of-done. Every sprint has a planning doc and a retro. Every session has a notes file. Every decision has a one-page decision summary so six months later I can remember why past-me picked Turso over Supabase and stop relitigating it with present-me.
+
+This sounds obsessive. It is. But the reason is not discipline, it's tempo. If you have two hours between a 10pm Teams call and bed, you cannot afford to reload context. The tracker is the context. You open it, you see the next three items, you do one, you close the laptop.
+
+I did this for a year. The firm is the sum of those evenings.
+
+## What AI actually changed
+
+I get asked what AI changed. The honest answer is: it raised the ceiling on what one person can complete in two hours.
+
+Before, a good two-hour session was "I got the schema migration written and half the route handler." Now it's "I got the schema, the route handler, the rate limiter, the audit log wiring, and the admin UI." Not because I type faster. Because Claude takes care of the mechanical parts — the boilerplate, the wiring, the types — and I spend the time on the parts that actually require judgement.
+
+The parts that require judgement are:
+
+- **What to build.** AI has zero opinion about what your business should do. Anyone who tells you otherwise is selling you a prompt.
+- **What "done" means.** Models are eager to please. They'll stop when you tell them to stop, not when it's right.
+- **The second-order consequences.** An AI will happily add a feature that creates a compliance problem six months out. You have to be the person who notices.
+- **Taste.** When to stop polishing.
+
+Everything else — the *how* — is genuinely cheaper. A year ago I would not have built a passkey flow for my own firm. The marginal cost would have been a weekend I didn't have. This year it was one evening.
+
+## The thing about building solo
+
+The thing I did not expect about building solo is that the loneliness is not the problem. I'm an introvert. I like the quiet. What I didn't expect is that without teammates, there is no natural mechanism for someone to tell you your idea is bad.
+
+You have to build that mechanism yourself. Mine looks like:
+
+1. Writing things down. Drafts die in markdown more often than in production. A bad idea usually reveals itself when I try to summarize it in three bullets.
+2. A small group of people I trust — two security friends, one former manager, one designer — who will tell me when I'm being stupid. I don't ask them often. When I do, I listen.
+3. Letting the sprint retro be honest. "This sprint, I shipped three things. Two of them were worth shipping. The third was yak-shaving." That's the retro. I can't lie to it because nobody else reads it.
+
+## The firm is the point, not the product
+
+The mistake I almost made early on was treating Diallo Group like a product startup. Pick a wedge, build an MVP, iterate. Tech people love this pattern because it's the pattern we know.
+
+Consulting is not that. Consulting is an institution play. You are building a brand that someone trusts enough to hand you a signed statement of work. The brand is slow. The brand compounds. You do not ship an MVP of a brand.
+
+What this changed, practically, is that I stopped optimizing for "how can I land the first client this month" and started optimizing for "ten years from now, when someone Googles Diallo Group, what do I want them to find." The website has a blog because people read blogs when they're deciding whether to take a call. The firm has frameworks, not packages. Everything is designed to look like it'll still be here in a decade, because I want it to be.
+
+This is slower. But slower is fine. I have a job. I'm not running out of runway.
+
+## What I'd tell someone doing the same thing
+
+Three things, and then I'll stop.
+
+**Keep your day job longer than feels cool.** The pressure cooker of "I quit and now I have to make this work" is romantic in a book and corrosive in real life. Your judgement gets worse when rent is on the line. If the thing you're building is supposed to be an institution, let it simmer.
+
+**Write everything down.** You will not remember. Future-you is a different person who operates on a different sleep schedule. Leave them notes.
+
+**Use the tools.** I am a little embarrassed at how much of Diallo Group was written in partnership with an AI. I got over it. The work is still mine — the judgement, the taste, the positioning, the liability. The AI is a tireless junior who doesn't need a coffee break. Accept the help.
+
+---
+
+The firm is still small. The real test will be the next year — more clients, more writing, probably a first hire. I'll update this when I know more.
+
+For now, I like that I can tell you with a straight face: the firm runs on a text editor, a Turso database, and a person who takes two-week sprints seriously.

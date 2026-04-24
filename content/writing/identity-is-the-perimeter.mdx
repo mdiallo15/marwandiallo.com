@@ -1,0 +1,66 @@
+---
+title: "Identity Is the Perimeter, and the Perimeter Is a Person"
+date: "2026-04-10"
+summary: "Ten years of security work taught me the boring thing: the firewall isn't the thing. The session token is."
+tags: ["security", "identity", "mfa"]
+---
+
+I spent my first five years in tech moving mailboxes.
+
+That's not a metaphor. I was an Active Directory and Exchange guy. I did the unglamorous migrations — the 2003 to 2010, the 2010 to Online, the hybrid configs nobody wanted to touch. I knew what a KCC was. I could read a `repadmin /showrepl` and tell you which site link was about to die.
+
+The people doing "security" were somewhere upstairs.
+
+When I eventually made the move into security, the thing that struck me was how little of what I'd learned downstairs was wasted. In fact, most of it became the job.
+
+---
+
+## The story we tell ourselves
+
+The conventional story goes: firewalls were the perimeter, then cloud killed the perimeter, then zero trust replaced the perimeter with identity. You've heard it five hundred times. I've said it five hundred times.
+
+It's not wrong. It's just not specific enough to do anything with.
+
+Here's what most people miss. "Identity" is not a concept. It's a row in a table. Usually it's a refresh token sitting in a browser profile on someone's personal laptop. The person owns the laptop. The laptop is at a Starbucks. The token is valid for 14 more days. That is the perimeter. That. Right there.
+
+When a real incident starts, you don't find yourself in a Palo Alto dashboard. You find yourself in Entra sign-in logs, trying to decide whether a successful MFA satisfaction at 3:17 a.m. from a Lagos IP is the CFO on vacation or an AITM proxy that already replayed the cookie.
+
+The perimeter is a person making a decision about whether to tap a prompt on a phone they're holding in a kitchen.
+
+## What changes when you accept this
+
+Three things.
+
+**First**, your attack tree collapses. The phishing email, the OAuth consent grant, the token theft from a stealer, the help-desk social-engineering call — they're all the same attack. They're all "I am going to become someone you trust." Everything else is delivery.
+
+**Second**, your controls list shrinks. I used to write long defense-in-depth decks. Twelve layers. Seventeen layers. Now I write three:
+
+1. Make the identity hard to steal. (Phishing-resistant MFA. Passkeys. Certificate-bound tokens.)
+2. Make a stolen identity hard to use. (Conditional access. Device compliance. Continuous access evaluation.)
+3. Make a compromised identity obvious fast. (Audit log. Lockout. Real-time alerts on a very short list of events.)
+
+That's it. That's the program. Everything else is implementation detail.
+
+**Third**, you stop caring about a lot of things you used to care about. Password complexity policies. Periodic rotation. Most of the old NIST 800-63 we were all trained on got walked back, and if you still have a 90-day rotation policy in 2026 you are making your users worse at security, not better. Long passphrases, a password manager, and phishing-resistant MFA — that's the floor. Everything above the floor is identity.
+
+## Why passkeys actually matter
+
+I got a little religious about passkeys when I was wiring them up for my own firm. Not because they're new and shiny, but because they collapse the attack tree I just described.
+
+A passkey is a private key that never leaves the authenticator. It's cryptographically bound to the origin. You can't phish it. You can't replay it. You can't buy it from a stealer-log marketplace. A user typing the wrong domain into a lookalike proxy cannot present the passkey to the proxy, because the browser will not serve it to the wrong origin. The attack class just goes away.
+
+That is rare. Most security tooling reduces risk at the margin. Passkeys delete a category.
+
+The reason adoption is still slow is cultural, not technical. The recovery story is awkward, the cross-device UX is still rough, and every enterprise PM wants the option to fall back to SMS because some VP forgot their phone in a taxi. I get it. But the direction is settled.
+
+## The thing under all of this
+
+The thing I keep coming back to, after ten years, is that security is not really about systems. It's about the very small number of moments each day where a human makes a decision under uncertainty.
+
+Did I actually send this request? Did I actually authorize this payment? Did I actually consent to this app?
+
+Our job is to make the right answer cheap and the wrong answer visible. That's it. We dress it up with frameworks and acronyms — and I love a good framework — but the frameworks exist to make that one thing happen at scale.
+
+The longer I do this, the more convinced I am that the firewall was a lie we told ourselves because it was tractable. A box you could buy and rack. Identity is the real problem, and identity is messy, because people are messy.
+
+Good. That's where the interesting work is.
