@@ -11,27 +11,37 @@ export default function WritingIndex() {
   const posts = getAllPosts();
   return (
     <div>
-      <h1 className="text-2xl font-semibold tracking-tight mb-2">Writing</h1>
-      <p className="text-[var(--color-ink-muted)] mb-10 text-[0.95rem]">
-        {posts.length} {posts.length === 1 ? "essay" : "essays"}. Occasional.
-      </p>
-      <ul className="space-y-5">
+      <Link
+        href="/"
+        className="inline-flex items-center gap-1.5 text-[0.85rem] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors mb-12"
+      >
+        ← Back
+      </Link>
+      <section className="mb-14 flex items-end justify-between">
+        <h1 className="text-[2rem] md:text-[2.4rem] leading-[1.05] tracking-[-0.025em] text-[var(--color-ink)] font-medium">
+          Writing
+        </h1>
+        <span className="text-[0.7rem] uppercase tracking-[0.24em] text-[var(--color-ink-muted)] tabular-nums pb-2">
+          {String(posts.length).padStart(2, "0")} essays
+        </span>
+      </section>
+      <ul className="space-y-1">
         {posts.map((post) => (
           <li key={post.slug}>
             <Link
               href={`/writing/${post.slug}`}
-              className="group block no-underline"
+              className="group block py-5 border-t border-[var(--color-rule)] last:border-b"
             >
               <div className="grid grid-cols-[1fr_auto] items-baseline gap-4">
-                <span className="group-hover:text-[var(--color-accent)]">
+                <span className="text-[1.02rem] text-[var(--color-ink)] group-hover:text-[var(--color-accent)] transition-colors">
                   {post.title}
                 </span>
-                <span className="text-[0.8rem] text-[var(--color-ink-muted)] tabular-nums font-sans whitespace-nowrap">
+                <span className="text-[0.75rem] text-[var(--color-ink-muted)] tabular-nums whitespace-nowrap">
                   {formatDate(post.date)} · {post.readingMinutes} min
                 </span>
               </div>
               {post.summary && (
-                <p className="mt-1 text-[0.92rem] text-[var(--color-ink-soft)]">
+                <p className="mt-2 text-[0.92rem] leading-[1.55] text-[var(--color-ink-soft)] max-w-[540px]">
                   {post.summary}
                 </p>
               )}

@@ -2,6 +2,9 @@ import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
 import readingTime from "reading-time";
+import { remark } from "remark";
+import remarkGfm from "remark-gfm";
+import remarkHtml from "remark-html";
 
 const CONTENT_DIR = path.join(process.cwd(), "content", "writing");
 
@@ -17,6 +20,14 @@ export interface PostMeta {
 
 export interface Post extends PostMeta {
   content: string;
+}
+
+export async function renderMarkdown(md: string): Promise<string> {
+  const file = await remark()
+    .use(remarkGfm)
+    .use(remarkHtml, { sanitize: false })
+    .process(md);
+  return String(file);
 }
 
 export function getAllPostSlugs(): string[] {
@@ -60,7 +71,10 @@ export function getPost(slug: string): Post | null {
 export function getAllPosts(): PostMeta[] {
   return getAllPostSlugs()
     .map((slug) => readPost(slug))
-    .filter((p): p is Post => !!p && !(p.draft && process.env.NODE_ENV === "production"))
+    .filter(
+      (p): p is Post =>
+        !!p && !(p.draft && process.env.NODE_ENV === "production"),
+    )
     .sort((a, b) => (a.date < b.date ? 1 : -1))
     .map(({ content: _c, ...meta }) => {
       void _c;

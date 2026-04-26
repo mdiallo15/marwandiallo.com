@@ -1,13 +1,11 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
-import { MDXRemote } from "next-mdx-remote/rsc";
-import remarkGfm from "remark-gfm";
-import rehypePrettyCode from "rehype-pretty-code";
 import {
   getAllPostSlugs,
   getPost,
   formatDate,
+  renderMarkdown,
 } from "@/lib/writing";
 
 interface Props {
@@ -39,40 +37,25 @@ export default async function WritingPost({ params }: Props) {
   const post = getPost(slug);
   if (!post) notFound();
 
+  const html = await renderMarkdown(post.content);
+
   return (
     <article>
-      <header className="mb-10">
-        <h1 className="text-[1.7rem] font-semibold tracking-tight leading-[1.25] mb-3">
+      <Link
+        href="/"
+        className="inline-flex items-center gap-1.5 text-[0.85rem] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors mb-12"
+      >
+        ← Back
+      </Link>
+      <header className="mb-12">
+        <h1 className="text-[2rem] md:text-[2.4rem] leading-[1.15] tracking-[-0.025em] text-[var(--color-ink)] font-medium">
           {post.title}
         </h1>
-        <div className="text-[0.85rem] text-[var(--color-ink-muted)] font-sans tabular-nums">
+        <div className="mt-4 text-[0.82rem] text-[var(--color-ink-muted)] tabular-nums">
           {formatDate(post.date)} · {post.readingMinutes} min read
         </div>
       </header>
-      <div className="prose">
-        <MDXRemote
-          source={post.content}
-          options={{
-            mdxOptions: {
-              remarkPlugins: [remarkGfm],
-              rehypePlugins: [
-                [
-                  rehypePrettyCode,
-                  {
-                    theme: { dark: "github-dark-dimmed", light: "github-light" },
-                    keepBackground: false,
-                  },
-                ],
-              ],
-            },
-          }}
-        />
-      </div>
-      <footer className="mt-20 pt-8 border-t border-[var(--color-rule)] text-[0.9rem] text-[var(--color-ink-muted)]">
-        <Link href="/writing" className="no-underline hover:text-[var(--color-accent)]">
-          ← all writing
-        </Link>
-      </footer>
+      <div className="prose" dangerouslySetInnerHTML={{ __html: html }} />
     </article>
   );
 }

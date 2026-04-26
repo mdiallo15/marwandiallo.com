@@ -1,0 +1,30 @@
+---
+title: "What Ten Years in Infrastructure Taught Me About AI"
+date: "2026-04-22"
+summary: "Everyone is treating AI like a revolution. I've seen this movie before. It was called virtualization, and then it was called cloud."
+tags: ["ai", "infrastructure"]
+---
+
+In 2013 I was racking servers.
+
+In 2015 I was decommissioning them, because we'd finally gotten serious about VMware and an entire room of metal became four hosts and a SAN. In 2018 the SAN went away too, replaced by a subscription. In 2024 a large part of my job became configuring policies on an AI model that would, in a calm voice, tell an analyst what was happening in a log the analyst had not yet opened.
+
+Each of these transitions was described, at the time, as a revolution. In practice each one was a slow unbundling of the layer underneath. The server became a subscription. The subscription became an API. The API is now starting to talk back.
+
+AI is the next layer in that stack. It is not a different kind of thing.
+
+## What the infrastructure decade taught me
+
+**Abstractions don't remove work. They move it.** Virtualization didn't eliminate the OS patching problem; it relocated it to a smaller number of larger teams who were now responsible for thousands of images instead of hundreds of hosts. Cloud didn't eliminate capacity planning; it turned it into a monthly bill that you had to read carefully. AI won't eliminate analysts. It will relocate them into the role of reviewing a machine's work rather than doing the work from scratch.
+
+**The interesting risk is always at the boundary.** In the VMware era it was hypervisor escape. In the cloud era it was IAM misconfiguration. In the AI era it is prompt injection, data exfiltration through tool calls, and the slow leak of context windows into places they shouldn't go. Every abstraction layer ships with a new class of bug. Every class of bug takes roughly five years for the industry to name, catalog, and learn to defend against.
+
+**The winners are the ones who adopt it earliest inside the firewall.** Not the ones who sell it. The ones who *use* it. In 2012, the companies that quietly put VMware everywhere inside their own walls became the companies that ran circles around the ones still racking pizza boxes. I suspect the same is true now. The companies patiently, boringly, privately integrating AI into their own workflows — not as a product, as a reflex — are going to have a decade-long head start on the ones still writing op-eds about it.
+
+## The boring prediction
+
+Five years from now, "AI security" is going to sound as dated as "cloud security" does today. It won't stop being relevant — it will stop being a category. It will just be *security*, the way cloud is now just *infrastructure*.
+
+The companies that still pretend it's special will be the ones paying a premium for consultants to explain it. The companies that treated it as a normal part of the stack — interesting, dangerous, but normal — will be the ones quietly shipping.
+
+I know which group I want to be in. I've been here before.
