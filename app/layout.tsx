@@ -86,10 +86,10 @@ export default async function RootLayout({
                   LinkedIn
                 </a>
                 <a
-                  href="mailto:hello@marwandiallo.com"
+                  href="https://x.com/x_marwan_"
                   className="hover:text-[var(--color-accent)]"
                 >
-                  Email
+                  X
                 </a>
                 <a
                   href="/feed.xml"
