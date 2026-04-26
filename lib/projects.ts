@@ -42,7 +42,7 @@ export const projects: Project[] = [
     summary:
       "Interactive JWT inspector with security findings (alg=none, alg-confusion, missing exp/iss/aud) and a working WebAuthn / passkey registration + sign-in flow.",
     status: "shipped",
-    url: "https://identity-lab.vercel.app",
+    url: "https://lab.marwandiallo.com/identity",
     tag: "identity",
   },
 ];
