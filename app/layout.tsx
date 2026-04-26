@@ -98,7 +98,9 @@ export default async function RootLayout({
                   RSS
                 </a>
               </div>
-              <span className="tabular-nums">© {new Date().getFullYear()}</span>
+              <span className="tabular-nums">
+                © {new Date().getFullYear()} Marwan Diallo. Code under MIT.
+              </span>
             </div>
           </footer>
         </div>

@@ -20,8 +20,9 @@ export const projects: Project[] = [
     title: "Secure-by-default Next.js Starter",
     date: "2026-04-01",
     summary:
-      "A Next.js 15 template with CSP, security headers, audit logging, rate limiting, and a sane server/client boundary on day one. Built because most starters don't.",
-    status: "in-progress",
+      "Next.js 15 template that boots with nonce-based CSP, the OWASP/CIS header set, rate limiting, Zod input validation, and an audit log helper. Aligned with NIST SP 800-218.",
+    status: "shipped",
+    url: "https://github.com/mdiallo15/secure-next-starter",
     tag: "security",
   },
   {
@@ -29,8 +30,9 @@ export const projects: Project[] = [
     title: "AI Codegen Audit",
     date: "2026-03-12",
     summary:
-      "A small CLI that grades AI-generated React/Next code against a checklist drawn from OWASP and real production failures. Runs locally — no code leaves the machine.",
-    status: "exploring",
+      "Zero-dependency CLI that flags the security footguns LLM code generators emit — eval, innerHTML, alg-confused JWTs, hardcoded secrets, weak crypto. CWE-mapped, OWASP-categorized.",
+    status: "shipped",
+    url: "https://github.com/mdiallo15/ai-codegen-audit",
     tag: "ai",
   },
   {
@@ -38,8 +40,9 @@ export const projects: Project[] = [
     title: "Identity Lab",
     date: "2026-02-20",
     summary:
-      "WebAuthn and passkey reference flows with the rough edges left in. Where I work out the things I'd otherwise have to learn the expensive way at a client.",
-    status: "in-progress",
+      "Interactive JWT inspector with security findings (alg=none, alg-confusion, missing exp/iss/aud) and a working WebAuthn / passkey registration + sign-in flow.",
+    status: "shipped",
+    url: "https://github.com/mdiallo15/identity-lab",
     tag: "identity",
   },
 ];
