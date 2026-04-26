@@ -2,6 +2,7 @@
 
 // Security headers — aligns with OWASP Secure Headers Project,
 // CIS Apache/Nginx benchmarks, and NIST SP 800-218 (PW.4) guidance.
+// CSP is set per-request in middleware.ts (nonce-based).
 const securityHeaders = [
   // Force TLS — HSTS with preload-eligible config
   {
@@ -20,37 +21,18 @@ const securityHeaders = [
     value:
       "camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()",
   },
-  // Content Security Policy
-  // - 'unsafe-inline' on script-src is required for the FOUC theme bootstrap
-  //   inline script in app/layout.tsx; everything else is locked down.
-  // - 'unsafe-inline' on style-src needed for Tailwind/Next inline styles.
-  // - data: in img-src for the inline SVGs / favicon.
-  {
-    key: "Content-Security-Policy",
-    value: [
-      "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com",
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-      "img-src 'self' data: blob:",
-      "font-src 'self' data: https://fonts.gstatic.com",
-      "connect-src 'self' https://vitals.vercel-insights.com",
-      "frame-ancestors 'none'",
-      "base-uri 'self'",
-      "form-action 'self'",
-      "object-src 'none'",
-      "upgrade-insecure-requests",
-    ].join("; "),
-  },
-  // Cross-origin isolation — relaxed since we have no cross-origin needs
+  // Cross-origin opener — keep window isolated
   { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
-  { key: "Cross-Origin-Resource-Policy", value: "same-origin" },
+  // CORP set to cross-origin so social card scrapers (Twitter, FB,
+  // LinkedIn, Slack) can fetch /opengraph-image. No private data here.
+  { key: "Cross-Origin-Resource-Policy", value: "cross-origin" },
 ];
 
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false, // remove X-Powered-By: Next.js fingerprint
   async headers() {
-    // Skip strict CSP/headers in dev — Next.js HMR needs eval/ws/inline
+    // Skip strict headers in dev — Next.js HMR needs eval/ws/inline
     // styles that production builds don't. Headers ship in prod only.
     if (process.env.NODE_ENV !== "production") {
       return [];

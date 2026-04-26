@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { headers } from "next/headers";
 import "./globals.css";
 import { ThemeToggle } from "./_components/theme-toggle";
 
@@ -20,22 +21,25 @@ const SITE_URL = "https://marwandiallo.com";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Marwan Diallo",
+    default: "Marwan Diallo — Security Architect & Builder",
     template: "%s — Marwan Diallo",
   },
   description:
-    "Security architect by trade, builder by habit. Notes on the AI coding stack and identity.",
+    "Security architect by trade, builder by habit. Notes from the seam between AI coding tools, identity, and the production reality of shipping secure software.",
   openGraph: {
     type: "website",
     siteName: "Marwan Diallo",
-    title: "Marwan Diallo",
+    title: "Marwan Diallo — Security Architect & Builder",
     description:
-      "Security architect by trade, builder by habit. Notes on the AI coding stack and identity.",
+      "Security architect by trade, builder by habit. Notes from the seam between AI coding tools, identity, and the production reality of shipping secure software.",
     url: SITE_URL,
   },
   twitter: {
     card: "summary_large_image",
     creator: "@x_marwan_",
+    title: "Marwan Diallo — Security Architect & Builder",
+    description:
+      "Security architect by trade, builder by habit. Notes from the seam between AI coding tools, identity, and the production reality of shipping secure software.",
   },
   alternates: {
     canonical: SITE_URL,
@@ -45,16 +49,18 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
   return (
     <html lang="en" className={`${geist.variable} ${geistMono.variable}`}>
       <head>
         {/* Prevent FOUC — apply theme before paint */}
         <script
+          nonce={nonce}
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var t=localStorage.getItem('theme');if(!t){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`,
           }}
