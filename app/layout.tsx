@@ -24,18 +24,18 @@ export const metadata: Metadata = {
     template: "%s — Marwan Diallo",
   },
   description:
-    "Security engineer by trade, builder by habit. Notes on the AI coding stack and identity.",
+    "Security architect by trade, builder by habit. Notes on the AI coding stack and identity.",
   openGraph: {
     type: "website",
     siteName: "Marwan Diallo",
     title: "Marwan Diallo",
     description:
-      "Security engineer by trade, builder by habit. Notes on the AI coding stack and identity.",
+      "Security architect by trade, builder by habit. Notes on the AI coding stack and identity.",
     url: SITE_URL,
   },
   twitter: {
     card: "summary_large_image",
-    creator: "@marwandiallo",
+    creator: "@x_marwan_",
   },
   alternates: {
     canonical: SITE_URL,
@@ -51,10 +51,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html
-      lang="en"
-      className={`${geist.variable} ${geistMono.variable}`}
-    >
+    <html lang="en" className={`${geist.variable} ${geistMono.variable}`}>
       <head>
         {/* Prevent FOUC — apply theme before paint */}
         <script

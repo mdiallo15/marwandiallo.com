@@ -50,6 +50,11 @@ const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false, // remove X-Powered-By: Next.js fingerprint
   async headers() {
+    // Skip strict CSP/headers in dev — Next.js HMR needs eval/ws/inline
+    // styles that production builds don't. Headers ship in prod only.
+    if (process.env.NODE_ENV !== "production") {
+      return [];
+    }
     return [
       {
         source: "/:path*",

@@ -16,7 +16,7 @@ export default function HomePage() {
             Marwan Diallo
           </h1>
           <p className="text-[1.05rem] leading-[1.5] text-[var(--color-ink-soft)]">
-            Security engineer by trade, builder by habit. Currently watching
+            Security architect by trade, builder by habit. Currently watching
             the AI coding stack ship insecure defaults. Founder of{" "}
             <Link
               href="https://security.diallogroup.io"
@@ -34,7 +34,7 @@ export default function HomePage() {
           className="flex flex-col items-end gap-1 text-[0.95rem] text-[var(--color-ink-soft)] shrink-0"
         >
           <a
-            href="https://x.com/marwandiallo"
+            href="https://x.com/x_marwan_"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-[var(--color-ink)] transition-colors"

@@ -3,27 +3,27 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "About",
-  description: "Marwan Diallo — security engineer, founder, writer.",
+  description: "Marwan Diallo — security architect, founder, writer.",
 };
 
 const roles = [
   {
-    years: "2023 –",
-    title: "Sr. Security Engineer",
+    years: "2022 –",
+    title: "Principal Security Engineer",
     org: "Microsoft",
-    note: "Cloud & Azure.",
+    note: "Defender for Cloud Apps & Defender for Identity — detection engineering at Microsoft enterprise scale.",
   },
   {
-    years: "2019 – 23",
-    title: "Security Engineer",
+    years: "2020 – 22",
+    title: "Architecture & Analysis Lead",
     org: "BNY Mellon",
-    note: "Financial services.",
+    note: "Led the architecture & analysis team. Rebuilt the enterprise vulnerability program for Treasury Services under SOX/GLBA.",
   },
   {
-    years: "2015 – 19",
-    title: "Infrastructure & Security",
-    org: "New York State",
-    note: "Public sector.",
+    years: "2015 – 20",
+    title: "Sr. Information Security Analyst",
+    org: "NY State Department of Health",
+    note: "Owned HIPAA/HITECH compliance and two federal ATOs (CMS, IRS 1075) for an 8M-patient marketplace.",
   },
 ];
 
@@ -46,14 +46,14 @@ export default function AboutPage() {
       {/* Intro — tight, two paragraphs */}
       <section className="mb-20">
         <h1 className="text-[2rem] md:text-[2.4rem] leading-[1.15] tracking-[-0.025em] text-[var(--color-ink)] font-medium">
-          A security engineer who came up through infrastructure.
+          A security architect who came up through infrastructure.
         </h1>
         <div className="mt-8 text-[1.02rem] leading-[1.72] text-[var(--color-ink-soft)] space-y-4 max-w-[560px]">
           <p>
             Active Directory, Exchange, VMware — the unglamorous layer that
             keeps companies alive. Security was a detour that became the job.
-            Ten years in, I still think identity is the most interesting problem
-            in the field.
+            Eleven years in, I still think identity is the most interesting
+            problem in the field.
           </p>
           <p>
             On the side I run{" "}
@@ -193,6 +193,13 @@ export default function AboutPage() {
             gap is real, but it might also be the first generation that closes
             faster than it widens.
           </dd>
+          <dt className="text-[var(--color-secondary)] text-[0.78rem] uppercase tracking-[0.18em] pt-0.5">
+            Languages
+          </dt>
+          <dd className="text-[var(--color-ink-soft)]">
+            English, French, Fulani — in that order of fluency, depending on the
+            day.
+          </dd>
         </dl>
       </section>
 
@@ -214,8 +221,8 @@ export default function AboutPage() {
                 </span>
               </div>
               <div className="text-[0.85rem] text-[var(--color-ink-muted)] mt-0.5">
-                Teaching assistant, intro CS. Started writing code before I
-                started writing policies.
+                Teaching assistant for intro CS. Ran STEM incubator programs for
+                the local community.
               </div>
             </div>
           </li>

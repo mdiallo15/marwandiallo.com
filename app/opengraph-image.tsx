@@ -53,7 +53,7 @@ export default function OG() {
             maxWidth: 900,
           }}
         >
-          Security engineer by trade, builder by habit. Notes from the seam
+          Security architect by trade, builder by habit. Notes from the seam
           between AI tooling and identity.
         </div>
       </div>

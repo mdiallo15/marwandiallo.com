@@ -383,15 +383,18 @@ a:hover {
 }
 .theme-rocker__label--bottom {
   bottom: 4px;
+  color: #ffffff;
 }
 
 .theme-rocker[aria-pressed="true"] .theme-rocker__label--top {
-  color: var(--color-accent);
-  filter: drop-shadow(0 0 4px rgba(207, 90, 36, 0.6));
+  color: #ffffff;
+  opacity: 1;
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.55));
 }
 .theme-rocker[aria-pressed="false"] .theme-rocker__label--bottom {
-  color: var(--color-accent);
-  filter: drop-shadow(0 0 4px rgba(207, 90, 36, 0.6));
+  color: #ffffff;
+  opacity: 1;
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.55));
 }
 
 .theme-rocker__knob {
