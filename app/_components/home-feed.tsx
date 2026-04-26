@@ -139,12 +139,13 @@ function ProjectCard({ project }: { project: Project }) {
   );
 
   if (project.url) {
+    // Same-tab nav for our own subdomains; new tab for external (GitHub, etc.)
+    const isOwn = /(^|\.)marwandiallo\.com($|\/)/.test(project.url);
     return (
       <li>
         <a
           href={project.url}
-          target="_blank"
-          rel="noopener noreferrer"
+          {...(isOwn ? {} : { target: "_blank", rel: "noopener noreferrer" })}
           className="feed-card"
           data-kind="project"
           data-tag={project.tag}
