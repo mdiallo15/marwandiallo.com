@@ -1031,24 +1031,60 @@ function DogfoodArtwork() {
     >
       {/* Left panel: BEFORE — 3 findings */}
       <g transform="translate(20, 24)">
-        <rect width="130" height="152" rx="6" className="art-dogfood-panel-bad" />
-        <text x="10" y="20" className="art-dogfood-title">BEFORE</text>
-        <text x="10" y="34" className="art-dogfood-sub">3 findings</text>
+        <rect
+          width="130"
+          height="152"
+          rx="6"
+          className="art-dogfood-panel-bad"
+        />
+        <text x="10" y="20" className="art-dogfood-title">
+          BEFORE
+        </text>
+        <text x="10" y="34" className="art-dogfood-sub">
+          3 findings
+        </text>
         {/* finding rows */}
         <g transform="translate(8, 50)">
-          <rect width="114" height="22" rx="3" className="art-dogfood-row-high" />
-          <text x="6" y="15" className="art-dogfood-id">CSP02</text>
-          <text x="44" y="15" className="art-dogfood-text">'unsafe-inline'</text>
+          <rect
+            width="114"
+            height="22"
+            rx="3"
+            className="art-dogfood-row-high"
+          />
+          <text x="6" y="15" className="art-dogfood-id">
+            CSP02
+          </text>
+          <text x="44" y="15" className="art-dogfood-text">
+            'unsafe-inline'
+          </text>
         </g>
         <g transform="translate(8, 78)">
-          <rect width="114" height="22" rx="3" className="art-dogfood-row-low" />
-          <text x="6" y="15" className="art-dogfood-id">CSP10</text>
-          <text x="44" y="15" className="art-dogfood-text">style-src</text>
+          <rect
+            width="114"
+            height="22"
+            rx="3"
+            className="art-dogfood-row-low"
+          />
+          <text x="6" y="15" className="art-dogfood-id">
+            CSP10
+          </text>
+          <text x="44" y="15" className="art-dogfood-text">
+            style-src
+          </text>
         </g>
         <g transform="translate(8, 106)">
-          <rect width="114" height="22" rx="3" className="art-dogfood-row-low" />
-          <text x="6" y="15" className="art-dogfood-id">CSP11</text>
-          <text x="44" y="15" className="art-dogfood-text">no reporting</text>
+          <rect
+            width="114"
+            height="22"
+            rx="3"
+            className="art-dogfood-row-low"
+          />
+          <text x="6" y="15" className="art-dogfood-id">
+            CSP11
+          </text>
+          <text x="44" y="15" className="art-dogfood-text">
+            no reporting
+          </text>
         </g>
       </g>
 
@@ -1060,18 +1096,26 @@ function DogfoodArtwork() {
 
       {/* Right panel: AFTER — clean */}
       <g transform="translate(195, 24)">
-        <rect width="105" height="152" rx="6" className="art-dogfood-panel-good" />
-        <text x="10" y="20" className="art-dogfood-title">AFTER</text>
-        <text x="10" y="34" className="art-dogfood-sub">0 findings</text>
+        <rect
+          width="105"
+          height="152"
+          rx="6"
+          className="art-dogfood-panel-good"
+        />
+        <text x="10" y="20" className="art-dogfood-title">
+          AFTER
+        </text>
+        <text x="10" y="34" className="art-dogfood-sub">
+          0 findings
+        </text>
         {/* big checkmark */}
         <g transform="translate(52, 88)">
           <circle r="26" className="art-dogfood-check-bg" />
-          <polyline
-            points="-12,2 -3,12 14,-8"
-            className="art-dogfood-check"
-          />
+          <polyline points="-12,2 -3,12 14,-8" className="art-dogfood-check" />
         </g>
-        <text x="52" y="138" textAnchor="middle" className="art-dogfood-clean">clean</text>
+        <text x="52" y="138" textAnchor="middle" className="art-dogfood-clean">
+          clean
+        </text>
       </g>
     </svg>
   );
@@ -1088,39 +1132,71 @@ function AuthzArtwork() {
       {/* Left: Alice (authed) */}
       <g transform="translate(20, 70)">
         <circle cx="22" cy="22" r="22" className="art-authz-user" />
-        <text x="22" y="27" textAnchor="middle" className="art-authz-user-text">A</text>
-        <text x="22" y="62" textAnchor="middle" className="art-authz-label">alice</text>
+        <text x="22" y="27" textAnchor="middle" className="art-authz-user-text">
+          A
+        </text>
+        <text x="22" y="62" textAnchor="middle" className="art-authz-label">
+          alice
+        </text>
       </g>
 
       {/* Request label */}
       <g transform="translate(80, 60)">
-        <text x="0" y="0" className="art-authz-req">GET /orders/1003</text>
-        <text x="0" y="14" className="art-authz-req-sub">(owned by bob)</text>
+        <text x="0" y="0" className="art-authz-req">
+          GET /orders/1003
+        </text>
+        <text x="0" y="14" className="art-authz-req-sub">
+          (owned by bob)
+        </text>
       </g>
 
       {/* Top arrow → naive endpoint (200 OK leak) */}
       <g transform="translate(80, 92)">
         <line x1="0" y1="0" x2="120" y2="0" className="art-authz-arrow-bad" />
-        <polygon points="120,-4 128,0 120,4" className="art-authz-arrow-bad-head" />
+        <polygon
+          points="120,-4 128,0 120,4"
+          className="art-authz-arrow-bad-head"
+        />
       </g>
 
       {/* Right: two endpoint chips */}
       <g transform="translate(212, 38)">
         <rect width="86" height="52" rx="6" className="art-authz-panel-bad" />
-        <text x="43" y="20" textAnchor="middle" className="art-authz-endpoint">naive</text>
-        <text x="43" y="40" textAnchor="middle" className="art-authz-status-bad">200 OK</text>
+        <text x="43" y="20" textAnchor="middle" className="art-authz-endpoint">
+          naive
+        </text>
+        <text
+          x="43"
+          y="40"
+          textAnchor="middle"
+          className="art-authz-status-bad"
+        >
+          200 OK
+        </text>
       </g>
 
       {/* Bottom arrow → hardened (404) */}
       <g transform="translate(80, 122)">
         <line x1="0" y1="0" x2="120" y2="0" className="art-authz-arrow-good" />
-        <polygon points="120,-4 128,0 120,4" className="art-authz-arrow-good-head" />
+        <polygon
+          points="120,-4 128,0 120,4"
+          className="art-authz-arrow-good-head"
+        />
       </g>
 
       <g transform="translate(212, 110)">
         <rect width="86" height="52" rx="6" className="art-authz-panel-good" />
-        <text x="43" y="20" textAnchor="middle" className="art-authz-endpoint">hardened</text>
-        <text x="43" y="40" textAnchor="middle" className="art-authz-status-good">404</text>
+        <text x="43" y="20" textAnchor="middle" className="art-authz-endpoint">
+          hardened
+        </text>
+        <text
+          x="43"
+          y="40"
+          textAnchor="middle"
+          className="art-authz-status-good"
+        >
+          404
+        </text>
       </g>
 
       {/* WHERE clause hint */}
