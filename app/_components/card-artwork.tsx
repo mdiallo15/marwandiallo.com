@@ -863,11 +863,33 @@ function LabsHubArtwork() {
 
       {/* Top-left: Identity (passkey/key glyph) */}
       <g transform="translate(36, 26)">
-        <rect width="116" height="68" rx="8" fill="url(#hub-id)" opacity="0.92" />
+        <rect
+          width="116"
+          height="68"
+          rx="8"
+          fill="url(#hub-id)"
+          opacity="0.92"
+        />
         <circle cx="34" cy="34" r="11" fill="#fff" opacity="0.95" />
         <rect x="32" y="30" width="4" height="9" rx="1" fill="#1e3a8a" />
-        <rect x="50" y="32" width="46" height="3" rx="1.5" fill="#fff" opacity="0.7" />
-        <rect x="50" y="40" width="34" height="3" rx="1.5" fill="#fff" opacity="0.5" />
+        <rect
+          x="50"
+          y="32"
+          width="46"
+          height="3"
+          rx="1.5"
+          fill="#fff"
+          opacity="0.7"
+        />
+        <rect
+          x="50"
+          y="40"
+          width="34"
+          height="3"
+          rx="1.5"
+          fill="#fff"
+          opacity="0.5"
+        />
         <text x="58" y="60" className="art-hub-tile-label">
           Identity
         </text>
@@ -875,11 +897,49 @@ function LabsHubArtwork() {
 
       {/* Top-right: CSP (header lines) */}
       <g transform="translate(168, 26)">
-        <rect width="116" height="68" rx="8" fill="url(#hub-csp)" opacity="0.92" />
-        <rect x="14" y="14" width="60" height="4" rx="2" fill="#fff" opacity="0.9" />
-        <rect x="14" y="24" width="80" height="3" rx="1.5" fill="#fff" opacity="0.6" />
-        <rect x="14" y="32" width="70" height="3" rx="1.5" fill="#fff" opacity="0.6" />
-        <rect x="14" y="40" width="50" height="3" rx="1.5" fill="#fff" opacity="0.6" />
+        <rect
+          width="116"
+          height="68"
+          rx="8"
+          fill="url(#hub-csp)"
+          opacity="0.92"
+        />
+        <rect
+          x="14"
+          y="14"
+          width="60"
+          height="4"
+          rx="2"
+          fill="#fff"
+          opacity="0.9"
+        />
+        <rect
+          x="14"
+          y="24"
+          width="80"
+          height="3"
+          rx="1.5"
+          fill="#fff"
+          opacity="0.6"
+        />
+        <rect
+          x="14"
+          y="32"
+          width="70"
+          height="3"
+          rx="1.5"
+          fill="#fff"
+          opacity="0.6"
+        />
+        <rect
+          x="14"
+          y="40"
+          width="50"
+          height="3"
+          rx="1.5"
+          fill="#fff"
+          opacity="0.6"
+        />
         <text x="14" y="60" className="art-hub-tile-label">
           CSP
         </text>
@@ -887,12 +947,44 @@ function LabsHubArtwork() {
 
       {/* Bottom-left: Prompt Injection (chat bubble + redacted block) */}
       <g transform="translate(36, 106)">
-        <rect width="116" height="68" rx="8" fill="url(#hub-pi)" opacity="0.92" />
-        <rect x="14" y="14" width="40" height="14" rx="6" fill="#fff" opacity="0.85" />
-        <rect x="58" y="14" width="44" height="14" rx="6" fill="#fff" opacity="0.4" />
+        <rect
+          width="116"
+          height="68"
+          rx="8"
+          fill="url(#hub-pi)"
+          opacity="0.92"
+        />
+        <rect
+          x="14"
+          y="14"
+          width="40"
+          height="14"
+          rx="6"
+          fill="#fff"
+          opacity="0.85"
+        />
+        <rect
+          x="58"
+          y="14"
+          width="44"
+          height="14"
+          rx="6"
+          fill="#fff"
+          opacity="0.4"
+        />
         {/* Redacted "system" injection */}
-        <rect x="14" y="34" width="88" height="10" rx="2" fill="#1e1b4b" opacity="0.85" />
-        <text x="18" y="42" className="art-hub-tile-tag">[SYS]</text>
+        <rect
+          x="14"
+          y="34"
+          width="88"
+          height="10"
+          rx="2"
+          fill="#1e1b4b"
+          opacity="0.85"
+        />
+        <text x="18" y="42" className="art-hub-tile-tag">
+          [SYS]
+        </text>
         <text x="14" y="60" className="art-hub-tile-label">
           Prompt Injection
         </text>
@@ -900,7 +992,13 @@ function LabsHubArtwork() {
 
       {/* Bottom-right: SSRF (IP block) */}
       <g transform="translate(168, 106)">
-        <rect width="116" height="68" rx="8" fill="url(#hub-ssrf)" opacity="0.92" />
+        <rect
+          width="116"
+          height="68"
+          rx="8"
+          fill="url(#hub-ssrf)"
+          opacity="0.92"
+        />
         <text x="58" y="32" textAnchor="middle" className="art-hub-tile-mono">
           169.254
         </text>
