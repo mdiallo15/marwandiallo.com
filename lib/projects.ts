@@ -16,6 +16,16 @@ export interface Project {
 // ----------------------------------------------------------------------
 export const projects: Project[] = [
   {
+    slug: "csp-playground",
+    title: "CSP Playground",
+    date: "2026-04-26",
+    summary:
+      "Paste a Content-Security-Policy header, get 12 findings ranked by severity. Plus the four canonical CSP shapes side by side and the bypass patterns I see most in client engagements.",
+    status: "shipped",
+    url: "https://lab.marwandiallo.com/csp",
+    tag: "security",
+  },
+  {
     slug: "secure-by-default-starter",
     title: "Secure-by-default Next.js Starter",
     date: "2026-04-01",
@@ -40,7 +50,7 @@ export const projects: Project[] = [
     title: "Identity Lab",
     date: "2026-02-20",
     summary:
-      "Interactive JWT inspector with security findings (alg=none, alg-confusion, missing exp/iss/aud) and a working WebAuthn / passkey registration + sign-in flow.",
+      "Phishing-resistant authentication, hands-on. WebAuthn passkey demo, JWT analyzer with 8 alg-confusion / PII findings, and explainers for phishing-resistant MFA and agent / workload identity.",
     status: "shipped",
     url: "https://lab.marwandiallo.com/identity",
     tag: "identity",
