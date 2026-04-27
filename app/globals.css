@@ -1277,3 +1277,113 @@ a:hover {
 :root[data-theme="dark"] .card-art .art-dogfood-arrow-head {
   fill: #cbd5e1;
 }
+
+/* AuthZ Lab artwork */
+.card-art .art-authz-user {
+  fill: #e0e7ff;
+  stroke: #6366f1;
+  stroke-width: 1.5;
+}
+.card-art .art-authz-user-text {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  fill: #4338ca;
+}
+.card-art .art-authz-label {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 9px;
+  fill: #475569;
+}
+.card-art .art-authz-req {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px;
+  fill: #1e293b;
+  font-weight: 600;
+}
+.card-art .art-authz-req-sub {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 9px;
+  fill: #64748b;
+  font-style: italic;
+}
+.card-art .art-authz-arrow-bad {
+  stroke: #ef4444;
+  stroke-width: 1.5;
+  stroke-dasharray: 3 2;
+}
+.card-art .art-authz-arrow-bad-head {
+  fill: #ef4444;
+}
+.card-art .art-authz-arrow-good {
+  stroke: #22c55e;
+  stroke-width: 1.5;
+}
+.card-art .art-authz-arrow-good-head {
+  fill: #22c55e;
+}
+.card-art .art-authz-panel-bad {
+  fill: #fef2f2;
+  stroke: #fca5a5;
+  stroke-width: 1;
+}
+.card-art .art-authz-panel-good {
+  fill: #f0fdf4;
+  stroke: #86efac;
+  stroke-width: 1;
+}
+.card-art .art-authz-endpoint {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  fill: #475569;
+}
+.card-art .art-authz-status-bad {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  font-weight: 700;
+  fill: #b91c1c;
+}
+.card-art .art-authz-status-good {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  font-weight: 700;
+  fill: #15803d;
+}
+.card-art .art-authz-where {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 9px;
+  fill: #64748b;
+}
+:root[data-theme="dark"] .card-art .art-authz-user {
+  fill: rgba(99, 102, 241, 0.18);
+  stroke: #818cf8;
+}
+:root[data-theme="dark"] .card-art .art-authz-user-text {
+  fill: #c7d2fe;
+}
+:root[data-theme="dark"] .card-art .art-authz-label,
+:root[data-theme="dark"] .card-art .art-authz-where,
+:root[data-theme="dark"] .card-art .art-authz-req-sub {
+  fill: #cbd5e1;
+}
+:root[data-theme="dark"] .card-art .art-authz-req {
+  fill: #f1f5f9;
+}
+:root[data-theme="dark"] .card-art .art-authz-panel-bad {
+  fill: rgba(248, 113, 113, 0.08);
+  stroke: #ef4444;
+}
+:root[data-theme="dark"] .card-art .art-authz-panel-good {
+  fill: rgba(74, 222, 128, 0.08);
+  stroke: #22c55e;
+}
+:root[data-theme="dark"] .card-art .art-authz-endpoint {
+  fill: #e2e8f0;
+}
+:root[data-theme="dark"] .card-art .art-authz-status-bad {
+  fill: #fca5a5;
+}
+:root[data-theme="dark"] .card-art .art-authz-status-good {
+  fill: #86efac;
+}

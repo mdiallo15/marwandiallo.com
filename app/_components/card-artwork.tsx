@@ -34,6 +34,8 @@ export function CardArtwork({ slug }: Props) {
       return <SsrfArtwork />;
     case "i-built-a-scanner-then-scanned-myself":
       return <DogfoodArtwork />;
+    case "authz-lab":
+      return <AuthzArtwork />;
     default:
       return null;
   }
@@ -1071,6 +1073,60 @@ function DogfoodArtwork() {
         </g>
         <text x="52" y="138" textAnchor="middle" className="art-dogfood-clean">clean</text>
       </g>
+    </svg>
+  );
+}
+
+function AuthzArtwork() {
+  return (
+    <svg
+      viewBox="0 0 320 200"
+      className="card-art"
+      aria-hidden
+      preserveAspectRatio="xMidYMid meet"
+    >
+      {/* Left: Alice (authed) */}
+      <g transform="translate(20, 70)">
+        <circle cx="22" cy="22" r="22" className="art-authz-user" />
+        <text x="22" y="27" textAnchor="middle" className="art-authz-user-text">A</text>
+        <text x="22" y="62" textAnchor="middle" className="art-authz-label">alice</text>
+      </g>
+
+      {/* Request label */}
+      <g transform="translate(80, 60)">
+        <text x="0" y="0" className="art-authz-req">GET /orders/1003</text>
+        <text x="0" y="14" className="art-authz-req-sub">(owned by bob)</text>
+      </g>
+
+      {/* Top arrow → naive endpoint (200 OK leak) */}
+      <g transform="translate(80, 92)">
+        <line x1="0" y1="0" x2="120" y2="0" className="art-authz-arrow-bad" />
+        <polygon points="120,-4 128,0 120,4" className="art-authz-arrow-bad-head" />
+      </g>
+
+      {/* Right: two endpoint chips */}
+      <g transform="translate(212, 38)">
+        <rect width="86" height="52" rx="6" className="art-authz-panel-bad" />
+        <text x="43" y="20" textAnchor="middle" className="art-authz-endpoint">naive</text>
+        <text x="43" y="40" textAnchor="middle" className="art-authz-status-bad">200 OK</text>
+      </g>
+
+      {/* Bottom arrow → hardened (404) */}
+      <g transform="translate(80, 122)">
+        <line x1="0" y1="0" x2="120" y2="0" className="art-authz-arrow-good" />
+        <polygon points="120,-4 128,0 120,4" className="art-authz-arrow-good-head" />
+      </g>
+
+      <g transform="translate(212, 110)">
+        <rect width="86" height="52" rx="6" className="art-authz-panel-good" />
+        <text x="43" y="20" textAnchor="middle" className="art-authz-endpoint">hardened</text>
+        <text x="43" y="40" textAnchor="middle" className="art-authz-status-good">404</text>
+      </g>
+
+      {/* WHERE clause hint */}
+      <text x="160" y="190" textAnchor="middle" className="art-authz-where">
+        WHERE id = ? AND owner_id = ?
+      </text>
     </svg>
   );
 }

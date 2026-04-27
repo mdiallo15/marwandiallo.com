@@ -18,11 +18,21 @@ export const projects: Project[] = [
   {
     slug: "labs-hub",
     title: "Labs",
-    date: "2026-04-26",
+    date: "2026-04-27",
     summary:
-      "Four hands-on security playgrounds in one place: phishing-resistant identity, Content Security Policy, prompt injection, and SSRF / cloud metadata. Each lab pairs a working tool or simulator with the failure modes I've seen in production.",
+      "Five hands-on security playgrounds in one place: phishing-resistant identity, Content Security Policy, prompt injection, SSRF / cloud metadata, and IDOR / BOLA. Each lab pairs a working tool or simulator with the failure modes I've seen in production.",
     status: "shipped",
     url: "https://lab.marwandiallo.com",
+    tag: "security",
+  },
+  {
+    slug: "authz-lab",
+    title: "AuthZ Lab — IDOR / BOLA",
+    date: "2026-04-27",
+    summary:
+      "OWASP API Top 10 #1 made tangible. Pick a user, ask for someone else's order, and watch the naive endpoint hand it over while the hardened one returns 404 — not 403, because 403 leaks existence. Plus an 8-rule pattern catalog with SARIF export.",
+    status: "shipped",
+    url: "https://lab.marwandiallo.com/authz",
     tag: "security",
   },
   {
