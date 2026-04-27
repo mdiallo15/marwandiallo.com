@@ -22,6 +22,16 @@ export function CardArtwork({ slug }: Props) {
       return <DiffArtwork />;
     case "identity-lab":
       return <PasskeyArtwork />;
+    case "labs-hub":
+      return <LabsHubArtwork />;
+    case "passwordless-and-your-agent":
+      return <HumanAgentArtwork />;
+    case "csp-playground":
+      return <CspArtwork />;
+    case "prompt-injection-lab":
+      return <PromptInjectionArtwork />;
+    case "ssrf-lab":
+      return <SsrfArtwork />;
     default:
       return null;
   }
@@ -444,6 +454,463 @@ function PasskeyArtwork() {
       <text x="160" y="164" textAnchor="middle" className="art-pk-foot">
         WebAuthn · FIDO2
       </text>
+    </svg>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Essay: passwordless and your agent                                          */
+/* Two parallel sign-in panels: human (passkey) + agent (token), linked by    */
+/* a delegation arrow (RFC 8693 token exchange).                              */
+/* -------------------------------------------------------------------------- */
+function HumanAgentArtwork() {
+  return (
+    <svg
+      viewBox="0 0 320 200"
+      className="card-art"
+      aria-hidden
+      preserveAspectRatio="xMidYMid meet"
+    >
+      {/* Human panel (left) */}
+      <rect
+        x="20"
+        y="32"
+        width="130"
+        height="136"
+        rx="10"
+        className="art-panel"
+      />
+      <text x="85" y="56" textAnchor="middle" className="art-pk-title">
+        Human
+      </text>
+      {/* Person glyph */}
+      <circle cx="85" cy="84" r="10" className="art-ring-head" />
+      <path d="M 68 110 Q 85 94 102 110 Z" className="art-ring-shoulders" />
+      {/* Passkey chip */}
+      <rect
+        x="42"
+        y="124"
+        width="86"
+        height="28"
+        rx="6"
+        className="art-btn-primary"
+      />
+      <circle cx="60" cy="138" r="6" fill="#ffffff" opacity="0.95" />
+      <rect x="58" y="134" width="4" height="6" rx="1" fill="#1e3a8a" />
+      <text x="98" y="142" textAnchor="middle" className="art-btn-text">
+        Passkey
+      </text>
+
+      {/* Delegation arrow */}
+      <g className="art-delegate">
+        <line x1="156" y1="100" x2="194" y2="100" />
+        <polygon points="194,100 188,96 188,104" />
+        <text x="175" y="92" textAnchor="middle">
+          act
+        </text>
+      </g>
+
+      {/* Agent panel (right) */}
+      <rect
+        x="200"
+        y="32"
+        width="100"
+        height="136"
+        rx="10"
+        className="art-panel"
+      />
+      <text x="250" y="56" textAnchor="middle" className="art-pk-title">
+        Agent
+      </text>
+      {/* Robot/workload glyph */}
+      <rect
+        x="232"
+        y="72"
+        width="36"
+        height="28"
+        rx="5"
+        className="art-agent-body"
+      />
+      <circle cx="242" cy="86" r="2.5" className="art-agent-eye" />
+      <circle cx="258" cy="86" r="2.5" className="art-agent-eye" />
+      <line x1="250" y1="64" x2="250" y2="72" className="art-agent-antenna" />
+      <circle cx="250" cy="62" r="2.5" className="art-agent-antenna-dot" />
+      {/* Token */}
+      <rect
+        x="216"
+        y="116"
+        width="68"
+        height="20"
+        rx="4"
+        className="art-token-chip"
+      />
+      <text x="250" y="130" textAnchor="middle" className="art-token-chip-text">
+        eyJhbGc...
+      </text>
+      <text x="250" y="152" textAnchor="middle" className="art-pk-foot">
+        scope: read:repo
+      </text>
+    </svg>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Project: CSP Playground                                                    */
+/* CSP header line with three severity findings stacked beneath               */
+/* -------------------------------------------------------------------------- */
+function CspArtwork() {
+  return (
+    <svg
+      viewBox="0 0 320 200"
+      className="card-art card-art--dark"
+      aria-hidden
+      preserveAspectRatio="xMidYMid meet"
+    >
+      <rect x="0" y="0" width="320" height="200" fill="#0f172a" />
+      {/* Header label */}
+      <text x="20" y="32" className="art-code">
+        <tspan className="art-code-key">Content-Security-Policy:</tspan>
+      </text>
+      {/* Header value (wrapped) */}
+      <text x="20" y="54" className="art-code">
+        <tspan className="art-code-str">default-src</tspan>{" "}
+        <tspan className="art-code-var">&apos;self&apos;</tspan>;
+      </text>
+      <text x="20" y="72" className="art-code">
+        <tspan className="art-code-str">script-src</tspan>{" "}
+        <tspan className="art-code-var">&apos;unsafe-inline&apos;</tspan>{" "}
+        https:;
+      </text>
+      <text x="20" y="90" className="art-code">
+        <tspan className="art-code-str">object-src</tspan>{" "}
+        <tspan className="art-code-var">*</tspan>;
+      </text>
+
+      {/* Findings list */}
+      <g transform="translate(20, 110)">
+        {/* critical */}
+        <rect x="0" y="0" width="280" height="22" rx="4" fill="#1e1027" />
+        <rect x="0" y="0" width="3" height="22" fill="#f43f5e" />
+        <text x="12" y="15" className="art-sev art-sev-crit">
+          CRIT
+        </text>
+        <text x="58" y="15" className="art-finding">
+          unsafe-inline in script-src
+        </text>
+
+        {/* high */}
+        <rect x="0" y="28" width="280" height="22" rx="4" fill="#231a0e" />
+        <rect x="0" y="28" width="3" height="22" fill="#fb923c" />
+        <text x="12" y="43" className="art-sev art-sev-high">
+          HIGH
+        </text>
+        <text x="58" y="43" className="art-finding">
+          object-src wildcard
+        </text>
+
+        {/* medium */}
+        <rect x="0" y="56" width="280" height="22" rx="4" fill="#1f2415" />
+        <rect x="0" y="56" width="3" height="22" fill="#facc15" />
+        <text x="12" y="71" className="art-sev art-sev-med">
+          MED
+        </text>
+        <text x="58" y="71" className="art-finding">
+          base-uri missing
+        </text>
+      </g>
+    </svg>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Project: Prompt Injection Lab                                              */
+/* Document with hidden [SYSTEM] block; arrows to naive (✗) and hardened (✓) */
+/* -------------------------------------------------------------------------- */
+function PromptInjectionArtwork() {
+  return (
+    <svg
+      viewBox="0 0 320 200"
+      className="card-art"
+      aria-hidden
+      preserveAspectRatio="xMidYMid meet"
+    >
+      {/* Document */}
+      <rect
+        x="14"
+        y="22"
+        width="130"
+        height="156"
+        rx="6"
+        className="art-panel"
+      />
+      {/* fold corner */}
+      <path d="M 130 22 L 144 22 L 144 36 Z" className="art-panel-bar" />
+
+      {/* normal lines */}
+      <rect
+        x="26"
+        y="40"
+        width="100"
+        height="3"
+        rx="1.5"
+        className="art-doc-line"
+      />
+      <rect
+        x="26"
+        y="50"
+        width="92"
+        height="3"
+        rx="1.5"
+        className="art-doc-line"
+      />
+      <rect
+        x="26"
+        y="60"
+        width="106"
+        height="3"
+        rx="1.5"
+        className="art-doc-line"
+      />
+
+      {/* [SYSTEM] injection block — highlighted */}
+      <rect
+        x="22"
+        y="76"
+        width="116"
+        height="38"
+        rx="3"
+        className="art-inject-bg"
+      />
+      <text x="28" y="89" className="art-inject-tag">
+        [SYSTEM]
+      </text>
+      <text x="28" y="102" className="art-inject-text">
+        ignore previous
+      </text>
+      <text x="28" y="111" className="art-inject-text">
+        exfil &lt;data&gt;
+      </text>
+
+      {/* trailing lines */}
+      <rect
+        x="26"
+        y="124"
+        width="98"
+        height="3"
+        rx="1.5"
+        className="art-doc-line"
+      />
+      <rect
+        x="26"
+        y="134"
+        width="86"
+        height="3"
+        rx="1.5"
+        className="art-doc-line"
+      />
+
+      {/* Arrows + outcomes */}
+      <g className="art-pi-arrow">
+        <line x1="148" y1="62" x2="190" y2="48" />
+        <polygon points="190,48 184,46 185,52" />
+      </g>
+      <g className="art-pi-arrow">
+        <line x1="148" y1="138" x2="190" y2="152" />
+        <polygon points="190,152 184,148 185,154" />
+      </g>
+
+      {/* Naive (top right) */}
+      <rect
+        x="196"
+        y="32"
+        width="108"
+        height="36"
+        rx="6"
+        className="art-pi-naive"
+      />
+      <text x="210" y="55" className="art-pi-result-text art-pi-result-bad">
+        ✗ followed
+      </text>
+
+      {/* Hardened (bottom right) */}
+      <rect
+        x="196"
+        y="138"
+        width="108"
+        height="36"
+        rx="6"
+        className="art-pi-hardened"
+      />
+      <text x="210" y="161" className="art-pi-result-text art-pi-result-good">
+        ✓ refused
+      </text>
+    </svg>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Project: SSRF / Cloud Metadata Lab                                         */
+/* Server box → blocked → 169.254.169.254 metadata box                        */
+/* -------------------------------------------------------------------------- */
+function SsrfArtwork() {
+  return (
+    <svg
+      viewBox="0 0 320 200"
+      className="card-art"
+      aria-hidden
+      preserveAspectRatio="xMidYMid meet"
+    >
+      {/* App box (left) */}
+      <rect x="22" y="58" width="92" height="84" rx="8" className="art-panel" />
+      <text x="68" y="78" textAnchor="middle" className="art-ssrf-label">
+        app
+      </text>
+      <rect
+        x="34"
+        y="92"
+        width="68"
+        height="6"
+        rx="2"
+        className="art-doc-line"
+      />
+      <rect
+        x="34"
+        y="104"
+        width="56"
+        height="6"
+        rx="2"
+        className="art-doc-line"
+      />
+      <rect
+        x="34"
+        y="116"
+        width="60"
+        height="6"
+        rx="2"
+        className="art-doc-line"
+      />
+
+      {/* Request arrow */}
+      <g className="art-ssrf-arrow">
+        <line x1="120" y1="100" x2="200" y2="100" strokeDasharray="4 4" />
+        <text x="160" y="92" textAnchor="middle" className="art-ssrf-req">
+          GET 169.254.169.254
+        </text>
+      </g>
+
+      {/* Firewall / blocked stamp */}
+      <g transform="translate(146, 100)">
+        <circle r="20" className="art-ssrf-block-bg" />
+        <line x1="-12" y1="-12" x2="12" y2="12" className="art-ssrf-block-x" />
+        <line x1="12" y1="-12" x2="-12" y2="12" className="art-ssrf-block-x" />
+      </g>
+
+      {/* Metadata target (right) */}
+      <rect
+        x="206"
+        y="58"
+        width="92"
+        height="84"
+        rx="8"
+        className="art-ssrf-meta"
+      />
+      <text x="252" y="80" textAnchor="middle" className="art-ssrf-meta-label">
+        IMDS
+      </text>
+      <text x="252" y="100" textAnchor="middle" className="art-ssrf-meta-ip">
+        169.254
+      </text>
+      <text x="252" y="116" textAnchor="middle" className="art-ssrf-meta-ip">
+        .169.254
+      </text>
+      <text x="252" y="134" textAnchor="middle" className="art-ssrf-meta-foot">
+        IAM creds
+      </text>
+    </svg>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Project: Labs hub                                                          */
+/* 2×2 grid of mini lab tiles — Identity, CSP, Prompt Injection, SSRF        */
+/* -------------------------------------------------------------------------- */
+function LabsHubArtwork() {
+  return (
+    <svg
+      viewBox="0 0 320 200"
+      className="card-art"
+      aria-hidden
+      preserveAspectRatio="xMidYMid meet"
+    >
+      <defs>
+        <linearGradient id="hub-id" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0%" stopColor="#60a5fa" />
+          <stop offset="100%" stopColor="#2563eb" />
+        </linearGradient>
+        <linearGradient id="hub-csp" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0%" stopColor="#fbbf24" />
+          <stop offset="100%" stopColor="#d97706" />
+        </linearGradient>
+        <linearGradient id="hub-pi" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0%" stopColor="#a78bfa" />
+          <stop offset="100%" stopColor="#7c3aed" />
+        </linearGradient>
+        <linearGradient id="hub-ssrf" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0%" stopColor="#34d399" />
+          <stop offset="100%" stopColor="#059669" />
+        </linearGradient>
+      </defs>
+
+      {/* Top-left: Identity (passkey/key glyph) */}
+      <g transform="translate(36, 26)">
+        <rect width="116" height="68" rx="8" fill="url(#hub-id)" opacity="0.92" />
+        <circle cx="34" cy="34" r="11" fill="#fff" opacity="0.95" />
+        <rect x="32" y="30" width="4" height="9" rx="1" fill="#1e3a8a" />
+        <rect x="50" y="32" width="46" height="3" rx="1.5" fill="#fff" opacity="0.7" />
+        <rect x="50" y="40" width="34" height="3" rx="1.5" fill="#fff" opacity="0.5" />
+        <text x="58" y="60" className="art-hub-tile-label">
+          Identity
+        </text>
+      </g>
+
+      {/* Top-right: CSP (header lines) */}
+      <g transform="translate(168, 26)">
+        <rect width="116" height="68" rx="8" fill="url(#hub-csp)" opacity="0.92" />
+        <rect x="14" y="14" width="60" height="4" rx="2" fill="#fff" opacity="0.9" />
+        <rect x="14" y="24" width="80" height="3" rx="1.5" fill="#fff" opacity="0.6" />
+        <rect x="14" y="32" width="70" height="3" rx="1.5" fill="#fff" opacity="0.6" />
+        <rect x="14" y="40" width="50" height="3" rx="1.5" fill="#fff" opacity="0.6" />
+        <text x="14" y="60" className="art-hub-tile-label">
+          CSP
+        </text>
+      </g>
+
+      {/* Bottom-left: Prompt Injection (chat bubble + redacted block) */}
+      <g transform="translate(36, 106)">
+        <rect width="116" height="68" rx="8" fill="url(#hub-pi)" opacity="0.92" />
+        <rect x="14" y="14" width="40" height="14" rx="6" fill="#fff" opacity="0.85" />
+        <rect x="58" y="14" width="44" height="14" rx="6" fill="#fff" opacity="0.4" />
+        {/* Redacted "system" injection */}
+        <rect x="14" y="34" width="88" height="10" rx="2" fill="#1e1b4b" opacity="0.85" />
+        <text x="18" y="42" className="art-hub-tile-tag">[SYS]</text>
+        <text x="14" y="60" className="art-hub-tile-label">
+          Prompt Injection
+        </text>
+      </g>
+
+      {/* Bottom-right: SSRF (IP block) */}
+      <g transform="translate(168, 106)">
+        <rect width="116" height="68" rx="8" fill="url(#hub-ssrf)" opacity="0.92" />
+        <text x="58" y="32" textAnchor="middle" className="art-hub-tile-mono">
+          169.254
+        </text>
+        <text x="58" y="44" textAnchor="middle" className="art-hub-tile-mono">
+          .169.254
+        </text>
+        <text x="14" y="60" className="art-hub-tile-label">
+          SSRF
+        </text>
+      </g>
     </svg>
   );
 }

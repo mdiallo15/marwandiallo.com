@@ -16,6 +16,16 @@ export interface Project {
 // ----------------------------------------------------------------------
 export const projects: Project[] = [
   {
+    slug: "labs-hub",
+    title: "Labs",
+    date: "2026-04-26",
+    summary:
+      "Four hands-on security playgrounds in one place: phishing-resistant identity, Content Security Policy, prompt injection, and SSRF / cloud metadata. Each lab pairs a working tool or simulator with the failure modes I've seen in production.",
+    status: "shipped",
+    url: "https://lab.marwandiallo.com",
+    tag: "security",
+  },
+  {
     slug: "ssrf-lab",
     title: "SSRF / Cloud Metadata Lab",
     date: "2026-04-26",

@@ -949,3 +949,229 @@ a:hover {
 :root[data-theme="dark"] .card-art .art-label {
   fill: #a1a1aa;
 }
+
+/* ---------- Card artwork: passwordless+agent, csp, prompt-injection, ssrf ---------- */
+
+/* Human ↔ Agent delegation arrow */
+.card-art .art-delegate line,
+.card-art .art-delegate polygon {
+  stroke: var(--color-ink-muted, #71717a);
+  fill: var(--color-ink-muted, #71717a);
+  stroke-width: 1.4;
+}
+.card-art .art-delegate text {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 9px;
+  fill: var(--color-ink-muted, #71717a);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Agent glyph */
+.card-art .art-agent-body {
+  fill: #6366f1;
+}
+.card-art .art-agent-eye {
+  fill: #fff;
+}
+.card-art .art-agent-antenna {
+  stroke: #6366f1;
+  stroke-width: 2;
+}
+.card-art .art-agent-antenna-dot {
+  fill: #6366f1;
+}
+.card-art .art-token-chip {
+  fill: #1e293b;
+}
+.card-art .art-token-chip-text {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px;
+  fill: #a5b4fc;
+  letter-spacing: 0.02em;
+}
+
+/* CSP findings */
+.card-art .art-sev {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+.card-art .art-sev-crit {
+  fill: #f43f5e;
+}
+.card-art .art-sev-high {
+  fill: #fb923c;
+}
+.card-art .art-sev-med {
+  fill: #facc15;
+}
+.card-art .art-finding {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px;
+  fill: #cbd5e1;
+}
+
+/* Prompt-injection doc + outcome boxes */
+.card-art .art-doc-line {
+  fill: var(--color-rule, #d4d4d8);
+}
+.card-art .art-inject-bg {
+  fill: #fef2f2;
+  stroke: #f87171;
+  stroke-width: 1;
+  stroke-dasharray: 3 2;
+}
+.card-art .art-inject-tag {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 9px;
+  font-weight: 700;
+  fill: #b91c1c;
+  letter-spacing: 0.06em;
+}
+.card-art .art-inject-text {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 8px;
+  fill: #991b1b;
+}
+.card-art .art-pi-arrow line,
+.card-art .art-pi-arrow polygon {
+  stroke: var(--color-ink-muted, #71717a);
+  fill: var(--color-ink-muted, #71717a);
+  stroke-width: 1.2;
+}
+.card-art .art-pi-naive {
+  fill: #fef2f2;
+  stroke: #fca5a5;
+  stroke-width: 1;
+}
+.card-art .art-pi-hardened {
+  fill: #f0fdf4;
+  stroke: #86efac;
+  stroke-width: 1;
+}
+.card-art .art-pi-result-text {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  font-weight: 600;
+}
+.card-art .art-pi-result-bad {
+  fill: #b91c1c;
+}
+.card-art .art-pi-result-good {
+  fill: #15803d;
+}
+
+/* SSRF diagram */
+.card-art .art-ssrf-label {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  fill: var(--color-ink, #18181b);
+  letter-spacing: 0.04em;
+}
+.card-art .art-ssrf-arrow line {
+  stroke: var(--color-ink-muted, #71717a);
+  stroke-width: 1.4;
+}
+.card-art .art-ssrf-req {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 9px;
+  fill: var(--color-ink-muted, #71717a);
+}
+.card-art .art-ssrf-block-bg {
+  fill: #fee2e2;
+  stroke: #f87171;
+  stroke-width: 1.5;
+}
+.card-art .art-ssrf-block-x {
+  stroke: #b91c1c;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+.card-art .art-ssrf-meta {
+  fill: #fff7ed;
+  stroke: #fb923c;
+  stroke-width: 1;
+}
+.card-art .art-ssrf-meta-label {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  font-weight: 700;
+  fill: #c2410c;
+}
+.card-art .art-ssrf-meta-ip {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px;
+  fill: #9a3412;
+}
+.card-art .art-ssrf-meta-foot {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 9px;
+  fill: #c2410c;
+  font-style: italic;
+}
+
+/* Dark theme tweaks */
+:root[data-theme="dark"] .card-art .art-doc-line {
+  fill: #3f3f46;
+}
+:root[data-theme="dark"] .card-art .art-inject-bg {
+  fill: rgba(248, 113, 113, 0.1);
+  stroke: #f87171;
+}
+:root[data-theme="dark"] .card-art .art-inject-tag,
+:root[data-theme="dark"] .card-art .art-inject-text {
+  fill: #fca5a5;
+}
+:root[data-theme="dark"] .card-art .art-pi-naive {
+  fill: rgba(248, 113, 113, 0.08);
+  stroke: #ef4444;
+}
+:root[data-theme="dark"] .card-art .art-pi-hardened {
+  fill: rgba(74, 222, 128, 0.08);
+  stroke: #22c55e;
+}
+:root[data-theme="dark"] .card-art .art-pi-result-bad {
+  fill: #fca5a5;
+}
+:root[data-theme="dark"] .card-art .art-pi-result-good {
+  fill: #86efac;
+}
+:root[data-theme="dark"] .card-art .art-ssrf-block-bg {
+  fill: rgba(248, 113, 113, 0.12);
+}
+:root[data-theme="dark"] .card-art .art-ssrf-meta {
+  fill: rgba(251, 146, 60, 0.08);
+  stroke: #fb923c;
+}
+:root[data-theme="dark"] .card-art .art-ssrf-meta-label,
+:root[data-theme="dark"] .card-art .art-ssrf-meta-foot {
+  fill: #fb923c;
+}
+:root[data-theme="dark"] .card-art .art-ssrf-meta-ip {
+  fill: #fdba74;
+}
+
+/* Labs hub artwork */
+.card-art .art-hub-tile-label {
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  fill: #fff;
+  letter-spacing: 0.02em;
+}
+.card-art .art-hub-tile-tag {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 7px;
+  font-weight: 700;
+  fill: #c4b5fd;
+  letter-spacing: 0.08em;
+}
+.card-art .art-hub-tile-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  fill: #fff;
+  font-weight: 600;
+}
