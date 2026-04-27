@@ -32,6 +32,8 @@ export function CardArtwork({ slug }: Props) {
       return <PromptInjectionArtwork />;
     case "ssrf-lab":
       return <SsrfArtwork />;
+    case "i-built-a-scanner-then-scanned-myself":
+      return <DogfoodArtwork />;
     default:
       return null;
   }
@@ -1008,6 +1010,66 @@ function LabsHubArtwork() {
         <text x="14" y="60" className="art-hub-tile-label">
           SSRF
         </text>
+      </g>
+    </svg>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Essay: dogfood — built scanner, scanned self                               */
+/* Before/after panels: a CSP findings list with 3 items, then 0 items        */
+/* -------------------------------------------------------------------------- */
+function DogfoodArtwork() {
+  return (
+    <svg
+      viewBox="0 0 320 200"
+      className="card-art"
+      aria-hidden
+      preserveAspectRatio="xMidYMid meet"
+    >
+      {/* Left panel: BEFORE — 3 findings */}
+      <g transform="translate(20, 24)">
+        <rect width="130" height="152" rx="6" className="art-dogfood-panel-bad" />
+        <text x="10" y="20" className="art-dogfood-title">BEFORE</text>
+        <text x="10" y="34" className="art-dogfood-sub">3 findings</text>
+        {/* finding rows */}
+        <g transform="translate(8, 50)">
+          <rect width="114" height="22" rx="3" className="art-dogfood-row-high" />
+          <text x="6" y="15" className="art-dogfood-id">CSP02</text>
+          <text x="44" y="15" className="art-dogfood-text">'unsafe-inline'</text>
+        </g>
+        <g transform="translate(8, 78)">
+          <rect width="114" height="22" rx="3" className="art-dogfood-row-low" />
+          <text x="6" y="15" className="art-dogfood-id">CSP10</text>
+          <text x="44" y="15" className="art-dogfood-text">style-src</text>
+        </g>
+        <g transform="translate(8, 106)">
+          <rect width="114" height="22" rx="3" className="art-dogfood-row-low" />
+          <text x="6" y="15" className="art-dogfood-id">CSP11</text>
+          <text x="44" y="15" className="art-dogfood-text">no reporting</text>
+        </g>
+      </g>
+
+      {/* Arrow */}
+      <g transform="translate(160, 100)">
+        <line x1="0" y1="0" x2="20" y2="0" className="art-dogfood-arrow" />
+        <polygon points="20,-4 28,0 20,4" className="art-dogfood-arrow-head" />
+      </g>
+
+      {/* Right panel: AFTER — clean */}
+      <g transform="translate(195, 24)">
+        <rect width="105" height="152" rx="6" className="art-dogfood-panel-good" />
+        <text x="10" y="20" className="art-dogfood-title">AFTER</text>
+        <text x="10" y="34" className="art-dogfood-sub">0 findings</text>
+        {/* big checkmark */}
+        <g transform="translate(52, 88)">
+          <circle r="26" className="art-dogfood-check-bg" />
+          <polyline
+            points="-12,2 -3,12 14,-8"
+            className="art-dogfood-check"
+          />
+        </g>
+        <text x="52" y="138" textAnchor="middle" className="art-dogfood-clean">clean</text>
       </g>
     </svg>
   );

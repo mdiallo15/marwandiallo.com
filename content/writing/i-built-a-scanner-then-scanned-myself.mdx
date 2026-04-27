@@ -1,0 +1,92 @@
+---
+title: "I Built a Security Scanner, Then Pointed It at Myself"
+date: "2026-04-27"
+summary: "I built a four-lab security platform — CSP, prompt injection, SSRF, identity. The first real test was running it against my own production site. It found three things."
+tags: ["security", "engineering", "case-study"]
+---
+
+A few weeks ago I shipped [lab.marwandiallo.com](https://lab.marwandiallo.com) — four hands-on security playgrounds I built on weekends to teach the failure modes I see most often in client work. Identity (passkeys + JWT), Content-Security-Policy, prompt injection, SSRF.
+
+The labs are deterministic rule engines, not AI. Same architecture as Google's [csp-evaluator](https://csp-evaluator.withgoogle.com), Mozilla Observatory, and the passive scan rules in OWASP ZAP — parse the input, walk a small ruleset, return findings with severity and remediation.
+
+I built them, shipped them, and then somebody asked the question I had been avoiding:
+
+> *"Have you ever run your CSP analyzer against your own site?"*
+
+Reader, I had not.
+
+## The first run
+
+I pasted the live `Content-Security-Policy` header from [marwandiallo.com](https://marwandiallo.com) into my own analyzer. Three findings came back.
+
+```
+1 high · 2 low
+
+CSP02 — 'unsafe-inline' on script-src       (high)
+CSP10 — 'unsafe-inline' on style-src        (low)
+CSP11 — No CSP reporting configured         (low)
+```
+
+I had built the analyzer carefully enough that it actually told me the truth: my own personal site, the one I had been linking from this blog about security, was running a CSP that had the most common XSS bypass right there in the script directive.
+
+I am genuinely glad nobody pointed this out to me before I built the lab. The dogfood path is much better than the public-callout path.
+
+## The fixes — three commits, ten minutes
+
+### CSP02 — `'unsafe-inline'` on script-src (high)
+
+The fix is well understood: **drop `'unsafe-inline'`, replace it with a per-request nonce, and add `'strict-dynamic'`.** Next.js 15 already supports this — set the `x-nonce` request header in middleware and the framework propagates it to its own runtime script tags.
+
+```ts
+// middleware.ts
+const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
+const csp = [
+  `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https://va.vercel-scripts.com`,
+  // ...
+].join("; ");
+```
+
+That single change is what makes the difference between "CSP that exists" and "CSP that meaningfully blocks XSS." `'unsafe-inline'` allows any inline `<script>` block or `onclick=` handler — i.e., the vast majority of XSS payloads. With nonce + `'strict-dynamic'` in place, a payload can be injected into the DOM and the browser will refuse to execute it.
+
+The lab knows this. CSP02 is deliberately written to *not* fire if the policy also has `'strict-dynamic'` and a nonce or hash, because in that combination browsers ignore `'unsafe-inline'` ([CSP3 §6.6.2.4](https://www.w3.org/TR/CSP3/#allow-all-inline)). Most public CSP analyzers I've used don't get that exception right.
+
+### CSP10 — `'unsafe-inline'` on style-src (low)
+
+Same fix, applied to `style-src`. This is lower severity because CSS-only XSS is much harder, but it's not zero — attribute selectors, font ligatures, and scrollbar tricks can be used to exfiltrate page contents one character at a time. Tailwind compiles to external CSS, so dropping `'unsafe-inline'` on styles cost me nothing.
+
+### CSP11 — no reporting configured (low)
+
+Without `report-to` or `report-uri`, every CSP violation in production happens silently. You won't see the in-the-wild XSS attempts the policy is blocking, and you won't see the well-meaning library you added last week that's now triggering policy failures for users.
+
+I added a tiny Edge route at `/api/csp-report` that accepts both legacy `application/csp-report` and modern `application/reports+json` payloads, caps body size at 16 KiB, and logs to Vercel runtime logs. Then added `report-to csp-endpoint; report-uri /api/csp-report` to the policy and the matching `Report-To` response header. Total: one route, one CSP directive, one header.
+
+## Re-test
+
+I pushed the three commits, waited 90 seconds for Vercel to redeploy, and pasted the new live CSP back into the analyzer.
+
+```
+0 high · 0 medium · 0 low · 0 info
+```
+
+Then I ran [securityheaders.com](https://securityheaders.com) against the same URL — independent verification — and that passed too.
+
+## What this is and isn't
+
+The thing I want to be clear about: a static CSP analyzer is **not** the same as a real-world security audit. It checks a string against a fixed ruleset. It does not:
+
+- Fetch the page and verify the policy is actually enforced.
+- Test whether the nonce is unique per request (a critical bug in some homemade implementations).
+- Find your *missing* security controls, only your weak existing ones.
+- Catch logic flaws, IDOR, broken authZ, or any of the OWASP Top 10 categories that aren't string-shaped.
+
+What it does, very well, is take 60 seconds to give you a defensible read on whether the security header you spent half an hour writing is actually doing its job. That's a useful feedback loop. It's the same category of feedback as ESLint or `cargo clippy` — a fast, deterministic linter for one specific class of risk.
+
+The next iteration of the lab does take it one step further: it now has a runtime mode where you paste in any URL, the server fetches the live response headers, and the same ruleset runs against the actual policy on the wire. That closes one of the gaps above — you can verify that what you *think* you ship is what you actually ship.
+
+## The lesson I keep relearning
+
+Every consultant has had this conversation: *"You secure other people's stuff for a living — what does your own site look like?"* For most of my career the honest answer has been "I'd rather not show you." Not because anything was on fire, but because the same triage that makes you good at this work in production is exactly what gets deferred on the personal weekend project.
+
+Building the lab gave me a forcing function. The cost of leaving CSP02 in place when the analyzer I wrote sits at `lab.marwandiallo.com/csp/analyzer` was no longer "a finding I might fix someday" — it was actively embarrassing. The labs got me to fix the site. That's a useful pattern beyond CSP: **build the tool that scores the thing, then run it on yourself first.**
+
+If you'd like to do the same exercise on your own site, [the CSP analyzer is here](https://lab.marwandiallo.com/csp/analyzer). Paste your header in the first textarea, or drop a URL into the scanner mode and let it fetch your live policy. If you find something interesting — or if you find a bug in the analyzer itself — I'd love to hear about it.
