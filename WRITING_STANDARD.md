@@ -37,8 +37,15 @@ advanced reader gets new value and a layperson can still follow.
 6. **Scope — where this is limited.**
    Honest list of what the work doesn't do. No marketing.
 
-7. **Closing — next step, not moral.**
-   End on a concrete action the reader can take. One link, one invitation.
+7. **Closing — lesson and next step, blended.**
+   Close with both: the takeaway from the work (what changed in how I
+   think, what I'd do differently, the principle the reader should walk
+   away with) and a concrete next step they can take (a link, an
+   invitation, a tool to try). Lead with the lesson, end with the
+   action. Keep the lesson short — one or two sentences — and avoid
+   bolded aphorisms or "the lesson I keep relearning" framing. The
+   reader should leave with both something to think about and something
+   to do.
 
 ## Voice rules
 
