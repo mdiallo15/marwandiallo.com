@@ -90,14 +90,23 @@ For independent verification I ran [securityheaders.com](https://securityheaders
 
 ## What this kind of tool can and can't do
 
-A static CSP analyzer is not a substitute for a real-world security audit. It checks a string against a fixed ruleset. Things it does not do:
+A static CSP analyzer is not a substitute for a real-world security audit. It checks a string against a fixed ruleset. Being explicit about both halves of that:
 
-- Fetch the page and verify the policy is actually enforced. (The lab's runtime mode does this now.)
+**What the analyzer does:**
+
+- Parse a Content Security Policy header and apply a ruleset of known weakening patterns (CSP01–CSP11) with severity and remediation.
+- In runtime mode, fetch a target URL on the server side and run the same ruleset against the live response headers, so you can verify what you actually ship instead of what you think you ship.
+- Honor CSP Level 3 nuance, including the `'strict-dynamic'` + nonce/hash exception that makes most public analyzers report false positives.
+- Export findings as JSON or SARIF for use in CI and GitHub code scanning.
+
+**What the analyzer does not do:**
+
 - Test whether the nonce is genuinely unique per request, which is a critical implementation bug in some homemade middlewares.
 - Find your *missing* security controls; only your weak existing ones.
 - Catch logic flaws, IDOR, broken authorization, or any OWASP Top 10 category that isn't string-shaped.
+- Replace a code review, a threat model, or an actual penetration test.
 
-What it does well is give you a one-minute read on whether the security header you spent half an hour writing is actually doing its job. It is roughly the same category of feedback as ESLint or `cargo clippy`: a fast, deterministic linter for one specific class of risk. The lab now has a runtime mode where you paste any URL, the server fetches the live response headers, and the same ruleset runs against the actual policy on the wire. That closes the gap between the policy you think you ship and the policy you actually ship.
+What it does well is give you a one-minute read on whether the security header you spent half an hour writing is actually doing its job. It is roughly the same category of feedback as ESLint or `cargo clippy`: a fast, deterministic linter for one specific class of risk.
 
 ## Closing
 
