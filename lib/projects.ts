@@ -16,6 +16,26 @@ export interface Project {
 // ----------------------------------------------------------------------
 export const projects: Project[] = [
   {
+    slug: "ssrf-lab",
+    title: "SSRF / Cloud Metadata Lab",
+    date: "2026-04-26",
+    summary:
+      "Why 169.254.169.254 is the most-attacked IP on the internet. URL-bypass analyzer (decimal, hex, octal, alias hostnames), the five canonical SSRF targets, and the four hardening layers that actually contain blast radius.",
+    status: "shipped",
+    url: "https://lab.marwandiallo.com/ssrf",
+    tag: "infra",
+  },
+  {
+    slug: "prompt-injection-lab",
+    title: "Prompt Injection Lab",
+    date: "2026-04-26",
+    summary:
+      "Backendless naive-vs-hardened agent simulator. Six attacker-crafted documents (direct override, exfil-via-image, fake tool boundaries, white-on-white, on-behalf-of confusion), a 10-rule detector, and a defense playbook ranked by impact.",
+    status: "shipped",
+    url: "https://lab.marwandiallo.com/prompt-injection",
+    tag: "ai",
+  },
+  {
     slug: "csp-playground",
     title: "CSP Playground",
     date: "2026-04-26",
