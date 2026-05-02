@@ -1,0 +1,149 @@
+---
+title: "When 'No Vulnerabilities Found' Means 'We Didn't Look There'"
+date: "2026-05-02"
+summary: "A POC pitted an agent-based compliance scanner against an active network scanner on the same Windows domain controller. They disagreed about whether it was vulnerable to BEAST. The disagreement is the whole story."
+tags: ["security", "vulnerability-management", "case-study"]
+---
+
+A vulnerability scanner that returns no findings is one of two things. Either the asset is genuinely clean, or the scanner can't see the class of bug that is actually present. Most security programs treat those two outcomes as the same, and the gap between them is where audit findings and incidents live.
+
+I ran into a clean version of this gap during a recent proof-of-concept evaluation. Two scanners, the same Windows Server 2022 domain controller, the same week. One reported a stack of TLS findings. The other reported nothing. Both products were configured correctly. Both were running as recommended. The disagreement was not a misconfiguration. It was a difference in what the two tools are architecturally able to see.
+
+This essay is about that gap, what's behind it, and why I think it's the most under-discussed problem in vulnerability management right now.
+
+## Two scanners, two different questions
+
+There are two dominant architectures for vulnerability scanning in enterprise environments today.
+
+**Agent-based config and inventory scanning.** A lightweight agent runs on each asset, enumerates installed software, version numbers, registry keys, file hashes, kernel modules, and so on. It compares that local inventory against a vulnerability library, usually OVAL definitions plus vendor advisories, and produces findings based on what's installed. Tanium Comply is the canonical example, but the same architecture underlies Microsoft Defender Vulnerability Management's asset-inventory side, the agent component of Rapid7 InsightVM, Qualys VMDR's cloud agent, and several others.
+
+**Active network probe scanning.** A scan engine reaches across the network, opens TCP connections to listening ports on the target, negotiates protocol handshakes, and records what the service actually advertises. For TLS, this means initiating a handshake on every supported port and observing the protocols, ciphers, and certificate the service offers in response. Rapid7's network scan engines do this. So does Nessus, Qualys's external scanner, OpenVAS, and the open-source `testssl.sh`.
+
+These approaches answer different questions. The agent answers: *what software is installed, and is any of it a known-vulnerable version?* The network probe answers: *what does this listening service actually accept on the wire right now?*
+
+Both are useful. Neither is sufficient on its own.
+
+## The investigation
+
+The POC was straightforward. Stand up an agent-based compliance scanner alongside an existing active network scanner, run both against the same in-scope assets, compare coverage. The expected outcome was significant overlap with some divergence at the edges.
+
+What happened instead was a clean detection mismatch on a specific finding: BEAST (CVE-2011-3389), reported by the network scanner on a Windows Server 2022 domain controller, completely absent from the agent-based scanner's report. The first reaction from the infrastructure team was that the network scanner had thrown a false positive. That is a reasonable first read on any unilateral finding, especially against a critical asset, and a healthy default. It also turned out to be wrong.
+
+BEAST is fifteen years old. Any vulnerability library is going to have it. So I went to look at why one library said yes and the other said nothing.
+
+The agent-based product's library did contain CVE-2011-3389. It was split across two sections of the library:
+
+- **Vulnerability definitions** (4 entries), all targeting Opera browser versions on specific Linux distributions.
+- **Patch definitions** (64 OVAL checks), covering OpenJDK, Firefox, NSS, Thunderbird and similar packages on specific Linux distros.
+
+That is the entire coverage for CVE-2011-3389 in this product's library. There was no check for TLS service configuration on Windows. There was no check that examines the Schannel registry. There was nothing that probes a port. The CVE is in the library, but the *detection logic* assumes a software-package shape that this finding doesn't have.
+
+A Windows domain controller negotiating TLS 1.0 with CBC ciphers on its LDAPS port has the BEAST condition. None of the 68 OVAL definitions in the library will match that condition, because the condition isn't expressible as "package X version Y is installed."
+
+## Independent verification
+
+Before drawing any conclusions about the POC, I wanted to confirm the network scanner's finding was real and not a false positive. I ran `testssl.sh` from a Mac terminal over VPN against the same DC on three ports: TCP 636 (LDAPS), TCP 3269 (LDAPS for Global Catalog), and TCP 3389 (RDP). Anonymized output, host and IP redacted:
+
+```
+Port 636/LDAPS:
+  TLSv1     offered  (deprecated, BEAST candidate)
+  TLSv1.1   offered  (deprecated)
+  TLSv1.2   offered
+  TLSv1.3   not offered
+  Cipher suites include: ECDHE-RSA-AES128-CBC-SHA  (CBC = BEAST risk)
+  BEAST   (CVE-2011-3389):    VULNERABLE
+  LUCKY13 (CVE-2013-0169):    potentially VULNERABLE
+
+Port 3269/LDAPS-GC:
+  ...same protocol set as 636, plus:
+  ROBOT   (CVE-2017-13099):   VULNERABLE
+  SWEET32 (CVE-2016-2183):    VULNERABLE  (3DES offered)
+  Overall grade:              M
+
+Port 3389/RDP:
+  ...same as above, plus:
+  Self-signed certificate
+  Overall grade:              T (cert) / F (config)
+```
+
+The network scanner was correct. The agent-based scanner missed all of it.
+
+## The Schannel registry trap
+
+There is a documentation trap embedded in this finding worth pulling out, because it explains both how a well-run team can confidently claim TLS 1.0 is disabled while the wire says otherwise, and how an agent-based scanner that reads the registry can confirm the wrong belief.
+
+Windows TLS protocol enable/disable lives at:
+
+```
+HKLM\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols
+```
+
+Two facts about this path matter, and both come straight from Microsoft documentation that is easy to miss because it lives in different parts of the docs site.
+
+First: **TLS 1.0 is enabled by default at the OS level on Windows Server 2022.** Microsoft's [Schannel SSP protocols reference](https://learn.microsoft.com/en-us/windows/win32/secauthn/protocols-in-tls-ssl--schannel-ssp-) lists the default-enabled and default-disabled protocols per Windows version. TLS 1.0 is in the default-enabled list for Server 2022. There has been a steady drumbeat of guidance saying *you should disable it*, and there are deprecation timelines at the application layer, but the OS-default state of the protocol is on, not off.
+
+Second: **an absent or empty registry key is not the same as a disabled protocol.** Microsoft's [TLS, DTLS, and SSL protocol version registry settings](https://learn.microsoft.com/en-us/windows-server/security/tls/tls-registry-settings?tabs=diffie-hellman#tls-dtls-and-ssl-protocol-version-settings) page is explicit on this point: when the protocol's `Enabled` and `DisabledByDefault` values are absent, the OS default applies. To override the OS default you have to write the registry explicitly. Blank means "defer to the OS," and the OS default for TLS 1.0 on Server 2022 is enabled.
+
+This is the trap. A team checks the Schannel path, sees the TLS 1.0 keys are missing, and concludes the protocol is disabled. The host is in fact still negotiating TLS 1.0 because the OS default applies and nothing has been written to override it. An agent-based scanner that reads the registry is going to mirror the team's belief, because the registry says exactly what the team thinks it says. The probe is the only thing that knows what the network is actually doing.
+
+When I walked the asset owner through the network scanner output, the `testssl.sh` HTML reports for ports 636, 3269, and 3389, and the two Microsoft documentation pages above, the conclusion changed. The host was confirmed vulnerable on the wire. Not just to BEAST. The 3269 and 3389 listeners were also vulnerable to ROBOT (CVE-2017-13099) and SWEET32 (CVE-2016-2183), and the RDP service was using a self-signed certificate. ROBOT in particular is more impactful than BEAST — it allows decryption of captured RSA traffic — and would also have been invisible to a software-inventory scanner.
+
+The asset team's revised position was that their agent-based platform can be made to inspect the Schannel registry through custom OVAL or CIS/STIG benchmark content, but does not perform active TLS handshake probing. That is a fair description of the architecture, and it is also the limitation. A custom OVAL check that reads the Schannel registry will tell you what the registry says. It will not tell you what the listening service negotiates.
+
+## The auto-remediation story cuts both ways
+
+Agent-based vuln management products lean heavily on a related promise: bulk auto-remediation. The agent that found the missing patch can also push the patch. The same agent can apply the registry change, restart the service, and retire the finding. In the marketing, this is the unification of detection and response. In practice, it cuts both ways.
+
+The benefits are real. For software-package vulnerabilities — a CVE in a Chrome version, an unpatched .NET runtime, an out-of-date OpenSSL on a Linux host — having the agent that detects the gap also close the gap eliminates a huge amount of toil. You can roll a patch to ten thousand endpoints in a maintenance window with one operator. That is a meaningful operational win, and it's the reason these products sell.
+
+The limitation is exactly what the BEAST finding exposes. Auto-remediation only works against findings the agent can detect. A class of vulnerability that lives outside the agent's detection model — TLS service configuration, exposed admin interfaces, default credentials on a network appliance, IAM misconfigurations in a cloud control plane, business-logic flaws in a custom app — is not just undetected. It is also unfixable by the platform that's supposed to be your remediation surface.
+
+The risk is buying the consolidation story without auditing the coverage. A program that retires its active network scanner because the agent platform "does it all" inherits a quiet blind spot in exactly the places where attackers are looking.
+
+## The other half: prioritization
+
+Detection mechanism is one half of the modern vuln-mgmt problem. The other half is what you do with the findings once you have them.
+
+Any reasonably-instrumented enterprise produces tens of thousands of vulnerability findings per scan cycle. Most teams are not capable of fixing tens of thousands of things, and most of those things would not change the organization's risk posture even if fixed. The work that matters is figuring out which few percent to act on first.
+
+The current state of practice is mostly CVSS-based prioritization. CVSS scores are useful but they are intrinsic; they describe the bug, not the risk to your environment. A 9.8 CVSS on a service that isn't internet-reachable, doesn't process sensitive data, and sits behind three layers of segmentation is operationally less urgent than a 7.5 on a public-facing identity provider.
+
+Two efforts are pulling toward better answers:
+
+- **EPSS** (Exploit Prediction Scoring System, maintained by FIRST.org). Adds a probability that a CVE will be exploited in the wild within the next 30 days. Combined with CVSS, EPSS is a much better first-pass filter than severity alone. Scores are public and freely available.
+- **Attack-path and reachability analysis.** Graph-based approaches that ask: given this finding on this asset, what is the actual blast radius given network connectivity, identity relationships, and existing controls? Several commercial vendors are starting to ship this; the open-source `BloodHound` project does a focused version of it for Active Directory.
+
+The hard part is that exploitability and attack-path mapping have to be tied to *your* environment. A vendor's risk score that doesn't know your network segmentation, your identity model, your data classifications, or your compensating controls is approximating an answer using their assumptions about a generic enterprise. The real prioritization signal lives at the intersection of CVE data and your environment graph, and almost no commercial product gets that intersection right today.
+
+## What AI changes — on both sides
+
+Two things are happening in parallel that change this picture.
+
+**On the defense side**, AI is finally useful for the part of vuln-mgmt that humans have always been bad at: synthesizing thousands of findings into a small number of decisions. Asking an LLM "which 50 of these 8,000 findings should we fix this sprint, given that we run a healthcare workload, our crown jewels are these systems, and our recent incidents have looked like X" is now a viable workflow. So is using one to draft remediation plans, write the change-management ticket, and translate a finding into language a non-security engineer can act on. The summarization and translation layer is the win. The judgment is still yours.
+
+**On the attack side**, the same capabilities help adversaries triage your attack surface. An attacker no longer needs to read every Shodan result by hand or hand-craft a phishing pretext. The economics of low-effort, high-volume reconnaissance and exploitation have shifted in their favor, and the gap between "vulnerability disclosed" and "vulnerability mass-exploited" has been shrinking measurably for several years.
+
+**The third thread is AI agents themselves.** As organizations onboard AI agents into business workflows — agents that read email, ticket systems, data warehouses, source repos, customer records — those agents acquire identities, credentials, and access patterns. They become a new asset class with attack surface that traditional vuln scanners do not cover. Most of the current crop of agent platforms gives you no first-class way to enumerate what an agent has accessed, what tools it has called, or what identities it has assumed during a task. Identity governance for human users (joiner-mover-leaver, least privilege, periodic access reviews) has no clean analog yet for agent identities. This is where I expect the next generation of "no scanner saw it" findings to come from.
+
+The pattern is consistent with the TLS story. New attack surface. Old detection model. Predictable outcome.
+
+## Standards mapping
+
+For readers who need to back the above into framework language:
+
+- **PCI-DSS 4.0 §4.2.1** — requires "strong cryptography and security protocols" for transmission of cardholder data over open public networks. TLS 1.0 and 1.1 do not qualify. Detecting protocol use on the wire is a network-probe problem, not a software-inventory problem.
+- **NIST SP 800-52 Rev. 2** — current US federal guidance for selecting, configuring, and using TLS. TLS 1.2 minimum, TLS 1.3 recommended, TLS 1.0 / 1.1 deprecated. Includes the Schannel "blank means default" trap explicitly.
+- **NIST SP 800-40 Rev. 4** — enterprise patch management planning. Calls out risk-based prioritization explicitly and discusses the limits of automated patching as part of a broader vulnerability response process.
+- **NIST CSF 2.0 — Identify (ID.RA) and Protect (PR.IP) functions** — risk assessment and information protection processes that frame why detection-mechanism diversity matters.
+- **CIS Controls v8 — Control 7 (Continuous Vulnerability Management)**, particularly Safeguard 7.5, which calls out *both* authenticated agent-style scans and unauthenticated network-probe scans as part of a complete program. The frameworks already say what good looks like. The gap is implementation.
+
+## Closing
+
+The lesson I'm taking from this is that "we have a vulnerability management program" is doing too much work as a sentence. What teams actually have is a particular combination of detection mechanisms, a particular library of checks within each, a particular prioritization model, and a particular remediation pipeline. Each of those four parts has blind spots. They compound. A clean executive dashboard often means you've only counted what one of your tools is able to see.
+
+Two specific things you can do this week if any of this sounds familiar:
+
+1. Pick a known-vulnerable service condition (BEAST is fine, or pick something more recent like SWEET32 or ROBOT) and run [`testssl.sh`](https://testssl.sh) from outside your scanner against a sample of internal services. Cross-reference what the probe finds against what your existing scanners reported. The deltas are your real coverage map.
+2. Pull the [EPSS scores](https://www.first.org/epss/) for your top 100 highest-CVSS findings and sort by EPSS instead. The ranking will look very different. That difference is roughly how much value an environment-aware prioritization model would add over CVSS alone.
+
+Vulnerability management is hard for boring reasons more than it's hard for exciting ones. The exciting reason is the one that gets the budget. The boring reason is what trips you up.
