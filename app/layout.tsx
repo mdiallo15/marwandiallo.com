@@ -58,11 +58,15 @@ export default async function RootLayout({
   return (
     <html lang="en" className={`${geist.variable} ${geistMono.variable}`}>
       <head>
-        {/* Prevent FOUC — apply theme before paint */}
+        {/* Prevent FOUC — apply theme before paint.
+            Default to 'light' (site signature look) unless the user has
+            explicitly toggled. Intentionally does not follow
+            prefers-color-scheme, which caused unwanted flips on systems
+            with auto-dark scheduling. */}
         <script
           nonce={nonce}
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('theme');if(!t){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`,
+            __html: `(function(){try{var t=localStorage.getItem('theme');if(t!=='dark'&&t!=='light'){t='light';}document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','light');}})();`,
           }}
         />
       </head>
