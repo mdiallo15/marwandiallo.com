@@ -14,19 +14,19 @@
     var(--font-geist-mono), "JetBrains Mono", "SF Mono", ui-monospace, Menlo,
     Monaco, Consolas, monospace;
 
-  /* FT-style warm paper. Slightly pinkish/tan, not pure white. */
-  --color-bg: #fff6ec;
-  --color-bg-elev: #fffaf3;
-  --color-bg-sink: #faecdc;
+  /* Warm near-white paper. Closer to Claude/Anthropic cream than FT pink. */
+  --color-bg: #faf7f0;
+  --color-bg-elev: #fdfbf6;
+  --color-bg-sink: #f1ebdd;
   --color-ink: #0a0a0a;
   --color-ink-soft: #33302e;
   --color-ink-muted: #6b6661;
   --color-ink-faint: #a39b91;
-  --color-rule: #ecddca;
-  --color-rule-soft: #f4e8d6;
+  --color-rule: #e6dccb;
+  --color-rule-soft: #efe6d4;
   --color-accent: #0a0a0a;
   --color-accent-soft: #33302e;
-  --color-accent-wash: #faecdc;
+  --color-accent-wash: #f1ebdd;
   --color-secondary: #6b6661;
   --color-secondary-soft: #a39b91;
 }
