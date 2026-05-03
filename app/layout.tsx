@@ -36,7 +36,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    creator: "@x_marwan_",
+    creator: "@marwanbuilds",
     title: "Marwan Diallo — Security Architect & Builder",
     description:
       "Security architect by trade, builder by habit. Notes from the seam between AI coding tools, identity, and the production reality of shipping secure software.",
@@ -90,7 +90,7 @@ export default async function RootLayout({
                   LinkedIn
                 </a>
                 <a
-                  href="https://x.com/x_marwan_"
+                  href="https://x.com/marwanbuilds"
                   className="hover:text-[var(--color-accent)]"
                 >
                   X

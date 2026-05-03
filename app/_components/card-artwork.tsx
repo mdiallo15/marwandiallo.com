@@ -1630,13 +1630,7 @@ function AgentIdentityLabArtwork() {
           strokeWidth="0.8"
           opacity="0.5"
         />
-        <rect
-          width="22"
-          height="6"
-          rx="3"
-          fill="currentColor"
-          opacity="0.7"
-        />
+        <rect width="22" height="6" rx="3" fill="currentColor" opacity="0.7" />
         <text
           x="45"
           y="174"

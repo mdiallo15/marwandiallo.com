@@ -34,7 +34,7 @@ export default function HomePage() {
           className="flex flex-col items-end gap-1 text-[0.95rem] text-[var(--color-ink-soft)] shrink-0"
         >
           <a
-            href="https://x.com/x_marwan_"
+            href="https://x.com/marwanbuilds"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-[var(--color-ink)] transition-colors"
