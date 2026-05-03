@@ -1229,21 +1229,21 @@ function AgentIdentityFrontArtwork() {
       {/* Front line (the perimeter the org thinks it has) */}
       <line
         x1="120"
-        y1="20"
+        y1="24"
         x2="120"
         y2="180"
         stroke="currentColor"
-        strokeWidth="1.5"
-        strokeDasharray="4 4"
-        opacity="0.5"
+        strokeWidth="2"
+        strokeDasharray="5 5"
+        opacity="0.65"
       />
       <text
         x="120"
-        y="14"
+        y="16"
         textAnchor="middle"
         fontSize="9"
         fill="currentColor"
-        opacity="0.6"
+        opacity="0.7"
       >
         front line
       </text>
@@ -1286,18 +1286,19 @@ function AgentIdentityFrontArtwork() {
         <g key={i} transform={`translate(${a.x}, ${a.y})`}>
           <circle
             r="11"
-            fill="none"
+            fill="rgba(255,255,255,0.55)"
             stroke="currentColor"
-            strokeWidth="1.5"
-            opacity={a.badge ? 1 : 0.55}
+            strokeWidth="2"
+            opacity={a.badge ? 1 : 0.7}
           />
           <text
             x="0"
             y="3"
             textAnchor="middle"
             fontSize="10"
+            fontWeight="600"
             fill="currentColor"
-            opacity={a.badge ? 1 : 0.55}
+            opacity={a.badge ? 1 : 0.75}
           >
             ai
           </text>
@@ -1305,10 +1306,10 @@ function AgentIdentityFrontArtwork() {
             <circle
               cx="9"
               cy="-9"
-              r="3"
+              r="3.5"
               fill="#0a7c4a"
-              stroke="currentColor"
-              strokeWidth="0.5"
+              stroke="#fff"
+              strokeWidth="1"
             />
           )}
         </g>
@@ -1323,8 +1324,8 @@ function AgentIdentityFrontArtwork() {
             x2="135"
             y2={y}
             stroke="currentColor"
-            strokeWidth="0.8"
-            opacity="0.18"
+            strokeWidth="1"
+            opacity="0.28"
           />
         </g>
       ))}
@@ -1366,81 +1367,92 @@ function ScannerGapArtwork() {
 
       {/* Left scanner (agent-based) */}
       <circle
-        cx="120"
-        cy="105"
-        r="64"
-        fill="none"
+        cx="115"
+        cy="112"
+        r="58"
+        fill="rgba(255,255,255,0.35)"
         stroke="currentColor"
-        strokeWidth="1.5"
-        opacity="0.85"
+        strokeWidth="2"
+        opacity="0.95"
       />
       <text
-        x="80"
-        y="42"
+        x="85"
+        y="40"
+        textAnchor="middle"
         fontSize="10"
+        fontWeight="600"
         fill="currentColor"
-        opacity="0.85"
       >
         agent-based
       </text>
       <text
-        x="86"
-        y="55"
+        x="85"
+        y="52"
+        textAnchor="middle"
         fontSize="8"
         fill="currentColor"
-        opacity="0.55"
+        opacity="0.65"
       >
         (registry, packages)
       </text>
 
       {/* Right scanner (network probe) */}
       <circle
-        cx="200"
-        cy="105"
-        r="64"
-        fill="none"
+        cx="205"
+        cy="112"
+        r="58"
+        fill="rgba(255,255,255,0.35)"
         stroke="currentColor"
-        strokeWidth="1.5"
-        opacity="0.85"
+        strokeWidth="2"
+        opacity="0.95"
       />
       <text
-        x="200"
-        y="42"
+        x="235"
+        y="40"
+        textAnchor="middle"
         fontSize="10"
+        fontWeight="600"
         fill="currentColor"
-        opacity="0.85"
       >
         network probe
       </text>
       <text
-        x="200"
-        y="55"
+        x="235"
+        y="52"
+        textAnchor="middle"
         fontSize="8"
         fill="currentColor"
-        opacity="0.55"
+        opacity="0.65"
       >
         (TLS handshake)
       </text>
 
       {/* The gap — area only the network probe sees, hatched */}
       <path
-        d="M 200 49 a 64 64 0 0 1 0 112 a 64 64 0 0 1 -10 -1.5 a 70 70 0 0 0 0 -109 a 64 64 0 0 1 10 -1.5 z"
+        d="M 205 54 a 58 58 0 0 1 0 116 a 58 58 0 0 1 -8 -1 a 64 64 0 0 0 0 -114 a 58 58 0 0 1 8 -1 z"
         fill="url(#hatch)"
       />
 
       {/* The BEAST tag in the gap-only region */}
-      <g transform="translate(232, 95)">
+      <g transform="translate(232, 105)">
         <rect
           x="-26"
-          y="-9"
+          y="-10"
           width="52"
-          height="20"
+          height="22"
           rx="4"
           fill="#fff7ee"
           stroke="currentColor"
-          strokeWidth="1"
+          strokeWidth="1.5"
         />
-        <text x="0" y="5" textAnchor="middle" fontSize="9" fill="currentColor">
+        <text
+          x="0"
+          y="5"
+          textAnchor="middle"
+          fontSize="10"
+          fontWeight="700"
+          fill="currentColor"
+        >
           BEAST
         </text>
       </g>
@@ -1451,8 +1463,9 @@ function ScannerGapArtwork() {
         y="190"
         textAnchor="middle"
         fontSize="9"
+        fontStyle="italic"
         fill="currentColor"
-        opacity="0.6"
+        opacity="0.7"
       >
         the gap is the finding
       </text>
@@ -1514,9 +1527,9 @@ function AgentIdentityLabArtwork() {
           width="90"
           height="60"
           rx="8"
-          fill="none"
+          fill="rgba(255,255,255,0.55)"
           stroke="currentColor"
-          strokeWidth="1.5"
+          strokeWidth="2"
         />
         <text
           x="45"
@@ -1566,9 +1579,9 @@ function AgentIdentityLabArtwork() {
       <g transform="translate(272, 100)">
         <circle
           r="14"
-          fill="none"
+          fill="rgba(255,255,255,0.55)"
           stroke="currentColor"
-          strokeWidth="1.5"
+          strokeWidth="2"
         />
         <text x="0" y="3" textAnchor="middle" fontSize="9" fill="currentColor">
           ai
