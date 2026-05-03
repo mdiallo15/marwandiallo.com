@@ -32,13 +32,15 @@ nouns over abstractions. Name the artifact (BEAST, RFC 8693, MCAS, the
 agent) when possible.
 
 **Good (in repo today):**
-- *Identity Is the Perimeter*
-- *Infrastructure Taught Me About AI*
-- *I Built a Scanner, Then Scanned Myself*
-- *The Agent Identity Front*
-- *Agent-Based vs. Network-Probe Scanners: A Coverage Case Study*
+
+- _Identity Is the Perimeter_
+- _Infrastructure Taught Me About AI_
+- _I Built a Scanner, Then Scanned Myself_
+- _The Agent Identity Front_
+- _Agent-Based vs. Network-Probe Scanners: A Coverage Case Study_
 
 **Avoid:**
+
 - Question-as-headline ("Is X the new Y?")
 - Listicle counts ("7 things…")
 - Rhetorical clickbait ("This one weird trick…")
@@ -57,6 +59,7 @@ Lowercase, fragmentary, descriptive. Not Title Case. They are signposts,
 not advertisements.
 
 **Good:**
+
 - `## Two scanners, two different questions`
 - `## The investigation`
 - `## The Schannel registry trap`
@@ -65,6 +68,7 @@ not advertisements.
 - `## Closing`
 
 **Avoid:**
+
 - `## Introduction` / `## Conclusion` (just write the paragraph)
 - `## The 5 Pillars Of Modern Security`
 - `## Why You Should Care About X`
@@ -77,12 +81,14 @@ Three patterns recur and should keep recurring:
 
 1. **The dichotomy opener.** State two outcomes that look the same but
    aren't. Name the gap.
+
    > "A vulnerability scanner that returns no findings is one of two
    > things. Either the asset is genuinely clean, or the scanner can't
    > see the class of bug that is actually present."
 
 2. **The artifact opener.** Lead with the concrete thing — a port, a
    CVE, a registry path, a server. Then back out to the lesson.
+
    > "I ran into a clean version of this gap during a recent
    > proof-of-concept evaluation. Two scanners, the same Windows Server
    > 2022 domain controller, the same week."
@@ -119,19 +125,20 @@ them. The literal name of the tool, RFC, CVE, registry key, port, or
 control.
 
 **Avoid (banned list).**
-- *leverage* (use)
-- *utilize* (use)
-- *robust* (sturdy / well-tested / specific)
-- *seamless* (almost always a lie)
-- *holistic* (vague)
-- *synergy* (cut the sentence)
-- *cutting-edge / state-of-the-art* (cut)
-- *ecosystem* (be specific: the AWS console, the npm registry, etc.)
-- *paradigm shift* (cut)
-- *deep dive* (write the dive)
-- *world-class* (cut)
-- *unlocks* (as a verb for capabilities — overused)
-- *delve* (LLM tell)
+
+- _leverage_ (use)
+- _utilize_ (use)
+- _robust_ (sturdy / well-tested / specific)
+- _seamless_ (almost always a lie)
+- _holistic_ (vague)
+- _synergy_ (cut the sentence)
+- _cutting-edge / state-of-the-art_ (cut)
+- _ecosystem_ (be specific: the AWS console, the npm registry, etc.)
+- _paradigm shift_ (cut)
+- _deep dive_ (write the dive)
+- _world-class_ (cut)
+- _unlocks_ (as a verb for capabilities — overused)
+- _delve_ (LLM tell)
 
 **Hedge sparingly.** "I think", "in my experience" are fine and earn
 trust when used once or twice per essay. Five times per essay reads as
@@ -212,7 +219,7 @@ that; the essay doesn't need to do the linking.
 
 ---
 
-## What an essay is *not*
+## What an essay is _not_
 
 - It is not a vendor product brief. We don't recommend a single tool.
 - It is not a tutorial. We don't write step-by-step howtos here. (Those
