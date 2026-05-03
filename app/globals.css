@@ -725,6 +725,10 @@ a:hover {
   height: 100%;
   display: block;
   z-index: 1;
+  /* Card backgrounds are always light gradients regardless of page theme,
+     so pin the artwork ink dark so currentColor strokes/fills stay visible
+     when the rest of the page is in dark mode. */
+  color: #0a0a0a;
 }
 /* When artwork is present, soften the gradient circles behind */
 .feed-card__visual:has(.card-art)::before,
@@ -735,7 +739,7 @@ a:hover {
 /* shared text styles */
 .card-art text {
   font-family: var(--font-mono, ui-monospace, monospace);
-  fill: var(--color-ink);
+  fill: #0a0a0a;
 }
 
 /* Stack diagram labels */
