@@ -15,18 +15,18 @@
     Monaco, Consolas, monospace;
 
   /* FT-style warm paper. Slightly pinkish/tan, not pure white. */
-  --color-bg: #fff1e5;
-  --color-bg-elev: #fff7ee;
-  --color-bg-sink: #f9e7d6;
+  --color-bg: #fff6ec;
+  --color-bg-elev: #fffaf3;
+  --color-bg-sink: #faecdc;
   --color-ink: #0a0a0a;
   --color-ink-soft: #33302e;
   --color-ink-muted: #6b6661;
   --color-ink-faint: #a39b91;
-  --color-rule: #e8d8c4;
-  --color-rule-soft: #f1e3d0;
+  --color-rule: #ecddca;
+  --color-rule-soft: #f4e8d6;
   --color-accent: #0a0a0a;
   --color-accent-soft: #33302e;
-  --color-accent-wash: #f9e7d6;
+  --color-accent-wash: #faecdc;
   --color-secondary: #6b6661;
   --color-secondary-soft: #a39b91;
 }
