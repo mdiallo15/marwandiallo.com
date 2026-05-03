@@ -1,0 +1,94 @@
+---
+title: "The Agent Identity Front"
+date: "2026-05-02"
+summary: "AI agents are the next vulnerability vector and we are not tackling it fast enough. A look at why the gap between AI adoption and AI governance is widening, what it looks like inside real orgs, and where identity programs should be aiming."
+tags: ["security", "identity", "ai", "agents", "governance"]
+---
+
+The shorthand most security leaders use for AI risk is *prompt injection*. Some add *data exfiltration*. A few add *training data poisoning*. Almost none of them lead with *identity*, which is where I think the actual front line is, and where the biggest gap between attacker velocity and defender preparedness is opening.
+
+This essay is about that front line: what it looks like inside real organizations, why it is moving faster than most identity programs are scaled to handle, and where I think the next set of breaches is going to come from.
+
+## The number that changed how I think about this
+
+In a recent engagement, the org wanted visibility into shadow AI usage. They'd been hearing from managers that employees were "using AI" but had no inventory and no way to size the problem. We stood up a generative-AI usage dashboard in Microsoft Fabric and Power BI sourced from network and identity logs. Everyone expected the number to be meaningful. Nobody expected what came back.
+
+**Day one of the dashboard going live:** out of roughly 1,600 employees, more than 700 were already using generative AI tools, on an average of six different tools per user — browser extensions, web apps, native clients, IDE plugins.
+
+**Four months later:** that number had grown to roughly 1,100 of the 1,600 users, on an average of eight tools per user. The average Microsoft Cloud App Security score across those tools was six on a scale of one to ten.
+
+The org had not officially adopted any of these tools. There were no enterprise contracts, no DLP coverage, no DPIA on file, no security review of the SaaS posture. The procurement team did not know about most of these vendors. The identity team had no visibility into which of the apps had OAuth-connected to corporate accounts. The legal team had no idea what data was being pasted into them.
+
+This is not a story about a poorly-run org. The org was a mature, well-funded enterprise with good people in every seat. It is a story about how fast the adoption curve is moving and how thin the governance layer underneath it is.
+
+## What "agent identity" actually means
+
+When I say *agent identity* I don't just mean an LLM endpoint behind an API key. I mean every flavor of:
+
+- **Foundation-model API access** holding a long-lived key in a config file or secret store.
+- **Browser extensions and IDE plugins** authenticating to corporate accounts via OAuth, often with broad mail/calendar/repo scopes.
+- **No-code agent builders** running in employee tenants and reaching into SaaS the way the user does.
+- **Vendor-native agents** like Copilot Studio agents, ChatGPT custom GPTs with tools, Anthropic projects with file uploads, AWS Bedrock agents, Google Agentspace.
+- **In-house agents** built on top of the above, usually with their own service principal or workload identity.
+
+Each of these is, from a security perspective, a non-human identity that can act in the environment, hold credentials, accumulate access, and produce audit-log entries that may or may not be distinguishable from a human's actions. Each one needs to be inventoried, attributed, scoped, monitored, and eventually retired — same lifecycle as a human, with the speed and scale of a workload.
+
+Most identity programs are not currently set up to do any of these things for agents.
+
+## Why this is happening faster than the program can keep up
+
+Three structural factors are pushing adoption faster than governance.
+
+**The tool catalog is exploding.** The number of AI tools that an employee can sign up for and use in a workflow has grown by a factor I do not have a clean way to measure but the dashboard story above gives a flavor of it. Eight tools per user is not the ceiling, it is the average four months in.
+
+**Most adoption is bottom-up.** Employees are not waiting for IT to bless a tool. They sign up with a corporate email, paste a corporate document into the prompt, and use the result in a corporate deliverable, and the org learns about it through a leaked screenshot or a usage dashboard that gets stood up after the fact. The traditional procurement-to-deployment-to-IAM-onboarding chain has been bypassed at scale.
+
+**The vendor race is incentivizing speed over controls.** The largest platform vendors are competing for the agent governance layer and shipping into general availability fast. Identity buyers, especially in orgs that have standardized on a single primary IAM provider, are being pulled toward "we'll govern this for you, just pick our agents." That is a useful capability for the vendor's own agents and a partial capability for everything else. As an example, a vendor that owns a large share of an org's identity portal can make their own AI agents first-class citizens in the governance experience, while third-party agents from competing model providers show up as opaque OAuth apps or API-key holders that the same portal can see but cannot meaningfully manage. Buyers should not assume that "agent governance built into the IAM platform" means *all* agents.
+
+This is not a vendor takedown. It is the current shape of the market in 2026, and it has real implications for buyers. The orgs that come out ahead are the ones that build agent governance independent of the agent vendor, not on top of it.
+
+## The attacker side, briefly
+
+Most of this essay is about defense, but it is worth saying explicitly that the attacker side is moving even faster.
+
+A reasonably capable attacker today can use commodity LLMs to triage attack surface, draft pretexts for phishing campaigns that survive all but the most disciplined human eye, generate exploitation code for newly disclosed CVEs, and operate semi-autonomous reconnaissance loops. The economics of low-effort, high-volume work have shifted in their favor. The window between "vulnerability disclosed" and "vulnerability mass-exploited" has been compressing for several years and the AI tooling has accelerated that.
+
+The defensive equivalent — using AI to triage findings, draft remediation tickets, summarize logs, and so on — is also useful. It is not the same accelerant. The attacker only has to find one path. The defender has to govern many. The asymmetry has not gotten better.
+
+## What the next two years probably look like
+
+A few directional bets, hedged appropriately because this space is moving.
+
+The next major incident class will involve an agent identity that nobody has on the inventory. Either an OAuth scope that an extension acquired and the org never reviewed, or a service principal an engineer created for an internal agent and forgot, or a vendor agent that was authorized once and accumulated reach. The post-incident report will sound a lot like 2018-2020 cloud IAM misconfiguration reports. The tools to prevent it will exist. The deployment of those tools will lag.
+
+Identity programs that adopt the pattern of treating any non-human identity as a peer to a human identity — same lifecycle hooks, same access reviews, same risk classification — will outperform the programs that keep agents in a separate, less-loved swimlane. The mature program of 2028 looks more like joiner-mover-leaver-with-AI than like joiner-mover-leaver-and-also-some-agents-somewhere.
+
+Smaller orgs that are early in their security program will have a counter-intuitive advantage here: they get to build the pattern in from the start, before there are decades of legacy identity tooling to retrofit. The orgs in the worst position are the ones that have a thirty-year identity infrastructure and a four-month-old AI footprint.
+
+## What to actually do
+
+Not exhaustive, but the actions I bring up in every consulting engagement I've been in this year.
+
+- **Inventory every non-human identity.** Including service principals, OAuth apps, API keys, workload identities, agent build artifacts, browser extension authorizations, and SaaS-side bot users. The first pass usually finds two to five times what the org expected.
+- **Stand up a shadow AI usage dashboard.** Network logs, cloud app discovery, OAuth grant logs, and DLP signals are usually enough to start. Run it for ninety days before deciding what policy needs to look like. The data will surprise you.
+- **Treat the agent identity lifecycle the same as the human lifecycle.** Issue, scope, monitor, review, retire. With shorter durations and tighter scope on the issuance side.
+- **Use workload identity federation** wherever the agent runs on a platform that supports it: GitHub Actions OIDC, AWS IAM Roles Anywhere, Azure managed identities, GCP workload identity federation. Eliminate long-lived API keys at the source.
+- **Architect for agent vendor diversity.** Do not assume the IAM platform you bought will fully govern agents from a competing model provider. Build the inventory, the policies, and the access reviews so they are agent-agnostic.
+- **Adopt a token exchange model** (RFC 8693, or platform equivalents) so that an agent acting on behalf of a human ends up with a downscoped, time-bounded credential that the audit log can attribute correctly.
+
+## Standards mapping
+
+For readers who need to back this into framework language:
+
+- **NIST AI 600-1 / Generative AI Profile** — companion to AI RMF (AI 100-1). The risk categories around confabulation, data leakage, and information integrity all assume the AI system has identity and access. Most program owners are not yet pairing AI 600-1 with their identity governance baseline.
+- **NIST SP 800-63-4** (current draft) — extends digital identity guidance with treatment for non-person entities and federation. Useful framing for treating agents as first-class identities.
+- **NIST CSF 2.0** — *Govern* (GV) and *Identify* (ID) functions especially. The new GV function explicitly calls for governance over emerging technology adoption.
+- **CIS Controls v8** — Control 5 (Account Management) and Control 6 (Access Control Management). The safeguards already cover service accounts and non-human identities. Most orgs treat those safeguards as low-priority. They are about to become high-priority.
+- **OAuth 2.0 Token Exchange (RFC 8693)** — the standards-track mechanism for the user-to-agent delegation pattern this essay keeps returning to. The `act` claim is what makes audit logs meaningful again.
+- **Cloud Security Alliance — AI Controls Matrix** — a practical control list that maps cleanly into existing GRC programs.
+
+## Closing
+
+The lesson I'm taking from the last twelve months of consulting is that agent identity is a present-tense problem, not a 2028 problem. The shadow AI dashboard story is the one I bring up most often when an executive asks me what they should be worried about. It is concrete, it is recent, and it is reproducible inside almost any org with a network log and a few weeks. I have not yet stood one up that did not return a number that scared the room.
+
+If your program has a passkey rollout in flight (and it should — see the [companion piece on passwordless](https://marwandiallo.com/writing/passwordless-and-your-agent)), pair it with an agent inventory project this quarter. The scariest dashboards are the ones nobody has built yet. The fastest way to get out of that bucket is to build one.

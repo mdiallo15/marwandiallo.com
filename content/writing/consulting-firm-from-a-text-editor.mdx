@@ -1,40 +1,77 @@
 ---
-title: "Running a Consulting Firm From a Text Editor"
+title: "Why I Started a Security Firm in the Age of Vibe Coding"
 date: "2026-04-18"
-summary: "The firm is a repo. The marketing is a commit. The meetings fit in the corners of a day job. Here's what the last six months taught me about building slowly."
-tags: ["consulting", "building"]
+summary: "The orgs most exposed to AI-era security risk are the ones moving fastest to ship with AI. They are also the orgs least likely to have a CISO. I built Diallo Security Advisors for that gap."
+tags: ["consulting", "security", "ai", "building"]
 ---
 
-I launched my consulting firm on a Tuesday at 11pm, between a deploy and a load of laundry.
+The fastest-growing class of software being shipped in 2026 is software that the person shipping it did not fully write. AI-assisted coding, no-code agent builders, glue-layer prompts strung together with API keys, vibe-coded SaaS products that hit production over a long weekend. The economics are extraordinary. A founder with a clear idea can move from concept to live product in days, not quarters. The work that used to take a team of six can be done by a team of one with a good model subscription.
 
-There was no press release. There was a commit:
+I love this. I also know exactly what it looks like underneath, because I've been doing security across that stack for a decade. Most of these products ship with security debt that the founder cannot see, in shapes the security industry has not yet given a name to, on platforms that are racing to add governance after the fact.
 
-```
-feat(launch): ship public site, enable analytics
-```
+That gap is why I started [Diallo Security Advisors](https://security.diallogroup.com).
 
-The firm is real. It has a brand, a methodology, a pricing model, a legal entity, insurance, a contract template, an intake flow, and — as of last month — one pilot conversation with an actual customer. Most of it gets built in the evenings, around the day job.
+## The market that doesn't have a CISO
 
-## Sprints, not seasons
+There is a tier of organizations whose security posture is poorly served by the existing market. Startups in the seed-to-Series-B range. Mid-stage companies adopting AI without a security architect. Mature businesses with thirty-year operational footprints and a five-year-old security program that was sized for a different threat model. Family-owned businesses with eight or nine figures of revenue and one IT director carrying the entire security function.
 
-I run the firm the way I ship at work: two-week sprints, a backlog, a Friday review. The scope of any given sprint is "what can I finish between 9pm and midnight, four nights a week, without breaking anything at the day job I still need."
+Each of these orgs has the same structural problem. They cannot afford a full-time CISO, and the off-the-shelf consulting offerings they get pitched are sized for Fortune 500 procurement. The big-name firms quote engagements in millions of dollars, with project teams, partners, and slide decks calibrated for a buyer that has a chief information security officer asking for a particular kind of paper. The orgs in the gap below that don't have the buyer profile or the budget for that motion. They do have all the same risk.
 
-It turns out that is quite a lot — as long as you stop pretending it's a lot.
+The market response so far has been to package security as a checkbox tool. Endpoint subscriptions, automated compliance dashboards, point solutions that do one thing and call themselves a "platform." Most of the orgs I work with own three or four of these tools and have no one in the building to wire them into a coherent program. The tools are not the problem. The absence of someone who can architect them into a program for the org's specific situation is the problem.
 
-AI moved the ceiling. A year ago, an evening meant I might write half of a blog post. Now an evening means I can draft three posts, refactor the booking flow, fix the broken RSS feed, and still close the laptop by eleven. Not because I'm smarter. Because the compounding cost of context-switching — which is what kills most night builders — has collapsed. The tools hold the state so I don't have to.
+That is the gap. It is not a small gap.
 
-## Institution, not product
+## Why this is the right moment
 
-The thing I had to learn, and kept having to relearn, is that I'm not building a product. I'm building an institution.
+I would not have started a firm five years ago. The economics of being a small operator in security consulting were rough. Big firms had pricing power, distribution power, and a stable enough threat model that an off-the-shelf engagement still produced a reasonable result.
 
-A product is a thing people buy. An institution is a thing people trust. The former can be built in a quarter. The latter needs years of receipts. Every essay, every case study, every quietly-shipped improvement is a small deposit into an account that nobody is looking at yet but someone eventually will.
+Two things shifted.
 
-This is why writing matters more than copy. Copy is for customers I already have. Writing is for the ones who haven't found me yet.
+The threat model accelerated faster than the legacy consulting motion can adapt to. Generative AI tools rolled out faster than security organizations could write policy. Agent identities started accumulating in environments before anyone had built an inventory category for them. Vibe-coded products are shipping with credential exposures and SSRF gaps that did not exist in the same shapes a few years ago. The pace of change has rewarded operators who can move at the same speed as the engineering teams building the systems, and it has punished consulting motions that need eight weeks to mobilize.
 
-## Three things I'd tell last year's me
+At the same time, the work itself got more leverageable. AI in the loop has shifted what one operator can do. Drafting a risk assessment used to take days; with the right system, much of the structural work is done in hours and the human time gets spent where it actually matters — on the judgment, the context, the decisions that require knowing the org. I can run the firm at a level of throughput that would have required a four-person team a few years ago, and that throughput is what makes the economics work for a buyer who could not afford a full project team.
 
-1. **Keep the day job longer than feels cool.** The runway is the whole point. The firm grows better on top of a steady paycheck than on top of a stress ulcer.
-2. **Write everything down.** Including the things you think you'll remember. You won't.
-3. **Use the tools.** Not as a novelty. As the actual production workflow. If I had to build this without AI in the loop, I wouldn't.
+The combination is what makes the boutique firm viable in 2026. The buyer needs the speed. The operator can finally deliver it.
 
-Six months in, the firm has made no money. It has also not died. That's a position I'm happy to compound from.
+## The opinion this firm is built on
+
+Three opinions I'd defend. They show up in everything the firm publishes, and they shape the offering.
+
+**Security needs to come from operators, not auditors.** A lot of the available consulting in the small-to-mid market is paperwork-shaped. Gap assessments, policy templates, compliance documentation that gets filed and not implemented. The firms doing that work are honest professionals, but the work itself does not produce the operational changes the org needs. The buyers I want to serve need someone who has actually configured Entra Conditional Access, written detection rules, run an incident, and rolled out passkeys. Not someone who has read about doing those things.
+
+**Security should be baked in early, not retrofitted late.** The single highest-leverage moment in a company's security history is the first eighteen months. The architecture decisions made then — identity model, secrets management, audit logging, environment separation, data classification — set the cost of every security decision for the next decade. I have watched several orgs grow into multi-billion-dollar valuations on top of an early architecture nobody designed for security, and the cost of fixing it later is staggering. One client I have worked with is a thirty-five-year-old business at a five-billion-dollar valuation running a five-year-old security program because nothing was budgeted for it earlier. The math at that scale only goes one way: it gets harder, slower, and more expensive every year.
+
+**The legacy consulting offering is mispriced for the actual work most orgs need.** A six-figure engagement that produces a deck and a roadmap is good business for the firm and a poor outcome for a buyer who needs the roadmap *implemented*. The smaller, operator-led firm is better positioned to do both — assessment and execution — for the orgs that are genuinely the highest-risk segment in the AI transition.
+
+## The offering, briefly
+
+I keep the [services page](https://security.diallogroup.com/services) up to date with the current shape of the firm's offerings, but the short version is built around what the buyers I described actually need:
+
+- **Vulnerability management as a program**, not as a tool deployment. Detection mechanism diversity, prioritization that matches the org's environment, remediation pipelines that close the loop. (The companion essay [*When 'No Vulnerabilities Found' Means 'We Didn't Look There'*](https://marwandiallo.com/writing/no-vulnerabilities-found) is the longer version of this argument.)
+- **AI security and governance**, including the agent identity work, shadow AI inventory, and integration with existing IAM. Almost every engagement I do now has an AI component, including the ones that did not start as AI engagements.
+- **Cloud security architecture and review**, with operating focus across Azure, AWS, and Microsoft 365.
+- **Compliance and audit preparation** mapped to the frameworks the buyer's industry actually uses — HIPAA, HITECH, FedRAMP, SOC 2, ISO 27001, NIST 800-53, PCI-DSS, the others.
+- **vCISO services** for orgs that need an executive-level security partner without a full-time CISO hire.
+- **Incident response, GRC, security monitoring, and the rest** — see the services page for the current list.
+
+The [industries page](https://security.diallogroup.com/industries) maps these to the sectors I have spent the most time in: healthcare, financial services, government, technology, retail, professional services. The mapping is not a marketing flourish. It reflects which compliance regimes I have actually run programs against and which threat models I have actually defended against.
+
+## What the last six months actually taught me
+
+A few honest lessons from running this in evenings and weekends while still doing the day job. Not advice. Things I did not see coming.
+
+The hardest part of running a small firm is not the work. It is choosing what work to say no to. There is more inbound than the firm can absorb at its current capacity, and saying yes to the wrong engagement compromises the firm's ability to do the right ones well. The discipline of being a boutique is in the *no*, not the *yes*.
+
+Writing has been the most leveraged business development activity I do. Far more than networking, conferences, or paid channels. The essays on this site, the long-form pieces on the firm's blog, and the labs at [lab.marwandiallo.com](https://lab.marwandiallo.com) generate inbound from readers who already understand the level of work. They self-qualify by reading. By the time they reach out, I am not selling a service. I am scoping one.
+
+Tooling matters more than I expected. The firm runs on a tight stack of AI-assisted code, version-controlled documents, automated client communications, and dashboards I built in the same frameworks I help clients evaluate. The compounding return on doing your own tooling well is real and underappreciated.
+
+I underestimated the difference between a product company and an institution. A product is a thing you sell. An institution is a thing people trust enough to hire. Building the latter takes years and the deposits look small at the time.
+
+## Where this is going
+
+The firm is real, the website is live, and the first engagements have started. The plan for the next twelve months is to keep narrowing — sharper service offerings, sharper industry focus, sharper writing — and to keep building the tooling that lets a small operator deliver enterprise-grade work without enterprise-grade overhead.
+
+If your org is in the gap I described, the [contact page](https://security.diallogroup.com/contact) is the right place to start a conversation. The first call is free, the second one is about scoping a real engagement. If you are not in the gap and just want to read what the firm publishes, the lab is open and the writing is open, and most of the value of either is available without ever picking up the phone.
+
+The thesis under all of this is simple. The orgs most exposed to AI-era security risk are the ones moving fastest, and most of them do not yet have someone in the building to architect their way through it. Diallo Security Advisors is built to be that person, on a footprint that fits the buyer's actual size. The age of the boutique firm is back, and AI is the reason.

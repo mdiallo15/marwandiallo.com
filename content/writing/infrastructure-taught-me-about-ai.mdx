@@ -1,30 +1,68 @@
 ---
-title: "What Ten Years in Infrastructure Taught Me About AI"
+title: "What a Decade in Infrastructure Taught Me About AI"
 date: "2026-04-22"
-summary: "Everyone is treating AI like a revolution. I've seen this movie before. It was called virtualization, and then it was called cloud."
-tags: ["ai", "infrastructure"]
+summary: "I came up through racking servers, hypervisor migrations, and identity provisioning. The lesson that work taught me, and that I keep applying to AI in 2026, is that you cannot make good security calls from one set of binoculars."
+tags: ["ai", "infrastructure", "security"]
 ---
 
-In 2013 I was racking servers.
+I started my career in a server room.
 
-In 2015 I was decommissioning them, because we'd finally gotten serious about VMware and an entire room of metal became four hosts and a SAN. In 2018 the SAN went away too, replaced by a subscription. In 2024 a large part of my job became configuring policies on an AI model that would, in a calm voice, tell an analyst what was happening in a log the analyst had not yet opened.
+In the early 2010s I was racking machines for the New York State Department of Health, doing tune-ups, sizing storage, walking new hosts onto domain, and provisioning identities for the people who would eventually use them. Plain physical infrastructure work. Then the work changed. By 2015 most of the racks were being decommissioned because the org had finally gotten serious about virtualization and an entire data hall collapsed into a few VMware hosts and a SAN. By 2018 the SAN went away too, replaced by a cloud subscription with a different operating model and a different bill. By 2024, in my Microsoft years, a meaningful part of my job was tuning policy on AI systems that would, in a calm voice, tell an analyst what was happening in a log they had not yet opened.
 
 Each of these transitions was described, at the time, as a revolution. In practice each one was a slow unbundling of the layer underneath. The server became a subscription. The subscription became an API. The API is now starting to talk back.
 
-AI is the next layer in that stack. It is not a different kind of thing.
+AI is the next layer in that stack. I think it is the same kind of transition, not a different kind of thing, and the lessons from racking servers still apply.
 
-## What the infrastructure decade taught me
+## The work was never just one job
 
-**Abstractions don't remove work. They move it.** Virtualization didn't eliminate the OS patching problem; it relocated it to a smaller number of larger teams who were now responsible for thousands of images instead of hundreds of hosts. Cloud didn't eliminate capacity planning; it turned it into a monthly bill that you had to read carefully. AI won't eliminate analysts. It will relocate them into the role of reviewing a machine's work rather than doing the work from scratch.
+Looking back, the most important lesson I picked up doing infrastructure was that you cannot run that work well from a single perspective. The teams I worked on had to balance availability and security at every step, and either lens on its own would have led us to wrong calls.
 
-**The interesting risk is always at the boundary.** In the VMware era it was hypervisor escape. In the cloud era it was IAM misconfiguration. In the AI era it is prompt injection, data exfiltration through tool calls, and the slow leak of context windows into places they shouldn't go. Every abstraction layer ships with a new class of bug. Every class of bug takes roughly five years for the industry to name, catalog, and learn to defend against.
+Pure security lens, I would have insisted on patching schedules and configurations that took down clinical systems during operating hours. The asset team would have correctly told me I had broken something more important than I had fixed. Pure availability lens, the infrastructure team would have rolled out hosts with default credentials and shared service accounts because the change window was tight, and we would have eaten that decision a year later in an incident review. Pure business lens, executives would have approved cost-saving consolidations that flattened security boundaries we needed to keep separate.
 
-**The winners are the ones who adopt it earliest inside the firewall.** Not the ones who sell it. The ones who *use* it. In 2012, the companies that quietly put VMware everywhere inside their own walls became the companies that ran circles around the ones still racking pizza boxes. I suspect the same is true now. The companies patiently, boringly, privately integrating AI into their own workflows — not as a product, as a reflex — are going to have a decade-long head start on the ones still writing op-eds about it.
+I learned to use both binoculars at once. Hold the security view in one eye, the operational and business view in the other, and treat the disagreement between them as the actual signal. Where they agreed, the work was easy. Where they disagreed, that was the design conversation worth having.
 
-## The boring prediction
+That habit shaped the rest of my career. It is also the habit I keep finding missing in 2026 AI conversations.
 
-Five years from now, "AI security" is going to sound as dated as "cloud security" does today. It won't stop being relevant — it will stop being a category. It will just be *security*, the way cloud is now just *infrastructure*.
+## What infrastructure decade lessons keep repeating
 
-The companies that still pretend it's special will be the ones paying a premium for consultants to explain it. The companies that treated it as a normal part of the stack — interesting, dangerous, but normal — will be the ones quietly shipping.
+**Abstractions don't remove work, they move it.** Virtualization didn't eliminate OS patching; it relocated it from a hundred admins managing a thousand boxes to a smaller team managing the gold images. Cloud didn't eliminate capacity planning; it turned it into a monthly bill that needed reading carefully. Identity federation didn't eliminate joiner-mover-leaver; it spread it across more SaaS providers. AI is not eliminating the analyst. It is relocating the analyst into the role of reviewing a model's work rather than doing the work from scratch. The volume of work going through the system is also growing, which is why the relocation feels like it leaves the analyst busier, not less busy.
 
-I know which group I want to be in. I've been here before.
+**The interesting risk is at the boundary, every time.** In the VMware era it was hypervisor escape and shared-storage exposure. In the cloud era it was IAM misconfiguration and metadata-service abuse. In the AI era it is prompt injection, tool-call exfiltration, and the slow leak of sensitive context into systems that were never scoped to hold it. Every abstraction layer ships with a new class of bug. Every class of bug takes the industry roughly five years to name, catalog, and learn to defend against. We are at year three for AI on that clock.
+
+**The advantage goes to the orgs that adopt it inside the firewall first.** Not the orgs that sell it. The orgs that *use* it, quietly, in their own workflows. In 2012 the orgs that put VMware everywhere inside their walls had a five-year lead on the ones still racking pizza boxes. In 2018 the same was true of cloud. The orgs that are patiently and privately integrating AI into their own operations now — not as a marketing project, as a reflex — are going to have a similar lead in 2030.
+
+**Both binoculars, always.** Security people look at AI and see prompt injection, data leakage, agent identity governance. Asset and business people look at AI and see throughput, decision speed, and lower headcount per unit of work. Each of them is right. Each of them is also wrong if held alone. The orgs that are going to do this well are the ones who treat the disagreement between the two views as the actual design surface, the way we eventually learned to do for virtualization and cloud.
+
+## The thing I got wrong
+
+Here is the part I do not see written down often enough.
+
+When public cloud was getting going in the mid-2010s, my read on it was that it was mostly an infrastructure simplification — same machines, same problems, different bill. I underestimated how much it would reshape security architecture. The IAM model, the shared-responsibility line, the network perimeter dissolving, the way a single misconfigured S3 bucket became the dominant breach class for several years. I saw the operational shift and missed the security shift.
+
+I do not want to make the same mistake on AI. So I'm forcing myself to take the second-order effects more seriously this time. The interesting things are not happening at the model layer. They are happening at the agent identity layer, the data flow layer, and the auditability layer. Those are the places I would be paying attention to if I were running a program in 2026, and they are the places most programs are still under-investing.
+
+The companion essays — *[Identity Is the Perimeter](https://marwandiallo.com/writing/identity-is-the-perimeter)* and *[The Agent Identity Front](https://marwandiallo.com/writing/agent-identity-front)* — are where I went deeper on the identity side of that.
+
+## Where the industry view is, and what I'd add to it
+
+The dominant analyst framing in 2026 — Gartner, Forrester, the major vendor strategy decks — is some flavor of "AI is a generational platform shift comparable to the move to cloud or the move to mobile." That framing is largely correct. It is also missing a piece.
+
+Cloud and mobile reshaped infrastructure and access. AI is reshaping infrastructure, access, *and* the agent layer that operates on top of both. The thing that made cloud security hard was that the controls had to move into the configuration layer. The thing that is making AI security hard is that the controls have to move into the agent identity layer, the data flow layer, *and* the model behavior layer simultaneously. Three transitions stacked on top of each other, in a tighter timeline than any of the previous shifts ran on.
+
+That's the piece I'd add to the analyst frame. It is also why the orgs trying to address this with one team or one tool are going to keep falling behind. The work is genuinely cross-functional in a way the cloud transition allowed teams to ignore for a while.
+
+## Standards mapping
+
+If you are translating any of the above into governance language for a steering committee:
+
+- **NIST AI Risk Management Framework (AI 100-1)** and the **Generative AI Profile (AI 600-1)** are the current consensus framing for AI risk in regulated environments. Read them as a pair.
+- **NIST CSF 2.0** — the new *Govern* function explicitly covers emerging-technology risk and is the right home for AI governance under existing CSF programs.
+- **ISO/IEC 42001** — AI management system standard, certifiable, useful for orgs that want to put AI governance under the same management-system umbrella as ISO 27001.
+- **Cloud Security Alliance — AI Controls Matrix** — practical control list, maps cleanly into existing GRC programs and saves a lot of crosswalk work.
+- **EU AI Act** — for orgs with EU exposure, the timeline matters. The regulation is staged, and the parts that bite first are around transparency and high-risk system documentation.
+
+## Closing
+
+The lesson I keep coming back to is that I have been here before, twice, and the people who did well in those transitions were not the loudest voices in the room. They were the ones who held the security and the operational lens at the same time, treated the disagreement between them as the design conversation, and made unsexy boring choices that compounded over years.
+
+If you are leading a program through this, the practical action is to put a recurring meeting on the calendar between your security and your asset/operational leads with one standing agenda item: *what is the AI footprint we are now responsible for, and where do our two views of it disagree?* That meeting, run honestly for six months, will surface more useful work than most AI strategy decks.

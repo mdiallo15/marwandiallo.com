@@ -1,34 +1,66 @@
 ---
 title: "Identity Is the Perimeter"
 date: "2026-04-10"
-summary: "After a decade in enterprise security, I've stopped believing in most of the perimeter. The actual perimeter is a person with a phone."
+summary: "After more than a decade in enterprise security across the public and private sectors, I'm convinced the actual perimeter is human and machine identity. Most security programs are still spending the majority of their budget on the wall around the castle."
 tags: ["security", "identity"]
 ---
 
-There is no perimeter.
+The penny dropped for me about a year into my time at the New York State Department of Health.
 
-I've worked on enterprise security across three very different places — New York State government, a global bank, and now Microsoft — and the one thing each of them eventually learned, usually the expensive way, is that the network boundary isn't where the attackers are. The attackers are in the inbox. The attackers are in the session token. The attackers are holding a phone that is pretending to be a person.
+The org had real money behind its security stack. Network controls, endpoint protection, DLP, the whole lineup. What it did not have, in any consistent way, was a culture of identity discipline. Help desk would bypass IAM policy when a senior person was annoyed. Onboarding paperwork did not match the permissions actually provisioned. Access reviews were performed in name. Privileged accounts outlived the people who had been given them. The security tools were good. The identity practices around them were where the program leaked.
 
-The actual perimeter is an identity.
+Every identity-driven incident I worked or reviewed in that period had the same shape: an account that should not have been active, or an access path that should not have existed, or a credential that nobody could clearly attribute to a current employee. The control on paper was strong. The control as implemented was a phone call to the help desk.
 
-Once you accept that, the security program gets smaller and sharper. Most enterprises are running a hundred controls to defend a castle that was demolished in 2018. A small number of those controls still matter. The rest is theater.
+That was the moment I stopped believing in the perimeter as a network concept and started believing in it as an identity concept. The walls were fine. The doors were the problem.
 
-## Three things that actually move risk
+## Humans as the firewall
 
-**Phishing-resistant MFA.** Not SMS. Not push. FIDO2 / passkeys, or nothing. Every other factor is one distracted tap away from being someone else's account. The win isn't just fewer phish — it's an entire class of attack that stops being possible.
+The framing I've come back to over the years is that *human assets are the most important assets a security program protects*, and the identity layer is the firewall most directly in front of those assets. A person with a phone, a session, and a credential is the smallest unit of access in a modern environment. That person can also be the lowest-effort entry point an attacker has into the environment. Both of those statements are true at the same time, and both are usually under-resourced.
 
-**Conditional access that is actually conditional.** "Require MFA" is not a policy. "Require a compliant device, from a known location, with a phishing-resistant factor, for this specific application" is a policy. Most organizations have the licenses. Very few have the muscle to wield them.
+This is not a story about phishing awareness training. I don't find that line of argument especially useful. People are not the problem to be trained out of the system. The problem is that the systems around them — the identity controls, the help desk recovery flows, the conditional access policies, the audit reviews, the offboarding workflow — are usually built as if the human were a passive endpoint rather than the most important production surface in the org. A human is the firewall. Everything that touches the human's identity is firewall configuration.
 
-**An audit log you actually read.** Microsoft Entra ID gives you a rich identity event stream for free. Most customers forward it to a SIEM that nobody queries. If I could only keep one detection, it would be: *this identity just did something it has never done before, from a place it has never been.*
+Once you accept that framing, the security program gets sharper. Most enterprises run a hundred controls to defend a network boundary that has been demolished since cloud and remote work. A small subset of those controls actually move risk in 2026. The rest is theater that survives because nobody has had the political capital to retire it.
 
-Three controls. That's most of the program.
+## What I've seen actually move risk
 
-## What most people miss
+Three areas, in order of impact, drawn from a decade of doing this across NYS public sector, Microsoft enterprise, and the consulting work I do now.
 
-The real question isn't "how do we stop phishing?" It's "how do we make phishing irrelevant?" Those are different projects with different budgets and different success criteria.
+**Phishing-resistant authentication, end to end.** The factor matters less than people think and the recovery flow matters more. A passkey is unphishable; an SMS-based recovery path that re-enrolls the passkey on demand is not. The orgs that get measurable risk reduction here are the ones who treated the recovery flow as a first-class control surface. They removed the help-desk bypass, removed the SMS recovery path, and accepted the temporary increase in support volume as the price of the win.
 
-The first is a forever-war. The second is a one-year plan.
+**Conditional access that is actually conditional.** *"Require MFA"* is not a policy. *"Require a compliant device, from a known location, with a phishing-resistant factor, on a low-risk session, for this specific application"* is a policy. Most organizations have the licenses for this already and do not have the muscle to use it. The teams that wield CA properly are the ones that treat policy authoring as a software engineering problem, not a checkbox.
 
-Passkeys don't make phishing harder. They make phishing a category that no longer applies to you. That is a different kind of win — the kind that retires the threat rather than managing it — and it is available, right now, to any organization willing to do the unglamorous work of telling five thousand employees to re-enroll their factors.
+**Joiner-mover-leaver discipline that includes audits.** This is the one that keeps coming up in incident reviews. Onboarding granted permissions that did not match the role. Movers accumulated permissions over years without losing the old ones. Leavers stayed active in one or another corner of the SaaS estate for months. Quarterly access reviews caught some of this when they were performed, and were performed performatively or skipped when the cycle got busy. Orgs that run a structured risk assessment cadence are the ones that catch the long tail of the identity hygiene problem before it becomes the post-incident root cause.
 
-Most won't. The ones that do are the ones I want to work with.
+I'd also add a fourth that gets less attention than it should: an audit log somebody actually reads. Microsoft Entra ID, Okta, Ping, all the major platforms ship a rich identity event stream. Most orgs forward it to a SIEM and never query it. The detection that has caught the most real attacks in my experience is the simplest one: *this identity just did something it has never done before, from a place it has never been, on a device it has never used*. That detection is free in any modern IdP. It still goes unwritten more than half the time.
+
+## What does not move risk, even when it feels like it does
+
+Let me be unpopular for a second.
+
+A lot of identity program spending in 2026 still goes to controls that look impressive and don't materially reduce the risk the program is supposed to address. Heavy IAM workflows that nobody actually completes. Endless quarterly attestations performed at the end of the day on a Friday. Conditional access policies copied from a vendor template, not authored against the org's actual application portfolio. Audit-log forwarding to a SIEM with no detections written against it. Awareness training measured by completion rather than by behavior change.
+
+If the next twelve months of an identity program could only fund three things, my honest take is they should be: phishing-resistant authentication including the recovery flow, an actual access review process with teeth, and detection on the identity event stream. Most of the rest is optional, and a meaningful amount of it should probably be retired.
+
+This is the unpopular take. Most security pros disagree with it because the rest of the spending is what makes a program *look* like a program. The rest of the spending is also where most of the budget goes. The two things are connected.
+
+## Where this points next
+
+Two of the three orgs I've worked at started passwordless rollouts in the last year. Most of the orgs I work with as a consultant are mid-rollout. That is genuine progress. It is also incomplete in a specific way: the same orgs are simultaneously onboarding AI agents, browser extensions, no-code automations, and SaaS connectors that hold long-lived credentials and act under the user's identity. Each of those is an agent identity. None of them shows up in the org chart. Most of them do not show up in the IAM portal either.
+
+Identity-as-the-perimeter is the right model for human users, and it is rapidly becoming the wrong size for the actual surface. The same primitives need to apply to the non-human population that has quietly outgrown most identity teams' inventory. I wrote a separate piece on what that looks like — *[The Agent Identity Front](https://marwandiallo.com/writing/agent-identity-front)* — because it deserves more than a paragraph here.
+
+## Standards mapping
+
+For readers who need to back the framing into something a steering committee will accept:
+
+- **NIST SP 800-63-4** (digital identity, current draft revision) — covers identity proofing, authentication, federation, and treatment of non-person entities. The draft language explicitly raises agent and workload identities as in-scope.
+- **NIST CSF 2.0** — *Govern* (GV) and *Protect* (PR.AA, identity management and access control). GV is new in 2.0 and explicitly elevates identity governance to a peer of other functions.
+- **CIS Controls v8** — Control 5 (Account Management) and Control 6 (Access Control Management). Together they cover the joiner-mover-leaver discipline, privileged account separation, and the access review cadence this essay keeps returning to.
+- **OMB M-22-09** — phishing-resistant MFA mandate for U.S. civilian agencies. The clearest available statement of *what good looks like* at the federal level.
+- **Microsoft Entra ID Conditional Access** and the equivalents in Okta and Ping — vendor surfaces that already implement the controls. The gap between "licensed" and "actually deployed at strength" is where most program risk lives.
+
+## Closing
+
+The lesson I keep coming back to is that the perimeter is a person, then a session, then a credential, then an action. Each of those layers is configurable, observable, and improvable. None of them is a firewall ruleset. Most of the security industry's vocabulary still treats the firewall as the canonical metaphor, which is part of why programs keep over-investing in the wrong place.
+
+If you only do one thing in the next quarter, run an end-to-end test of your own help-desk recovery flow against your strongest authentication setup. Have someone phone in claiming to be a senior VP who lost their device. See how far they get. The result is the most honest snapshot of your identity program you will get all year, and it costs an hour of someone's time.
