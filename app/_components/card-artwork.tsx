@@ -36,6 +36,12 @@ export function CardArtwork({ slug }: Props) {
       return <DogfoodArtwork />;
     case "authz-lab":
       return <AuthzArtwork />;
+    case "agent-identity-front":
+      return <AgentIdentityFrontArtwork />;
+    case "no-vulnerabilities-found":
+      return <ScannerGapArtwork />;
+    case "agent-identity-lab":
+      return <AgentIdentityLabArtwork />;
     default:
       return null;
   }
@@ -1203,6 +1209,432 @@ function AuthzArtwork() {
       <text x="160" y="190" textAnchor="middle" className="art-authz-where">
         WHERE id = ? AND owner_id = ?
       </text>
+    </svg>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Essay: The Agent Identity Front                                             */
+/* Front line: human, agent swarm pushing past it, identity badges only on    */
+/* a few — most have no badge (no inventory, no governance).                  */
+/* -------------------------------------------------------------------------- */
+function AgentIdentityFrontArtwork() {
+  return (
+    <svg
+      viewBox="0 0 320 200"
+      className="card-art"
+      aria-hidden
+      preserveAspectRatio="xMidYMid meet"
+    >
+      {/* Front line (the perimeter the org thinks it has) */}
+      <line
+        x1="120"
+        y1="20"
+        x2="120"
+        y2="180"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeDasharray="4 4"
+        opacity="0.5"
+      />
+      <text
+        x="120"
+        y="14"
+        textAnchor="middle"
+        fontSize="9"
+        fill="currentColor"
+        opacity="0.6"
+      >
+        front line
+      </text>
+
+      {/* Human (defender side, left) */}
+      <g transform="translate(60, 92)">
+        <circle cx="0" cy="-12" r="10" fill="currentColor" opacity="0.85" />
+        <rect
+          x="-14"
+          y="-2"
+          width="28"
+          height="32"
+          rx="6"
+          fill="currentColor"
+          opacity="0.75"
+        />
+        <text
+          x="0"
+          y="50"
+          textAnchor="middle"
+          fontSize="9"
+          fill="currentColor"
+          opacity="0.7"
+        >
+          program
+        </text>
+      </g>
+
+      {/* Agent swarm (right of line) — 6 agents, only 2 have a "badge" */}
+      {[
+        { x: 158, y: 50, badge: true },
+        { x: 200, y: 38, badge: false },
+        { x: 240, y: 60, badge: false },
+        { x: 168, y: 110, badge: true },
+        { x: 220, y: 100, badge: false },
+        { x: 270, y: 130, badge: false },
+        { x: 200, y: 160, badge: false },
+        { x: 252, y: 175, badge: false },
+      ].map((a, i) => (
+        <g key={i} transform={`translate(${a.x}, ${a.y})`}>
+          <circle
+            r="11"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            opacity={a.badge ? 1 : 0.55}
+          />
+          <text
+            x="0"
+            y="3"
+            textAnchor="middle"
+            fontSize="10"
+            fill="currentColor"
+            opacity={a.badge ? 1 : 0.55}
+          >
+            ai
+          </text>
+          {a.badge && (
+            <circle
+              cx="9"
+              cy="-9"
+              r="3"
+              fill="#0a7c4a"
+              stroke="currentColor"
+              strokeWidth="0.5"
+            />
+          )}
+        </g>
+      ))}
+
+      {/* Pressure arrows (right→left, agents pushing past) */}
+      {[60, 100, 140, 170].map((y, i) => (
+        <g key={i}>
+          <line
+            x1="290"
+            y1={y}
+            x2="135"
+            y2={y}
+            stroke="currentColor"
+            strokeWidth="0.8"
+            opacity="0.18"
+          />
+        </g>
+      ))}
+    </svg>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Essay: When 'No Vulnerabilities Found' Means 'We Didn't Look There'         */
+/* Two scanners, one Venn-diagram of coverage, with the BEAST gap visible.    */
+/* -------------------------------------------------------------------------- */
+function ScannerGapArtwork() {
+  return (
+    <svg
+      viewBox="0 0 320 200"
+      className="card-art"
+      aria-hidden
+      preserveAspectRatio="xMidYMid meet"
+    >
+      <defs>
+        <pattern
+          id="hatch"
+          patternUnits="userSpaceOnUse"
+          width="6"
+          height="6"
+          patternTransform="rotate(45)"
+        >
+          <line
+            x1="0"
+            y1="0"
+            x2="0"
+            y2="6"
+            stroke="currentColor"
+            strokeWidth="0.6"
+            opacity="0.35"
+          />
+        </pattern>
+      </defs>
+
+      {/* Left scanner (agent-based) */}
+      <circle
+        cx="120"
+        cy="105"
+        r="64"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        opacity="0.85"
+      />
+      <text
+        x="80"
+        y="42"
+        fontSize="10"
+        fill="currentColor"
+        opacity="0.85"
+      >
+        agent-based
+      </text>
+      <text
+        x="86"
+        y="55"
+        fontSize="8"
+        fill="currentColor"
+        opacity="0.55"
+      >
+        (registry, packages)
+      </text>
+
+      {/* Right scanner (network probe) */}
+      <circle
+        cx="200"
+        cy="105"
+        r="64"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        opacity="0.85"
+      />
+      <text
+        x="200"
+        y="42"
+        fontSize="10"
+        fill="currentColor"
+        opacity="0.85"
+      >
+        network probe
+      </text>
+      <text
+        x="200"
+        y="55"
+        fontSize="8"
+        fill="currentColor"
+        opacity="0.55"
+      >
+        (TLS handshake)
+      </text>
+
+      {/* The gap — area only the network probe sees, hatched */}
+      <path
+        d="M 200 49 a 64 64 0 0 1 0 112 a 64 64 0 0 1 -10 -1.5 a 70 70 0 0 0 0 -109 a 64 64 0 0 1 10 -1.5 z"
+        fill="url(#hatch)"
+      />
+
+      {/* The BEAST tag in the gap-only region */}
+      <g transform="translate(232, 95)">
+        <rect
+          x="-26"
+          y="-9"
+          width="52"
+          height="20"
+          rx="4"
+          fill="var(--color-bg, #fff1e5)"
+          stroke="currentColor"
+          strokeWidth="1"
+        />
+        <text x="0" y="5" textAnchor="middle" fontSize="9" fill="currentColor">
+          BEAST
+        </text>
+      </g>
+
+      {/* Reach line connecting agent miss → BEAST */}
+      <text
+        x="160"
+        y="190"
+        textAnchor="middle"
+        fontSize="9"
+        fill="currentColor"
+        opacity="0.6"
+      >
+        the gap is the finding
+      </text>
+    </svg>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Project: Agent Identity Lab                                                 */
+/* User → IdP → agent (with attestation badge) → resource. The act claim card. */
+/* -------------------------------------------------------------------------- */
+function AgentIdentityLabArtwork() {
+  return (
+    <svg
+      viewBox="0 0 320 200"
+      className="card-art"
+      aria-hidden
+      preserveAspectRatio="xMidYMid meet"
+    >
+      {/* User */}
+      <g transform="translate(28, 100)">
+        <circle r="14" fill="currentColor" opacity="0.85" />
+        <text
+          x="0"
+          y="32"
+          textAnchor="middle"
+          fontSize="9"
+          fill="currentColor"
+          opacity="0.7"
+        >
+          user
+        </text>
+        <text
+          x="0"
+          y="44"
+          textAnchor="middle"
+          fontSize="7"
+          fill="currentColor"
+          opacity="0.5"
+        >
+          passkey
+        </text>
+      </g>
+
+      {/* Arrow → IdP */}
+      <line
+        x1="46"
+        y1="100"
+        x2="100"
+        y2="100"
+        stroke="currentColor"
+        strokeWidth="1.2"
+      />
+      <polygon points="100,96 108,100 100,104" fill="currentColor" />
+
+      {/* IdP / token-exchange box */}
+      <g transform="translate(110, 70)">
+        <rect
+          width="90"
+          height="60"
+          rx="8"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+        />
+        <text
+          x="45"
+          y="22"
+          textAnchor="middle"
+          fontSize="9"
+          fill="currentColor"
+          fontWeight="600"
+        >
+          RFC 8693
+        </text>
+        <text
+          x="45"
+          y="36"
+          textAnchor="middle"
+          fontSize="8"
+          fill="currentColor"
+          opacity="0.7"
+        >
+          token-exchange
+        </text>
+        <text
+          x="45"
+          y="50"
+          textAnchor="middle"
+          fontSize="7"
+          fill="currentColor"
+          opacity="0.55"
+          fontFamily="monospace"
+        >
+          act: agent
+        </text>
+      </g>
+
+      {/* Arrow → Agent */}
+      <line
+        x1="200"
+        y1="100"
+        x2="246"
+        y2="100"
+        stroke="currentColor"
+        strokeWidth="1.2"
+      />
+      <polygon points="246,96 254,100 246,104" fill="currentColor" />
+
+      {/* Agent with attestation badge */}
+      <g transform="translate(272, 100)">
+        <circle
+          r="14"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+        />
+        <text x="0" y="3" textAnchor="middle" fontSize="9" fill="currentColor">
+          ai
+        </text>
+        <circle cx="11" cy="-11" r="4" fill="#0a7c4a" />
+        <text
+          x="11"
+          y="-9"
+          textAnchor="middle"
+          fontSize="6"
+          fill="#fff"
+          fontWeight="700"
+        >
+          ✓
+        </text>
+        <text
+          x="0"
+          y="32"
+          textAnchor="middle"
+          fontSize="9"
+          fill="currentColor"
+          opacity="0.7"
+        >
+          agent
+        </text>
+        <text
+          x="0"
+          y="44"
+          textAnchor="middle"
+          fontSize="7"
+          fill="currentColor"
+          opacity="0.5"
+        >
+          attested
+        </text>
+      </g>
+
+      {/* TTL bar */}
+      <g transform="translate(110, 154)">
+        <rect
+          width="90"
+          height="6"
+          rx="3"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="0.8"
+          opacity="0.5"
+        />
+        <rect
+          width="22"
+          height="6"
+          rx="3"
+          fill="currentColor"
+          opacity="0.7"
+        />
+        <text
+          x="45"
+          y="174"
+          textAnchor="middle"
+          fontSize="7"
+          fill="currentColor"
+          opacity="0.55"
+        >
+          ttl 5m
+        </text>
+      </g>
     </svg>
   );
 }

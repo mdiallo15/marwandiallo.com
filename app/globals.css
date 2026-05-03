@@ -14,40 +14,29 @@
     var(--font-geist-mono), "JetBrains Mono", "SF Mono", ui-monospace, Menlo,
     Monaco, Consolas, monospace;
 
-  /* Pure crisp light — white paper, no warmth */
-  --color-bg: #ffffff;
-  --color-bg-elev: #fafafa;
-  --color-bg-sink: #f5f5f5;
+  /* FT-style warm paper. Slightly pinkish/tan, not pure white. */
+  --color-bg: #fff1e5;
+  --color-bg-elev: #fff7ee;
+  --color-bg-sink: #f9e7d6;
   --color-ink: #0a0a0a;
-  --color-ink-soft: #404040;
-  --color-ink-muted: #737373;
-  --color-ink-faint: #a3a3a3;
-  --color-rule: #e5e5e5;
-  --color-rule-soft: #f0f0f0;
+  --color-ink-soft: #33302e;
+  --color-ink-muted: #6b6661;
+  --color-ink-faint: #a39b91;
+  --color-rule: #e8d8c4;
+  --color-rule-soft: #f1e3d0;
   --color-accent: #0a0a0a;
-  --color-accent-soft: #404040;
-  --color-accent-wash: #f5f5f5;
-  --color-secondary: #737373;
-  --color-secondary-soft: #a3a3a3;
+  --color-accent-soft: #33302e;
+  --color-accent-wash: #f9e7d6;
+  --color-secondary: #6b6661;
+  --color-secondary-soft: #a39b91;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) {
-    --color-bg: #0a0a0a;
-    --color-bg-elev: #141414;
-    --color-bg-sink: #0f0f0f;
-    --color-ink: #ffffff;
-    --color-ink-soft: #d4d4d4;
-    --color-ink-muted: #8a8a8a;
-    --color-ink-faint: #525252;
-    --color-rule: #232323;
-    --color-rule-soft: #1a1a1a;
-    --color-accent: #ffffff;
-    --color-accent-soft: #d4d4d4;
-    --color-accent-wash: #1a1a1a;
-    --color-secondary: #8a8a8a;
-    --color-secondary-soft: #525252;
-  }
+  /* Intentionally a no-op: theme is always pinned to light or dark by the
+     boot script in app/layout.tsx (writes data-theme on <html>). Following
+     prefers-color-scheme caused unwanted flips on systems with auto-dark
+     scheduling and on routes where a nested layout previously stripped the
+     bootstrap. Kept as an empty rule so future themers see the decision. */
 }
 
 :root[data-theme="dark"] {
@@ -508,16 +497,6 @@ a:hover {
 }
 
 /* Dark mode — pure crisp pill, no soft shadow */
-:root[data-theme="dark"] .seg-tabs__indicator,
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) .seg-tabs__indicator {
-    background: #000;
-    border-color: #000;
-    box-shadow:
-      0 1px 0 rgba(255, 255, 255, 0.04) inset,
-      0 1px 3px rgba(0, 0, 0, 0.5);
-  }
-}
 :root[data-theme="dark"] .seg-tabs__indicator {
   background: #000;
   border-color: #000;
@@ -562,11 +541,6 @@ a:hover {
 /* Dark mode — active tab is pure white, text on black */
 :root[data-theme="dark"] .seg-tabs__btn[data-active="true"] {
   color: #fff;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) .seg-tabs__btn[data-active="true"] {
-    color: #fff;
-  }
 }
 
 .seg-tabs__count {

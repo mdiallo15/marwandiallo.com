@@ -16,11 +16,21 @@ export interface Project {
 // ----------------------------------------------------------------------
 export const projects: Project[] = [
   {
+    slug: "agent-identity-lab",
+    title: "Agent Identity Lab",
+    date: "2026-05-02",
+    summary:
+      "RFC 8693 token exchange in motion. Pick a passkey-authenticated user, an agent (with one of four attestation surfaces), scopes, a TTL — see the delegated token, the act claim, the audit-log line. Plus an 8-rule drift detector on a fixture inventory and a six-surface attestation primer.",
+    status: "shipped",
+    url: "https://lab.marwandiallo.com/agent-identity",
+    tag: "ai",
+  },
+  {
     slug: "labs-hub",
     title: "Labs",
     date: "2026-04-27",
     summary:
-      "Five hands-on security playgrounds in one place: phishing-resistant identity, Content Security Policy, prompt injection, SSRF / cloud metadata, and IDOR / BOLA. Each lab pairs a working tool or simulator with the failure modes I've seen in production.",
+      "Six hands-on security playgrounds in one place: phishing-resistant identity, agent identity / RFC 8693 delegation, Content Security Policy, prompt injection, SSRF / cloud metadata, and IDOR / BOLA. Each lab pairs a working tool or simulator with the failure modes I've seen in production.",
     status: "shipped",
     url: "https://lab.marwandiallo.com",
     tag: "security",
