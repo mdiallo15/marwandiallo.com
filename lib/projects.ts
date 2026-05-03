@@ -68,9 +68,9 @@ export const projects: Project[] = [
   {
     slug: "csp-playground",
     title: "CSP Playground",
-    date: "2026-04-26",
+    date: "2026-05-03",
     summary:
-      "Paste a Content-Security-Policy header, get 12 findings ranked by severity. Plus the four canonical CSP shapes side by side and the bypass patterns I see most in client engagements.",
+      "A real iframe enforcing whatever Content-Security-Policy you paste, with every violation piped into a console mirror. Ten preset bypass scenarios — JSONP-on-allowlist, dangling-markup, 'strict-dynamic' without a nonce, eval, wildcards — plus a 12-rule paste-or-scan analyzer that exports to SARIF for GitHub Code Scanning.",
     status: "shipped",
     url: "https://lab.marwandiallo.com/csp",
     tag: "security",
