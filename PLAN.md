@@ -17,6 +17,8 @@ Living doc. Update as work lands. Keep entries short. Newest at top.
 
 ## Recently completed
 
+- `5340c66` — `/projects` route, nav entry, home + about cross-links.
+- `e7ec227` — Tag pages `/writing/tag/[tag]` + chips on the index.
 - `d505875` — Optional `updated` frontmatter + essay header stamp + sitemap lastmod.
 - `b490e33` — `/writing` index hover affordance + spacing tune for cream palette.
 - _T-02_ — OG image colors realigned to cream palette tokens; legacy red dot dropped.
@@ -33,7 +35,6 @@ _Pick one and start. Move to "In progress" when picked up._
 
 - [ ] Decide next direction: **content** (new essay) vs **site polish** vs **feature**.
 - [ ] Content: draft next essay (topic TBD — candidates below).
-- [ ] Feature: project index page or dedicated `/projects` route (currently only `lib/projects.ts`).
 
 ## In progress
 

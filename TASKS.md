@@ -21,20 +21,6 @@ session. Pick the top unblocked task, do it, commit, move it to "Done".
 
 ## Ready (ordered, top = next)
 
-### T-05 — Tag pages under `/writing/tag/[tag]`
-- **Files:** new `app/writing/tag/[tag]/page.tsx`, `lib/writing.ts`,
-  `app/sitemap.ts`.
-- **Do:** Generate static params from unique tags in frontmatter. Page lists
-  matching essays using the same card style as `/writing`. Add tag links
-  beneath each essay title on the index.
-- **Done when:** All tags render at `/writing/tag/<slug>`, included in sitemap.
-
-### T-06 — `/projects` route surfacing `lib/projects.ts`
-- **Files:** new `app/projects/page.tsx`, possibly new card component.
-- **Do:** Render entries from `lib/projects.ts` using FT card style consistent
-  with the home page. Link from the home and `/about`.
-- **Done when:** `/projects` lists all entries; nav surfaces it.
-
 ### T-07 — Lighthouse + a11y sweep
 - **Files:** none initially; report findings in PR description / commit body.
 - **Do:** Run Lighthouse against `/`, `/writing`, one essay, `/about`. Capture
@@ -52,6 +38,8 @@ session. Pick the top unblocked task, do it, commit, move it to "Done".
 - **T-02** — OG image colors aligned to cream palette tokens (`#faf7f0` paper, `#0a0a0a` ink, `#33302e` ink-soft, `#6b6661` ink-muted; dropped legacy red accent). Contrast ≥ 5:1 on all text. SHA: `7b1d7df`
 - **T-03** — `/writing` index: real hover affordance (row wash + title underline) since `--color-accent` matches `--color-ink` in light mode; bumped row padding and title size for breathing room with lighter palette. SHA: `b490e33`
 - **T-04** — Added optional `updated` frontmatter; surfaced `· updated <date>` in essay header when newer than `date`. Sitemap `lastmod` now prefers `updated`. Reading time was already wired. SHA: `d505875`
+- **T-05** — Tag pages under `/writing/tag/[tag]` (11 prerendered); added `tagSlug`/`getAllTags`/`getPostsByTag` helpers; tag chips below each summary on `/writing`; tag URLs added to sitemap. SHA: `e7ec227`
+- **T-06** — `/projects` route renders all 9 entries in the same FT card grid as the home feed (reuses `.feed-card` + `CardArtwork`); surfaced in nav and sitemap; "All projects →" link on home, "See projects →" link in `/about`. SHA: `5340c66`
 
 ## Notes
 
