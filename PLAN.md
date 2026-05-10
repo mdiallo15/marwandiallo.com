@@ -17,6 +17,8 @@ Living doc. Update as work lands. Keep entries short. Newest at top.
 
 ## Recently completed
 
+- `d505875` — Optional `updated` frontmatter + essay header stamp + sitemap lastmod.
+- `b490e33` — `/writing` index hover affordance + spacing tune for cream palette.
 - _T-02_ — OG image colors realigned to cream palette tokens; legacy red dot dropped.
 - _T-01_ — Verified sitemap + RSS list all 7 essays with correct dates (no fix needed).
 - `120e143` — X handle updated to `@marwanbuilds`.
@@ -31,7 +33,6 @@ _Pick one and start. Move to "In progress" when picked up._
 
 - [ ] Decide next direction: **content** (new essay) vs **site polish** vs **feature**.
 - [ ] Content: draft next essay (topic TBD — candidates below).
-- [ ] Site: audit `/writing` index typography + spacing post-palette change.
 - [ ] Feature: project index page or dedicated `/projects` route (currently only `lib/projects.ts`).
 
 ## In progress

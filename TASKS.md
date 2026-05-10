@@ -21,20 +21,6 @@ session. Pick the top unblocked task, do it, commit, move it to "Done".
 
 ## Ready (ordered, top = next)
 
-### T-03 — `/writing` index typography pass post-palette change
-- **Files:** `app/writing/page.tsx`, related component(s) under `app/_components/`.
-- **Do:** Review spacing, line-height, and link affordance on the index list
-  against the lighter palette. Tighten only what is visibly off. No new deps.
-- **Done when:** Index reads cleanly at 1280px and 390px widths; no regressions
-  on essay detail pages.
-
-### T-04 — Add reading-time + last-updated on essay pages
-- **Files:** `lib/writing.ts`, `app/writing/[slug]/page.tsx` (or equivalent).
-- **Deps:** `reading-time` already installed.
-- **Do:** Compute reading time from MDX body; surface `date` (and optional
-  `updated` frontmatter) in the article header in the existing FT style.
-- **Done when:** Each essay shows "X min read · Apr 23, 2026" under the title.
-
 ### T-05 — Tag pages under `/writing/tag/[tag]`
 - **Files:** new `app/writing/tag/[tag]/page.tsx`, `lib/writing.ts`,
   `app/sitemap.ts`.
@@ -64,6 +50,8 @@ session. Pick the top unblocked task, do it, commit, move it to "Done".
 
 - **T-01** — Verified sitemap + RSS include all 7 essays (no fix needed; dates match frontmatter). SHA: `7b1d7df`
 - **T-02** — OG image colors aligned to cream palette tokens (`#faf7f0` paper, `#0a0a0a` ink, `#33302e` ink-soft, `#6b6661` ink-muted; dropped legacy red accent). Contrast ≥ 5:1 on all text. SHA: `7b1d7df`
+- **T-03** — `/writing` index: real hover affordance (row wash + title underline) since `--color-accent` matches `--color-ink` in light mode; bumped row padding and title size for breathing room with lighter palette. SHA: `b490e33`
+- **T-04** — Added optional `updated` frontmatter; surfaced `· updated <date>` in essay header when newer than `date`. Sitemap `lastmod` now prefers `updated`. Reading time was already wired. SHA: `d505875`
 
 ## Notes
 
