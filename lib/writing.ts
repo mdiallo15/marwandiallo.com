@@ -92,3 +92,33 @@ export function formatDate(iso: string): string {
     day: "numeric",
   });
 }
+
+/** URL-safe tag slug. Lowercase, alnum + dashes only. */
+export function tagSlug(tag: string): string {
+  return tag
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+export function getAllTags(): { tag: string; slug: string; count: number }[] {
+  const counts = new Map<string, { tag: string; count: number }>();
+  for (const post of getAllPosts()) {
+    for (const t of post.tags ?? []) {
+      const key = tagSlug(t);
+      const cur = counts.get(key);
+      if (cur) cur.count += 1;
+      else counts.set(key, { tag: t, count: 1 });
+    }
+  }
+  return Array.from(counts.entries())
+    .map(([slug, v]) => ({ slug, tag: v.tag, count: v.count }))
+    .sort((a, b) => (b.count - a.count) || a.tag.localeCompare(b.tag));
+}
+
+export function getPostsByTag(slug: string): PostMeta[] {
+  return getAllPosts().filter((p) =>
+    (p.tags ?? []).some((t) => tagSlug(t) === slug),
+  );
+}

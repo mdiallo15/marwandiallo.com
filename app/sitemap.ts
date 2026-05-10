@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { getAllPosts } from "@/lib/writing";
+import { getAllPosts, getAllTags } from "@/lib/writing";
 
 const SITE_URL = "https://marwandiallo.com";
 
@@ -8,9 +8,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     url: `${SITE_URL}/writing/${p.slug}`,
     lastModified: new Date(p.updated ?? p.date),
   }));
-  const staticRoutes = ["", "/writing", "/about", "/now"].map((p) => ({
+  const tags = getAllTags().map((t) => ({
+    url: `${SITE_URL}/writing/tag/${t.slug}`,
+    lastModified: new Date(),
+  }));
+  const staticRoutes = ["", "/writing", "/projects", "/about", "/now"].map((p) => ({
     url: `${SITE_URL}${p}`,
     lastModified: new Date(),
   }));
-  return [...staticRoutes, ...posts];
+  return [...staticRoutes, ...posts, ...tags];
 }
