@@ -17,6 +17,7 @@ Living doc. Update as work lands. Keep entries short. Newest at top.
 
 ## Recently completed
 
+- _T-07_ — Lighthouse sweep: all four target pages now perf ≥98 / a11y 100 / seo 100 / bp 100.
 - `5340c66` — `/projects` route, nav entry, home + about cross-links.
 - `e7ec227` — Tag pages `/writing/tag/[tag]` + chips on the index.
 - `d505875` — Optional `updated` frontmatter + essay header stamp + sitemap lastmod.

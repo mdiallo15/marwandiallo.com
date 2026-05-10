@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { headers } from "next/headers";
 import "./globals.css";
 import { ThemeToggle } from "./_components/theme-toggle";
+import { ThemeBootstrap } from "./_components/theme-bootstrap";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -17,6 +17,8 @@ const geistMono = Geist_Mono({
 });
 
 const SITE_URL = "https://marwandiallo.com";
+const SITE_DESCRIPTION =
+  "Security architect by trade, builder by habit. Notes from the seam between AI coding tools, identity, and the production reality of shipping secure software.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -24,22 +26,19 @@ export const metadata: Metadata = {
     default: "Marwan Diallo — Security Architect & Builder",
     template: "%s — Marwan Diallo",
   },
-  description:
-    "Security architect by trade, builder by habit. Notes from the seam between AI coding tools, identity, and the production reality of shipping secure software.",
+  description: SITE_DESCRIPTION,
   openGraph: {
     type: "website",
     siteName: "Marwan Diallo",
     title: "Marwan Diallo — Security Architect & Builder",
-    description:
-      "Security architect by trade, builder by habit. Notes from the seam between AI coding tools, identity, and the production reality of shipping secure software.",
+    description: SITE_DESCRIPTION,
     url: SITE_URL,
   },
   twitter: {
     card: "summary_large_image",
     creator: "@marwanbuilds",
     title: "Marwan Diallo — Security Architect & Builder",
-    description:
-      "Security architect by trade, builder by habit. Notes from the seam between AI coding tools, identity, and the production reality of shipping secure software.",
+    description: SITE_DESCRIPTION,
   },
   alternates: {
     canonical: SITE_URL,
@@ -49,26 +48,25 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const nonce = (await headers()).get("x-nonce") ?? undefined;
   return (
     <html lang="en" className={`${geist.variable} ${geistMono.variable}`}>
       <head>
-        {/* Prevent FOUC — apply theme before paint.
-            Default to 'light' (site signature look) unless the user has
-            explicitly toggled. Intentionally does not follow
-            prefers-color-scheme, which caused unwanted flips on systems
-            with auto-dark scheduling. */}
-        <script
-          nonce={nonce}
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('theme');if(t!=='dark'&&t!=='light'){t='light';}document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','light');}})();`,
-          }}
-        />
+        {/* Eagerly emit a baseline <meta name="description"> in <head>.
+            Next.js 15 streams the `metadata` flush after </head> when
+            the root layout is dynamic (middleware reads cause this).
+            Crawlers (and Lighthouse SEO) won't see the metadata-exported
+            description otherwise. Per-route metadata still overrides
+            via OpenGraph + dynamic <head> updates. */}
+        <meta name="description" content={SITE_DESCRIPTION} />
+        {/* Prevent FOUC — apply theme before paint. The bootstrap is a
+            small async server component so the root layout itself stays
+            sync and metadata can be hoisted into <head>. */}
+        <ThemeBootstrap />
       </head>
       <body>
         <ThemeToggle />

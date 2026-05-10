@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import type { PostMeta } from "@/lib/writing";
 import type { Project } from "@/lib/projects";
@@ -20,29 +20,39 @@ interface Props {
 export function HomeFeed({ posts, projects }: Props) {
   const [tab, setTab] = useState<Tab>("all");
 
-  const merged: FeedItem[] = [
-    ...posts.map<FeedItem>((p) => ({ kind: "writing", data: p })),
-    ...projects.map<FeedItem>((p) => ({ kind: "project", data: p })),
-  ].sort(
-    (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime(),
-  );
+  const all = useMemo<FeedItem[]>(() => {
+    const merged: FeedItem[] = [
+      ...posts.map<FeedItem>((p) => ({ kind: "writing", data: p })),
+      ...projects.map<FeedItem>((p) => ({ kind: "project", data: p })),
+    ].sort(
+      (a, b) =>
+        new Date(b.data.date).getTime() - new Date(a.data.date).getTime(),
+    );
 
-  // Pin the Labs hub to the front of the All view so the entry point
-  // to the lab subdomain is the first thing visitors see.
-  const labsIdx = merged.findIndex(
-    (i) => i.kind === "project" && i.data.slug === "labs-hub",
-  );
-  const all: FeedItem[] =
-    labsIdx > 0
-      ? [merged[labsIdx], ...merged.slice(0, labsIdx), ...merged.slice(labsIdx + 1)]
+    // Pin the Labs hub to the front of the All view so the entry point
+    // to the lab subdomain is the first thing visitors see.
+    const labsIdx = merged.findIndex(
+      (i) => i.kind === "project" && i.data.slug === "labs-hub",
+    );
+    return labsIdx > 0
+      ? [
+          merged[labsIdx],
+          ...merged.slice(0, labsIdx),
+          ...merged.slice(labsIdx + 1),
+        ]
       : merged;
+  }, [posts, projects]);
 
-  const filtered = all.filter((item) => {
-    if (tab === "all") return true;
-    if (tab === "writing") return item.kind === "writing";
-    if (tab === "building") return item.kind === "project";
-    return true;
-  });
+  const filtered = useMemo(
+    () =>
+      all.filter((item) => {
+        if (tab === "all") return true;
+        if (tab === "writing") return item.kind === "writing";
+        if (tab === "building") return item.kind === "project";
+        return true;
+      }),
+    [all, tab],
+  );
 
   return (
     <section className="mb-24">

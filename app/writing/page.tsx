@@ -55,7 +55,7 @@ export default function WritingIndex() {
                   <Link
                     key={t}
                     href={`/writing/tag/${tagSlug(t)}`}
-                    className="hover:text-[var(--color-ink)] transition-colors"
+                    className="inline-flex items-center min-h-[28px] min-w-[28px] py-1.5 hover:text-[var(--color-ink)] transition-colors"
                   >
                     #{t}
                   </Link>
