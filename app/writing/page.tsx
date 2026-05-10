@@ -25,23 +25,23 @@ export default function WritingIndex() {
           {String(posts.length).padStart(2, "0")} essays
         </span>
       </section>
-      <ul className="space-y-1">
+      <ul className="space-y-0">
         {posts.map((post) => (
           <li key={post.slug}>
             <Link
               href={`/writing/${post.slug}`}
-              className="group block py-5 border-t border-[var(--color-rule)] last:border-b"
+              className="group block py-6 border-t border-[var(--color-rule)] last:border-b transition-colors hover:bg-[var(--color-bg-elev)]"
             >
               <div className="grid grid-cols-[1fr_auto] items-baseline gap-4">
-                <span className="text-[1.02rem] text-[var(--color-ink)] group-hover:text-[var(--color-accent)] transition-colors">
+                <span className="text-[1.05rem] leading-[1.35] text-[var(--color-ink)] underline decoration-transparent decoration-1 underline-offset-[3px] transition-[text-decoration-color] group-hover:decoration-[var(--color-ink)]">
                   {post.title}
                 </span>
-                <span className="text-[0.75rem] text-[var(--color-ink-muted)] tabular-nums whitespace-nowrap">
+                <span className="text-[0.72rem] uppercase tracking-[0.08em] text-[var(--color-ink-muted)] tabular-nums whitespace-nowrap">
                   {formatDate(post.date)} · {post.readingMinutes} min
                 </span>
               </div>
               {post.summary && (
-                <p className="mt-2 text-[0.92rem] leading-[1.55] text-[var(--color-ink-soft)] max-w-[540px]">
+                <p className="mt-2.5 text-[0.92rem] leading-[1.6] text-[var(--color-ink-soft)] max-w-[58ch]">
                   {post.summary}
                 </p>
               )}
