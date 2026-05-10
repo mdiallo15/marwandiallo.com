@@ -62,6 +62,21 @@ export default function HomePage() {
 
       {/* Feed — analog tabs over essays + projects */}
       <HomeFeed posts={posts} projects={projects} />
+
+      <div className="mb-24 -mt-12 flex justify-end gap-6 text-[0.78rem] uppercase tracking-[0.16em] text-[var(--color-ink-muted)]">
+        <Link
+          href="/writing"
+          className="hover:text-[var(--color-ink)] transition-colors"
+        >
+          All writing →
+        </Link>
+        <Link
+          href="/projects"
+          className="hover:text-[var(--color-ink)] transition-colors"
+        >
+          All projects →
+        </Link>
+      </div>
     </div>
   );
 }

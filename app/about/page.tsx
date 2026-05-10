@@ -162,7 +162,13 @@ export default function AboutPage() {
           <dd className="text-[var(--color-ink-soft)]">
             Small Next.js and React apps. Vibe-coding the way most of the
             internet now does — partly to enjoy it, partly to map where AI tools
-            still skip secure-by-default.
+            still skip secure-by-default.{" "}
+            <Link
+              href="/projects"
+              className="text-[var(--color-ink)] underline decoration-[var(--color-rule)] underline-offset-[5px] hover:decoration-[var(--color-ink)]"
+            >
+              See projects →
+            </Link>
           </dd>
           <dt className="text-[var(--color-secondary)] text-[0.78rem] uppercase tracking-[0.18em] pt-0.5">
             Watching
