@@ -21,20 +21,6 @@ session. Pick the top unblocked task, do it, commit, move it to "Done".
 
 ## Ready (ordered, top = next)
 
-### T-01 — Verify sitemap + RSS include all 7 essays
-- **Files:** `app/sitemap.ts`, `app/feed.xml/route.ts` (or equivalent), `lib/writing.ts`.
-- **Do:** Run `npm run build`, fetch `/sitemap.xml` and `/feed.xml` from `npm run start`,
-  confirm all 7 MDX slugs appear with correct `lastmod`/`pubDate`. Fix any
-  missing or stale entries.
-- **Done when:** Both feeds list every non-draft essay; dates match frontmatter.
-
-### T-02 — OG image audit against new cream palette
-- **Files:** `app/opengraph-image.tsx`, `app/globals.css` (read only).
-- **Do:** Render the OG image locally (`/opengraph-image`), confirm background
-  matches current `--paper` token and text contrast passes WCAG AA. Adjust
-  colors only — no layout changes.
-- **Done when:** OG image visually matches site palette and contrast >= 4.5:1.
-
 ### T-03 — `/writing` index typography pass post-palette change
 - **Files:** `app/writing/page.tsx`, related component(s) under `app/_components/`.
 - **Do:** Review spacing, line-height, and link affordance on the index list
@@ -76,7 +62,8 @@ session. Pick the top unblocked task, do it, commit, move it to "Done".
 
 ## Done
 
-- _(none yet — move completed tasks here with commit SHA)_
+- **T-01** — Verified sitemap + RSS include all 7 essays (no fix needed; dates match frontmatter). SHA: `da2d7f2`
+- **T-02** — OG image colors aligned to cream palette tokens (`#faf7f0` paper, `#0a0a0a` ink, `#33302e` ink-soft, `#6b6661` ink-muted; dropped legacy red accent). Contrast ≥ 5:1 on all text. SHA: `da2d7f2`
 
 ## Notes
 

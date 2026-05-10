@@ -17,6 +17,8 @@ Living doc. Update as work lands. Keep entries short. Newest at top.
 
 ## Recently completed
 
+- _T-02_ — OG image colors realigned to cream palette tokens; legacy red dot dropped.
+- _T-01_ — Verified sitemap + RSS list all 7 essays with correct dates (no fix needed).
 - `120e143` — X handle updated to `@marwanbuilds`.
 - `e83d341` — Palette lightened, dropped chroma toward Claude-style cream.
 - `5a4f2b4` — FT paper toned one notch toward white.
@@ -30,9 +32,7 @@ _Pick one and start. Move to "In progress" when picked up._
 - [ ] Decide next direction: **content** (new essay) vs **site polish** vs **feature**.
 - [ ] Content: draft next essay (topic TBD — candidates below).
 - [ ] Site: audit `/writing` index typography + spacing post-palette change.
-- [ ] Site: verify OG image renders correctly with new cream palette.
 - [ ] Feature: project index page or dedicated `/projects` route (currently only `lib/projects.ts`).
-- [ ] SEO: confirm `sitemap.ts` and `feed.xml` include all 7 essays after recent changes.
 
 ## In progress
 

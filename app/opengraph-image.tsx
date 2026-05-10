@@ -15,9 +15,9 @@ export default function OG() {
         flexDirection: "column",
         justifyContent: "space-between",
         padding: "80px",
-        background: "#faf8f3",
+        background: "#faf7f0",
         fontFamily: "Georgia, serif",
-        color: "#1a1a1a",
+        color: "#0a0a0a",
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
@@ -26,8 +26,8 @@ export default function OG() {
             width: 72,
             height: 72,
             borderRadius: 14,
-            background: "#1a1a1a",
-            color: "#faf8f3",
+            background: "#0a0a0a",
+            color: "#faf7f0",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -38,7 +38,7 @@ export default function OG() {
         >
           MD
         </div>
-        <div style={{ fontSize: 28, color: "#6b6b6b" }}>marwandiallo.com</div>
+        <div style={{ fontSize: 28, color: "#6b6661" }}>marwandiallo.com</div>
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -48,7 +48,7 @@ export default function OG() {
         <div
           style={{
             fontSize: 34,
-            color: "#4a4a4a",
+            color: "#33302e",
             lineHeight: 1.35,
             maxWidth: 900,
           }}
@@ -63,7 +63,7 @@ export default function OG() {
           display: "flex",
           justifyContent: "space-between",
           fontSize: 22,
-          color: "#6b6b6b",
+          color: "#6b6661",
         }}
       >
         <div>Raleigh, NC · Conakry, GN</div>
@@ -73,7 +73,7 @@ export default function OG() {
               width: 10,
               height: 10,
               borderRadius: 5,
-              background: "#9a3a1f",
+              background: "#0a0a0a",
             }}
           />
           <div>writing / building / reading</div>
