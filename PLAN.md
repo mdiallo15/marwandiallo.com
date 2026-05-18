@@ -34,8 +34,13 @@ Living doc. Update as work lands. Keep entries short. Newest at top.
 
 _Pick one and start. Move to "In progress" when picked up._
 
-- [ ] Decide next direction: **content** (new essay) vs **site polish** vs **feature**.
-- [ ] Content: draft next essay (topic TBD — candidates below).
+- [ ] **Site polish:** dark mode pass that respects the cream paper aesthetic
+  (see T-08 in `TASKS.md`). Purely technical, dark tokens already scaffolded
+  in `globals.css`.
+- [ ] **Human-decision:** pick next direction — content (new essay), more
+  site polish, or a feature push. Agent skips this per kickoff rule.
+- [ ] **Content (human):** draft next essay. Candidates in backlog. Skipped
+  by agent — needs voice / topic call.
 
 ## In progress
 
@@ -45,11 +50,7 @@ _Pick one and start. Move to "In progress" when picked up._
 
 - Essay candidates: follow-up to "Agent Identity Front"; field note on
   Schannel registry trap; short on RFC 8693 token-exchange in practice.
-- `/projects` route surfacing `lib/projects.ts` entries with same FT card style.
-- Reading-time + last-updated stamps on essay pages (deps already installed).
-- Tag pages under `/writing/tag/[tag]`.
-- Dark mode pass that respects the cream paper aesthetic.
-- Lighthouse + a11y sweep after palette work.
+- Dark mode pass that respects the cream paper aesthetic. _(promoted to T-08)_
 
 ## Conventions
 

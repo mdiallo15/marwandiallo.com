@@ -21,7 +21,20 @@ session. Pick the top unblocked task, do it, commit, move it to "Done".
 
 ## Ready (ordered, top = next)
 
-- _(empty — pick from PLAN.md backlog or open a new task)_
+### T-08 — Dark mode pass respecting the cream aesthetic
+- **Files:** `app/globals.css` (dark token block already scaffolded),
+  `app/_components/theme-toggle.tsx`, `app/_components/theme-bootstrap.tsx`,
+  any component using hard-coded color hexes.
+- **Do:** Audit dark mode rendering against every shipped route
+  (`/`, `/writing`, `/writing/[slug]`, `/writing/tag/[tag]`, `/projects`,
+  `/about`, `/now`). Fix contrast, code-block backgrounds, card hover
+  washes, OG image hex literals, and any places that hard-code a light
+  hex instead of using a `--color-*` token. Keep the toggle behavior
+  (manual only, no `prefers-color-scheme` auto-flip — see note in
+  `globals.css`). Light palette tokens are still locked.
+- **Done when:** Every route renders cleanly in dark; no light hexes
+  leak into dark surfaces; `npm run build` clean; Lighthouse a11y stays
+  at 100 in dark.
 
 ## Blocked
 
