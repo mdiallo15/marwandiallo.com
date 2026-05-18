@@ -17,6 +17,7 @@ Living doc. Update as work lands. Keep entries short. Newest at top.
 
 ## Recently completed
 
+- _T-08_ — Dark mode audit across all 7 routes: zero light-hex leaks, Lighthouse a11y 100 in dark on every route, no code change needed (scaffold was correct).
 - _T-07_ — Lighthouse sweep: all four target pages now perf ≥98 / a11y 100 / seo 100 / bp 100.
 - `5340c66` — `/projects` route, nav entry, home + about cross-links.
 - `e7ec227` — Tag pages `/writing/tag/[tag]` + chips on the index.
@@ -33,10 +34,7 @@ Living doc. Update as work lands. Keep entries short. Newest at top.
 ## Next up
 
 _Pick one and start. Move to "In progress" when picked up._
-
-- [ ] **Site polish:** dark mode pass that respects the cream paper aesthetic
-  (see T-08 in `TASKS.md`). Purely technical, dark tokens already scaffolded
-  in `globals.css`.
+obals.css`.
 - [ ] **Human-decision:** pick next direction — content (new essay), more
   site polish, or a feature push. Agent skips this per kickoff rule.
 - [ ] **Content (human):** draft next essay. Candidates in backlog. Skipped

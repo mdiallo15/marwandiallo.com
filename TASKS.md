@@ -21,20 +21,7 @@ session. Pick the top unblocked task, do it, commit, move it to "Done".
 
 ## Ready (ordered, top = next)
 
-### T-08 — Dark mode pass respecting the cream aesthetic
-- **Files:** `app/globals.css` (dark token block already scaffolded),
-  `app/_components/theme-toggle.tsx`, `app/_components/theme-bootstrap.tsx`,
-  any component using hard-coded color hexes.
-- **Do:** Audit dark mode rendering against every shipped route
-  (`/`, `/writing`, `/writing/[slug]`, `/writing/tag/[tag]`, `/projects`,
-  `/about`, `/now`). Fix contrast, code-block backgrounds, card hover
-  washes, OG image hex literals, and any places that hard-code a light
-  hex instead of using a `--color-*` token. Keep the toggle behavior
-  (manual only, no `prefers-color-scheme` auto-flip — see note in
-  `globals.css`). Light palette tokens are still locked.
-- **Done when:** Every route renders cleanly in dark; no light hexes
-  leak into dark surfaces; `npm run build` clean; Lighthouse a11y stays
-  at 100 in dark.
+- _(none — awaiting human-decision next direction; see `PLAN.md` "Next up")_
 
 ## Blocked
 
@@ -55,3 +42,5 @@ session. Pick the top unblocked task, do it, commit, move it to "Done".
 - Each task is intentionally scoped to ~1 commit. Split if it grows.
 - If a task reveals a larger problem, stop, write a new task for it, and
   flag the original as Blocked.
+8** — Dark mode audit across every shipped route (`/`, `/writing`, `/writing/[slug]`, `/writing/tag/[tag]`, `/projects`, `/about`, `/now`). Headless puppeteer scan: zero light-background leaks in dark mode (no element wider than 50px renders a high-brightness `background-color` outside the deliberately-light `.feed-card__visual` / `.card-art` blocks). Visual pass clean — page chrome reads ink on `#0a0a0a`, code blocks pick up `--color-bg-elev` `#141414`, segmented-tab indicator uses the dark override (`#000` pill, white text), feed-card hover shadow has dark-mode override, card artwork stays pinned ink on light gradients per the documented decision. Lighthouse a11y in dark mode: `/` 100, `/writing` 100, essay 100, `/about` 100, `/projects` 100. No code changes required — dark token block + per-component overrides already in `app/globals.css` are correct. SHA: _(see commit)_
+- **T-0
