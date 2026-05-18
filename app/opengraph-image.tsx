@@ -15,7 +15,7 @@ export default function OG() {
         flexDirection: "column",
         justifyContent: "space-between",
         padding: "80px",
-        background: "#faf7f0",
+        background: "#fff1e5",
         fontFamily: "Georgia, serif",
         color: "#0a0a0a",
       }}
@@ -27,7 +27,7 @@ export default function OG() {
             height: 72,
             borderRadius: 14,
             background: "#0a0a0a",
-            color: "#faf7f0",
+            color: "#fff1e5",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",

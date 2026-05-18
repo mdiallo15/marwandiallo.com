@@ -1441,7 +1441,7 @@ function ScannerGapArtwork() {
           width="52"
           height="22"
           rx="4"
-          fill="#fdfbf6"
+          fill="#fff7ee"
           stroke="currentColor"
           strokeWidth="1.5"
         />

@@ -14,19 +14,20 @@
     var(--font-geist-mono), "JetBrains Mono", "SF Mono", ui-monospace, Menlo,
     Monaco, Consolas, monospace;
 
-  /* Warm near-white paper. Closer to Claude/Anthropic cream than FT pink. */
-  --color-bg: #faf7f0;
-  --color-bg-elev: #fdfbf6;
-  --color-bg-sink: #f1ebdd;
+  /* FT-style salmon paper. Matches ft.com (#fff1e5) — peachy cream with
+     just enough chroma to read as warm paper, not white. */
+  --color-bg: #fff1e5;
+  --color-bg-elev: #fff7ee;
+  --color-bg-sink: #f5e3d0;
   --color-ink: #0a0a0a;
   --color-ink-soft: #33302e;
   --color-ink-muted: #6b6661;
   --color-ink-faint: #a39b91;
-  --color-rule: #e6dccb;
-  --color-rule-soft: #efe6d4;
+  --color-rule: #e8d0b5;
+  --color-rule-soft: #f0dfca;
   --color-accent: #0a0a0a;
   --color-accent-soft: #33302e;
-  --color-accent-wash: #f1ebdd;
+  --color-accent-wash: #f5e3d0;
   --color-secondary: #6b6661;
   --color-secondary-soft: #a39b91;
 }
