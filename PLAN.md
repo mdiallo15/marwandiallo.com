@@ -34,7 +34,8 @@ Living doc. Update as work lands. Keep entries short. Newest at top.
 ## Next up
 
 _Pick one and start. Move to "In progress" when picked up._
-obals.css`.
+
+- [ ] **Site polish:** see regenerated `Ready` queue in `TASKS.md`.
 - [ ] **Human-decision:** pick next direction — content (new essay), more
   site polish, or a feature push. Agent skips this per kickoff rule.
 - [ ] **Content (human):** draft next essay. Candidates in backlog. Skipped
