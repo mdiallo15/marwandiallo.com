@@ -4,6 +4,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Now",
   description: "What I'm focused on right now.",
+  alternates: { canonical: "/now" },
 };
 
 const blocks = [

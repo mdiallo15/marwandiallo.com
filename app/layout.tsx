@@ -36,6 +36,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
+    site: "@marwanbuilds",
     creator: "@marwanbuilds",
     title: "Marwan Diallo — Security Architect & Builder",
     description: SITE_DESCRIPTION,

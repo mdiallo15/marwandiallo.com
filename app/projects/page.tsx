@@ -6,6 +6,7 @@ import { CardArtwork } from "@/app/_components/card-artwork";
 export const metadata: Metadata = {
   title: "Projects",
   description: "Things I've shipped. Labs, tools, starters.",
+  alternates: { canonical: "/projects" },
 };
 
 function isoDate(iso: string): string {

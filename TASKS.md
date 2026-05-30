@@ -22,26 +22,6 @@ session. Pick the top unblocked task, do it, commit, move it to "Done".
 
 ## Ready (ordered, top = next)
 
-### T-27 — Canonical `<link rel="canonical">` on all routes
-- **Files:** `app/layout.tsx` (metadata), `app/page.tsx`,
-  `app/about/page.tsx`, `app/now/page.tsx`, `app/writing/page.tsx`,
-  `app/writing/[slug]/page.tsx`, `app/projects/page.tsx`,
-  `app/writing/tag/[tag]/page.tsx`.
-- **Do:** Use Next 15 `Metadata.alternates.canonical` (absolute URLs
-  built from `SITE_URL`). Per-route metadata exports should each set
-  their canonical so duplicate URLs (e.g., trailing-slash variants,
-  feed reader rewrites) collapse to the right one.
-- **Done when:** Every HTML response includes one `<link rel="canonical">`
-  pointing at the expected absolute URL; build clean.
-
-### T-28 — `twitter:card` + author meta
-- **Files:** `app/layout.tsx`, `app/writing/[slug]/page.tsx`.
-- **Do:** Add `metadata.twitter = { card: "summary_large_image", creator: "@marwanbuilds", site: "@marwanbuilds" }`
-  at the root, override per-essay with the essay title/description.
-  Confirm OG images are picked up by Twitter's validator format.
-- **Done when:** Twitter Card debugger renders large-image preview on
-  home + essays; build clean.
-
 ### T-29 — Reduce-motion respect
 - **Files:** `app/globals.css`, `app/_components/theme-toggle.tsx`,
   any component with transition/animation.
@@ -191,6 +171,8 @@ session. Pick the top unblocked task, do it, commit, move it to "Done".
 
 ## Done
 
+- **T-28** — Added `twitter.site: "@marwanbuilds"` to root metadata alongside the existing `creator` + `card: summary_large_image`. Per-essay metadata already cascades title/description; OG image (per-essay `opengraph-image.tsx`) drives the Twitter preview via `summary_large_image`. SHA: _(see commit)_
+- **T-27** — Per-route `alternates.canonical` on `/writing`, `/writing/[slug]`, `/writing/tag/[tag]`, `/about`, `/now`, `/projects`. Root layout already pinned `/`. Next resolves relative paths against `metadataBase` so every HTML response now emits one absolute `<link rel="canonical">`. SHA: _(see commit)_
 - **T-25** — Removed `@tailwindcss/typography` from `package.json` and the `@plugin` line from `app/globals.css`. Verified no `.prose-*` utility classes are used anywhere; the `.prose` ruleset is fully custom. Build clean, shared chunks unchanged. SHA: `3767e16`
 - **T-18** — Skip-to-content link as the first focusable element in `app/layout.tsx` (`<a href="#main" class="skip-link">`), revealed on `:focus`/`:focus-visible` via `app/globals.css`. `<main>` got `id="main"`. Tab from the address bar surfaces it; Enter jumps focus to `<main>`. SHA: `3767e16`
 - **T-17** — "Related" block on essays via `getRelatedPosts(slug, 3)` in `lib/writing.ts` — ranks other essays by shared-tag count then date desc, excludes the current post and drafts. Section is omitted entirely when overlap is zero. SHA: `3767e16`

@@ -5,6 +5,7 @@ import { getAllPosts, formatDate, tagSlug } from "@/lib/writing";
 export const metadata: Metadata = {
   title: "Writing",
   description: "Essays on security, building, and Guinea.",
+  alternates: { canonical: "/writing" },
 };
 
 export default function WritingIndex() {

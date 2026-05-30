@@ -10,6 +10,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "About",
   description: "Marwan Diallo — security architect, founder, writer.",
+  alternates: { canonical: "/about" },
 };
 
 const roles = [
