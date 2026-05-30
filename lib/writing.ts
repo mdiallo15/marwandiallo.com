@@ -4,7 +4,10 @@ import matter from "gray-matter";
 import readingTime from "reading-time";
 import { remark } from "remark";
 import remarkGfm from "remark-gfm";
-import remarkHtml from "remark-html";
+import remarkRehype from "remark-rehype";
+import rehypeSlug from "rehype-slug";
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import rehypeStringify from "rehype-stringify";
 
 const CONTENT_DIR = path.join(process.cwd(), "content", "writing");
 
@@ -26,7 +29,18 @@ export interface Post extends PostMeta {
 export async function renderMarkdown(md: string): Promise<string> {
   const file = await remark()
     .use(remarkGfm)
-    .use(remarkHtml, { sanitize: false })
+    .use(remarkRehype, { allowDangerousHtml: true })
+    .use(rehypeSlug)
+    .use(rehypeAutolinkHeadings, {
+      behavior: "append",
+      properties: {
+        className: ["heading-anchor"],
+        ariaLabel: "Link to this section",
+        tabIndex: -1,
+      },
+      content: { type: "text", value: "#" },
+    })
+    .use(rehypeStringify, { allowDangerousHtml: true })
     .process(md);
   return decorateExternalLinks(String(file));
 }

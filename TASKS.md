@@ -22,18 +22,6 @@ session. Pick the top unblocked task, do it, commit, move it to "Done".
 
 ## Ready (ordered, top = next)
 
-### T-13 — Heading anchors on essay h2/h3
-- **Files:** `lib/writing.ts` (add `rehype-slug` + `rehype-autolink-headings`
-  through a remark→rehype pipeline), `app/globals.css` (anchor-link styling).
-- **Do:** Switch `renderMarkdown` to `remark` → `remark-rehype` →
-  `rehype-slug` → `rehype-autolink-headings` → `rehype-stringify`. Anchor
-  link is a small `#` glyph, hidden by default, visible on heading hover
-  and on `:focus-within`. Add `scroll-margin-top` so deep links land
-  below sticky nav.
-- **Done when:** Hovering an h2 reveals a `#` link; clicking it copies
-  the anchored URL to clipboard (or just navigates — pick the simpler);
-  every essay still renders; build clean.
-
 ### T-14 — Syntax highlighting for code blocks (Shiki)
 - **Files:** `lib/writing.ts`, `package.json`, `README.md`.
 - **Do:** Add `rehype-pretty-code` + `shiki` to deps. Wire into the
@@ -161,6 +149,7 @@ session. Pick the top unblocked task, do it, commit, move it to "Done".
 
 ## Done
 
+- **T-13** — Heading anchors on h2/h3. `lib/writing.ts` `renderMarkdown` migrated from `remark-html` to `remark` → `remarkRehype` → `rehypeSlug` → `rehypeAutolinkHeadings` → `rehypeStringify`. Anchor renders as a small `#` glyph appended to each heading, hidden by default, visible on heading hover or `:focus-within`. Added `scroll-margin-top` to h2/h3 so deep links don't land flush at the viewport edge. Verified at runtime: every h2 now has an `id` slug + `<a class="heading-anchor" href="#slug">`. Removed unused `remark-html` import. SHA: _(see commit)_
 - **T-12** — Audited every `<a href="http">` site-wide. Added `target="_blank" rel="noopener noreferrer"` to layout footer (GitHub/LinkedIn/X), about page Diallo Group link, now page /nownownow link, and home page Diallo Group `<Link>`. Added `decorateExternalLinks()` post-process in `lib/writing.ts` `renderMarkdown` so essay-body http(s) anchors also get the rel attributes (remark-html drops them). Verified at runtime: `/`, `/about`, `/now`, `/writing/agent-identity-front` render zero external `<a>` without `noopener`. Lab subdomain project cards stay same-tab (intentional, own-subdomain decision in `home-feed.tsx`). SHA: `acd2c46`
 - **T-11** — JSON-LD on `/` (WebSite + Person) and `/about` (Person with `worksFor` + `sameAs` GitHub/LinkedIn/X) via the same nonce-aware `<JsonLd />` helper from T-10. Both routes opted into `force-dynamic` so the JSON-LD nonce matches CSP. SHA: `1425bd9`
 - **T-10** — `Article` JSON-LD on essays via a nonce-aware `<JsonLd />` server component (`app/_components/json-ld.tsx`) that reads the per-request nonce from `x-nonce`. Schema includes headline, description, datePublished, dateModified (falls back to date), author Person, mainEntityOfPage, url, keywords from tags. Route opted into `force-dynamic` so the JSON-LD nonce matches the CSP header nonce on every request (verified single-GET: both nonces equal). SHA: `98ca59c`

@@ -149,6 +149,7 @@ a:hover {
   margin-top: 2.6em;
   margin-bottom: 0.55em;
   color: var(--color-ink);
+  scroll-margin-top: 1.5rem;
 }
 
 .prose h3 {
@@ -156,6 +157,28 @@ a:hover {
   font-weight: 500;
   margin-top: 2em;
   margin-bottom: 0.4em;
+  color: var(--color-ink);
+  scroll-margin-top: 1.5rem;
+}
+
+/* Heading anchor link injected by rehype-autolink-headings */
+.prose :is(h2, h3) {
+  position: relative;
+}
+.prose .heading-anchor {
+  margin-left: 0.4em;
+  color: var(--color-ink-faint);
+  text-decoration: none;
+  font-weight: 400;
+  opacity: 0;
+  transition: opacity 160ms ease, color 160ms ease;
+}
+.prose :is(h2, h3):hover .heading-anchor,
+.prose :is(h2, h3):focus-within .heading-anchor,
+.prose .heading-anchor:focus-visible {
+  opacity: 1;
+}
+.prose .heading-anchor:hover {
   color: var(--color-ink);
 }
 
