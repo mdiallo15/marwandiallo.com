@@ -74,9 +74,9 @@ export default async function WritingPost({ params }: Props) {
           {post.title}
         </h1>
         <div className="mt-4 text-[0.82rem] text-[var(--color-ink-muted)] tabular-nums">
-          {formatDate(post.date)} · {post.readingMinutes} min
+          <time dateTime={post.date}>{formatDate(post.date)}</time> · {post.readingMinutes} min
           {post.updated && post.updated !== post.date && (
-            <span> · updated {formatDate(post.updated)}</span>
+            <span> · updated <time dateTime={post.updated}>{formatDate(post.updated)}</time></span>
           )}
         </div>
       </header>

@@ -124,7 +124,7 @@ function WritingCard({ post }: { post: PostMeta }) {
         <div className="feed-card__top">
           <span className="feed-card__title-top">{post.title}</span>
           <span className="feed-card__date tabular-nums">
-            {isoDate(post.date)}
+            <time dateTime={post.date}>{isoDate(post.date)}</time>
           </span>
         </div>
         <span aria-hidden className="feed-card__visual">
@@ -149,7 +149,7 @@ function ProjectCard({ project }: { project: Project }) {
           )}
         </span>
         <span className="feed-card__date tabular-nums">
-          {isoDate(project.date)}
+          <time dateTime={project.date}>{isoDate(project.date)}</time>
         </span>
       </div>
       <span aria-hidden className="feed-card__visual" data-tag={project.tag}>

@@ -40,7 +40,7 @@ export default function WritingIndex() {
                   {post.title}
                 </span>
                 <span className="text-[0.72rem] uppercase tracking-[0.08em] text-[var(--color-ink-muted)] tabular-nums whitespace-nowrap">
-                  {formatDate(post.date)} · {post.readingMinutes} min
+                  <time dateTime={post.date}>{formatDate(post.date)}</time> · {post.readingMinutes} min
                 </span>
               </div>
               {post.summary && (
