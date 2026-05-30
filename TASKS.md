@@ -22,7 +22,168 @@ session. Pick the top unblocked task, do it, commit, move it to "Done".
 
 ## Ready (ordered, top = next)
 
-- _(none — backlog drained)_
+### T-27 — Canonical `<link rel="canonical">` on all routes
+- **Files:** `app/layout.tsx` (metadata), `app/page.tsx`,
+  `app/about/page.tsx`, `app/now/page.tsx`, `app/writing/page.tsx`,
+  `app/writing/[slug]/page.tsx`, `app/projects/page.tsx`,
+  `app/writing/tag/[tag]/page.tsx`.
+- **Do:** Use Next 15 `Metadata.alternates.canonical` (absolute URLs
+  built from `SITE_URL`). Per-route metadata exports should each set
+  their canonical so duplicate URLs (e.g., trailing-slash variants,
+  feed reader rewrites) collapse to the right one.
+- **Done when:** Every HTML response includes one `<link rel="canonical">`
+  pointing at the expected absolute URL; build clean.
+
+### T-28 — `twitter:card` + author meta
+- **Files:** `app/layout.tsx`, `app/writing/[slug]/page.tsx`.
+- **Do:** Add `metadata.twitter = { card: "summary_large_image", creator: "@marwanbuilds", site: "@marwanbuilds" }`
+  at the root, override per-essay with the essay title/description.
+  Confirm OG images are picked up by Twitter's validator format.
+- **Done when:** Twitter Card debugger renders large-image preview on
+  home + essays; build clean.
+
+### T-29 — Reduce-motion respect
+- **Files:** `app/globals.css`, `app/_components/theme-toggle.tsx`,
+  any component with transition/animation.
+- **Do:** Wrap non-essential transitions in
+  `@media (prefers-reduced-motion: no-preference) { ... }` or add a
+  global override `@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; } }`.
+- **Done when:** Users with reduce-motion get no transitions; default
+  experience unchanged; build clean.
+
+### T-30 — Copy-code button on `<pre>` blocks
+- **Files:** new `app/_components/copy-code.tsx` (client) +
+  small client wrapper, `lib/writing.ts` (mark `<pre>` for hydration),
+  `app/globals.css`.
+- **Do:** Either post-process rendered HTML to inject a button or use
+  a small client-side script that finds `pre[data-language]` and adds
+  a button positioned top-right. Button writes `pre.textContent` to
+  the clipboard, swaps label to "Copied" for 1.2s. Keyboard-accessible.
+- **Done when:** Every fenced code block has a working copy button;
+  no JS error on pages without code; shared bundle increase ≤2 kB.
+
+### T-31 — Footnotes support via `remark-gfm`
+- **Files:** `lib/writing.ts`, `app/globals.css`.
+- **Do:** `remark-gfm` is already loaded; verify footnote syntax
+  (`[^1]` … `[^1]: text`) round-trips through the pipeline. Style the
+  generated `<sup>` refs and `<section data-footnotes>` block to match
+  the FT palette (small caps eyebrow "Notes", thin rule, smaller text).
+- **Done when:** A test essay using footnotes renders linked
+  superscripts and a footnotes section; back-references work; build clean.
+
+### T-32 — Print stylesheet for essays
+- **Files:** `app/globals.css`.
+- **Do:** Inside `@media print { ... }` block: hide nav/footer/theme-toggle/
+  skip-link/CardArtwork mockups, force `background: #fff; color: #000;`,
+  expand `.prose` to full width, expose `href` next to external anchors
+  via `a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 0.8em; }`.
+- **Done when:** Print preview of any essay shows clean
+  black-on-white text + visible URLs; build clean.
+
+### T-33 — All-tags index page `/writing/tags`
+- **Files:** `app/writing/tags/page.tsx` (new), `lib/writing.ts`
+  (`getAllTags` already exists).
+- **Do:** List every tag with its essay count as a row (`#tag · N`),
+  linking to `/writing/tag/<slug>`. Sort by count desc, then alpha.
+  Match the writing-index visual rhythm. Add to sitemap.
+- **Done when:** `/writing/tags` renders all tags with counts; link
+  appears below the writing index ("Browse by tag →"); build clean.
+
+### T-34 — Essay word-count alongside reading-time
+- **Files:** `lib/writing.ts`, `app/writing/[slug]/page.tsx`,
+  `app/writing/page.tsx`, `app/writing/tag/[tag]/page.tsx`.
+- **Do:** Compute `words` from `reading-time`'s `wordCount` (or split
+  by `/\s+/`). Surface in the essay header as `· 1,240 words` after
+  the date and min. Index pages keep just `N min` to stay tight.
+- **Done when:** Every essay header shows date · N min · N words;
+  thousands separator on word count; build clean.
+
+### T-35 — Edit-on-GitHub link per essay
+- **Files:** `app/writing/[slug]/page.tsx`.
+- **Do:** Below the prose body (above prev/next), a small muted
+  `Edit on GitHub →` anchor linking to
+  `https://github.com/mdiallo15/marwandiallo.com/blob/main/content/writing/<slug>.mdx`.
+  `target="_blank" rel="noopener noreferrer"`.
+- **Done when:** Every essay has the edit link, opens new tab to the
+  raw source; build clean.
+
+### T-36 — Atom feed alongside RSS at `/atom.xml`
+- **Files:** `app/atom.xml/route.ts` (new).
+- **Do:** Emit Atom 1.0 (`application/atom+xml`) with the same posts
+  as `/feed.xml`. `<feed>`, `<title>`, `<id>` = SITE_URL, `<updated>` =
+  newest post date, `<link rel="self">`, per-entry `<id>`/`<title>`/
+  `<link>`/`<published>`/`<updated>`/`<summary>`/`<author>`.
+- **Done when:** `/atom.xml` validates as Atom 1.0; referenced from
+  `<head>` alongside RSS; build clean.
+
+### T-37 — Sitemap + RSS auto-discovery `<link>` tags
+- **Files:** `app/layout.tsx`.
+- **Do:** Add `<link rel="alternate" type="application/rss+xml" href="/feed.xml">`
+  and (after T-36) the Atom variant in `<head>`. Confirm sitemap is
+  surfaced via robots `Sitemap:` (already true) and as a `<link
+  rel="sitemap">` if practical.
+- **Done when:** Feed readers auto-discover the feeds from any page;
+  build clean.
+
+### T-38 — `humans.txt` at site root
+- **Files:** `app/humans.txt/route.ts` (new) or `public/humans.txt`.
+- **Do:** RFC-ish `humans.txt` with `/* TEAM */`, `/* SITE */`,
+  `/* THANKS */` sections. Lists Marwan as author, links GitHub, names
+  the stack (Next.js 15, Tailwind v4, Vercel).
+- **Done when:** `curl /humans.txt` returns the file as `text/plain`;
+  build clean.
+
+### T-39 — Lab project cards: subdomain badge
+- **Files:** `app/_components/home-feed.tsx`, `app/projects/page.tsx`.
+- **Do:** When a project's `url` is on a `*.marwandiallo.com` subdomain,
+  surface a tiny `LAB` chip in the card footer (uppercase, tracking,
+  ink-muted). Reinforces the "own-subdomain → same-tab" rule already
+  in code.
+- **Done when:** Lab subdomain cards show the chip; external `↗`
+  cards don't; build clean.
+
+### T-40 — Bundle-size budget guard in `npm run check`
+- **Files:** `scripts/check-bundle.mjs` (new), `package.json`.
+- **Do:** Parse `next build`'s "First Load JS shared by all" line via
+  a small Node script (or read `.next/build-manifest.json`). Fail if
+  the shared chunks exceed 110 kB. Wire as `"check:bundle"` and
+  append to `"check"`.
+- **Done when:** `npm run check` fails when shared bundle exceeds the
+  budget; passes today (current is 102 kB).
+
+### T-41 — Drop unused `@types/*` and audit deps
+- **Files:** `package.json`.
+- **Do:** Run `npx depcheck --json` (or manual grep) and remove
+  anything not referenced. Run `npm audit` and note remaining issues
+  in a comment if they're upstream-only.
+- **Done when:** `depcheck` reports zero unused dependencies; build
+  clean; no functional change.
+
+### T-42 — `prefers-color-scheme` initial-paint default
+- **Files:** `app/_components/theme-bootstrap.tsx`, `app/globals.css`.
+- **Do:** Confirm the inline bootstrap snippet picks
+  `prefers-color-scheme: dark` when no localStorage value exists, and
+  flips `data-theme` before first paint to avoid a light-mode flash
+  on dark-mode systems.
+- **Done when:** First-paint on a dark-mode system shows the dark
+  palette with no flash; toggle still overrides; build clean.
+
+### T-43 — Essay `<article>` semantic + ARIA labelling
+- **Files:** `app/writing/[slug]/page.tsx`.
+- **Do:** Add `aria-labelledby="essay-title"` on `<article>` and
+  `id="essay-title"` on the `<h1>`. Wrap the date+reading metadata in
+  `<address>` if it represents authorship metadata, or leave as `<div role="doc-subtitle">`.
+- **Done when:** Screen reader announces the essay title as the
+  article's accessible name; Lighthouse a11y still 100; build clean.
+
+### T-44 — Search-engine-friendly URL trailing-slash policy
+- **Files:** `next.config.mjs`, `middleware.ts` if needed.
+- **Do:** Pick one (no-trailing-slash, since canonical URLs in metadata
+  use it). Set `trailingSlash: false` in `next.config.mjs` (this is the
+  default, just make it explicit). Verify sitemap, RSS, and canonical
+  all agree.
+- **Done when:** `/writing/foo/` 308-redirects to `/writing/foo`; all
+  internal links use the canonical form; build clean.
 
 ## Blocked
 
