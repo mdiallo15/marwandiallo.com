@@ -75,6 +75,8 @@ export default function NowPage() {
         A{" "}
         <a
           href="https://nownownow.com/about"
+          target="_blank"
+          rel="noopener noreferrer"
           className="underline decoration-[var(--color-rule)] underline-offset-4 hover:decoration-[var(--color-accent)] hover:text-[var(--color-accent)]"
         >
           /now page

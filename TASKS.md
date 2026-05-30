@@ -22,17 +22,6 @@ session. Pick the top unblocked task, do it, commit, move it to "Done".
 
 ## Ready (ordered, top = next)
 
-### T-12 — Verify external-link rel + open behavior
-- **Files:** `app/layout.tsx` footer, `app/about/page.tsx`, `app/now/page.tsx`,
-  any essay-rendered HTML in `lib/writing.ts`.
-- **Do:** Audit every `<a href="http">` for `rel="noopener noreferrer"`
-  and confirm `target="_blank"` is used consistently for external links
-  (or consistently not — pick one and apply). Add a small remark plugin
-  or post-process pass in `renderMarkdown` so essay-body external links
-  also get the rel attributes (current `remark-html` output strips them).
-- **Done when:** Every external link in rendered HTML has the rel
-  attributes; build clean.
-
 ### T-13 — Heading anchors on essay h2/h3
 - **Files:** `lib/writing.ts` (add `rehype-slug` + `rehype-autolink-headings`
   through a remark→rehype pipeline), `app/globals.css` (anchor-link styling).
@@ -172,6 +161,7 @@ session. Pick the top unblocked task, do it, commit, move it to "Done".
 
 ## Done
 
+- **T-12** — Audited every `<a href="http">` site-wide. Added `target="_blank" rel="noopener noreferrer"` to layout footer (GitHub/LinkedIn/X), about page Diallo Group link, now page /nownownow link, and home page Diallo Group `<Link>`. Added `decorateExternalLinks()` post-process in `lib/writing.ts` `renderMarkdown` so essay-body http(s) anchors also get the rel attributes (remark-html drops them). Verified at runtime: `/`, `/about`, `/now`, `/writing/agent-identity-front` render zero external `<a>` without `noopener`. Lab subdomain project cards stay same-tab (intentional, own-subdomain decision in `home-feed.tsx`). SHA: _(see commit)_
 - **T-11** — JSON-LD on `/` (WebSite + Person) and `/about` (Person with `worksFor` + `sameAs` GitHub/LinkedIn/X) via the same nonce-aware `<JsonLd />` helper from T-10. Both routes opted into `force-dynamic` so the JSON-LD nonce matches CSP. SHA: `1425bd9`
 - **T-10** — `Article` JSON-LD on essays via a nonce-aware `<JsonLd />` server component (`app/_components/json-ld.tsx`) that reads the per-request nonce from `x-nonce`. Schema includes headline, description, datePublished, dateModified (falls back to date), author Person, mainEntityOfPage, url, keywords from tags. Route opted into `force-dynamic` so the JSON-LD nonce matches the CSP header nonce on every request (verified single-GET: both nonces equal). SHA: `98ca59c`
 - **T-09** — Custom 404 page at `app/not-found.tsx`. Eyebrow `404`, title "This page wandered off.", short paragraph, then a four-row link list (Home / Writing / Projects / About) styled like the writing index hover rows. Tokens-only colors so dark mode works automatically. SHA: `63d1752`

@@ -79,6 +79,8 @@ export default function AboutPage() {
             On the side I run{" "}
             <a
               href="https://security.diallogroup.io"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-[var(--color-ink)] underline decoration-[var(--color-rule)] underline-offset-[5px] hover:decoration-[var(--color-accent)] hover:text-[var(--color-accent)]"
             >
               Diallo Group

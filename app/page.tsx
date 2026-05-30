@@ -48,6 +48,8 @@ export default function HomePage() {
             the AI coding stack ship insecure defaults. Founder of{" "}
             <Link
               href="https://security.diallogroup.io"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-[var(--color-ink)] underline decoration-[var(--color-rule)] underline-offset-[5px] hover:decoration-[var(--color-ink)]"
             >
               Diallo Group

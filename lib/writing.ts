@@ -28,7 +28,27 @@ export async function renderMarkdown(md: string): Promise<string> {
     .use(remarkGfm)
     .use(remarkHtml, { sanitize: false })
     .process(md);
-  return String(file);
+  return decorateExternalLinks(String(file));
+}
+
+/**
+ * Add `target="_blank" rel="noopener noreferrer"` to every absolute-URL
+ * anchor in rendered essay HTML. `remark-html` doesn't add these by
+ * default, so we post-process the string. Only http(s) hrefs are
+ * touched; in-page anchors and relative links are left alone.
+ */
+function decorateExternalLinks(html: string): string {
+  return html.replace(/<a\s+([^>]*?)href="(https?:\/\/[^"]+)"([^>]*)>/gi,
+    (match, pre: string, href: string, post: string) => {
+      const attrs = `${pre} ${post}`.toLowerCase();
+      const hasTarget = /\btarget\s*=/.test(attrs);
+      const hasRel = /\brel\s*=/.test(attrs);
+      if (hasTarget && hasRel) return match;
+      const targetAttr = hasTarget ? "" : ' target="_blank"';
+      const relAttr = hasRel ? "" : ' rel="noopener noreferrer"';
+      return `<a ${pre}href="${href}"${post}${targetAttr}${relAttr}>`;
+    },
+  );
 }
 
 export function getAllPostSlugs(): string[] {

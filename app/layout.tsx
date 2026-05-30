@@ -77,18 +77,24 @@ export default function RootLayout({
               <div className="flex items-center gap-5">
                 <a
                   href="https://github.com/mdiallo15"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="hover:text-[var(--color-accent)]"
                 >
                   GitHub
                 </a>
                 <a
                   href="https://www.linkedin.com/in/marwandiallo/"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="hover:text-[var(--color-accent)]"
                 >
                   LinkedIn
                 </a>
                 <a
                   href="https://x.com/marwanbuilds"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="hover:text-[var(--color-accent)]"
                 >
                   X
