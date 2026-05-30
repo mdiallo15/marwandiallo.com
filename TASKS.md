@@ -85,13 +85,13 @@ session. Pick the top unblocked task, do it, commit, move it to "Done".
 
 ## Done
 
-- **T-55** — README "Scripts" section + "Bundle budget" subsection documenting the 420 kB raw / ~110 kB gzipped budget enforced by `scripts/check-bundle.mjs#BUDGET_KB`, and how to raise it. SHA: _(see commit)_
-- **T-54** — Explicit `metadata.robots = { index: true, follow: true }` on `/writing/tags` and `/writing/tag/[tag]` so the tag-search routes are indexed without ambiguity. SHA: _(see commit)_
-- **T-53** — Sitemap tuned: `/` priority 1.0 weekly, `/writing` + `/projects` 0.8, essays 0.7 monthly, tag pages 0.5 monthly, `/about`/`/now` 0.3 yearly/monthly. Drops the unspecified default for crawlers that respect the hint. SHA: _(see commit)_
-- **T-52** — RSS feed now emits `xmlns:content` + per-item `<content:encoded><![CDATA[rendered HTML]]>` alongside the short `<description>`. Readers that support `content:encoded` (most do) now show the full essay. SHA: _(see commit)_
-- **T-49** — Verified CSP3 §6.1 enforces `script-src` on every `<script>` element regardless of `type`, including `application/ld+json`. Modern Chrome/Firefox/Safari all block JSON-LD without the nonce when the directive omits `'unsafe-inline'`. Documented this in `app/_components/json-ld.tsx` so future maintainers don't strip the nonce or drop `force-dynamic` on the JSON-LD routes. SHA: _(see commit)_
-- **T-48** — Tiny muted "If this resonated, the next essay lives in the feed" CTA under the Edit-on-GitHub link on every essay, linking to `/writing`. Visually subordinate to prev/next. SHA: _(see commit)_
-- **T-46** — `/now` header now reads `Updated <time>May 2026</time>`. Date is single source-of-truth via `NOW_UPDATED` ISO const + matching label. SHA: _(see commit)_
+- **T-55** — README "Scripts" section + "Bundle budget" subsection documenting the 420 kB raw / ~110 kB gzipped budget enforced by `scripts/check-bundle.mjs#BUDGET_KB`, and how to raise it. SHA: `23d6a8f`
+- **T-54** — Explicit `metadata.robots = { index: true, follow: true }` on `/writing/tags` and `/writing/tag/[tag]` so the tag-search routes are indexed without ambiguity. SHA: `23d6a8f`
+- **T-53** — Sitemap tuned: `/` priority 1.0 weekly, `/writing` + `/projects` 0.8, essays 0.7 monthly, tag pages 0.5 monthly, `/about`/`/now` 0.3 yearly/monthly. Drops the unspecified default for crawlers that respect the hint. SHA: `23d6a8f`
+- **T-52** — RSS feed now emits `xmlns:content` + per-item `<content:encoded><![CDATA[rendered HTML]]>` alongside the short `<description>`. Readers that support `content:encoded` (most do) now show the full essay. SHA: `23d6a8f`
+- **T-49** — Verified CSP3 §6.1 enforces `script-src` on every `<script>` element regardless of `type`, including `application/ld+json`. Modern Chrome/Firefox/Safari all block JSON-LD without the nonce when the directive omits `'unsafe-inline'`. Documented this in `app/_components/json-ld.tsx` so future maintainers don't strip the nonce or drop `force-dynamic` on the JSON-LD routes. SHA: `23d6a8f`
+- **T-48** — Tiny muted "If this resonated, the next essay lives in the feed" CTA under the Edit-on-GitHub link on every essay, linking to `/writing`. Visually subordinate to prev/next. SHA: `23d6a8f`
+- **T-46** — `/now` header now reads `Updated <time>May 2026</time>`. Date is single source-of-truth via `NOW_UPDATED` ISO const + matching label. SHA: `23d6a8f`
 - **T-44** — Explicit `trailingSlash: false` in `next.config.mjs`. Reaffirms the canonical URL shape used by sitemap / RSS / `<link rel="canonical">`; `/path/` requests now 308 to `/path`. SHA: `836278e`
 - **T-43** — `<article aria-labelledby="essay-title">` + `id="essay-title"` on essay h1. Screen readers now announce the essay title as the article's accessible name. SHA: `836278e`
 - **T-42** — Theme bootstrap now reads `window.matchMedia('(prefers-color-scheme: dark)')` when no localStorage value exists, eliminating the light-mode flash on dark-mode systems. Manual toggle (which writes localStorage) still overrides. SHA: `836278e`
