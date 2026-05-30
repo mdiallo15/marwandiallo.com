@@ -1,5 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { JsonLd } from "@/app/_components/json-ld";
+
+const SITE_URL = "https://marwandiallo.com";
+
+// Dynamic so the JSON-LD <script> nonce matches the per-request CSP nonce.
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "About",
@@ -35,8 +41,22 @@ const thinking = [
 ];
 
 export default function AboutPage() {
+  const personSchema = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: "Marwan Diallo",
+    url: `${SITE_URL}/about`,
+    jobTitle: "Principal Security Engineer",
+    worksFor: { "@type": "Organization", name: "Microsoft" },
+    sameAs: [
+      "https://github.com/mdiallo15",
+      "https://www.linkedin.com/in/marwandiallo/",
+      "https://x.com/marwanbuilds",
+    ],
+  };
   return (
     <div>
+      <JsonLd data={personSchema} />
       <Link
         href="/"
         className="inline-flex items-center gap-1.5 text-[0.85rem] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors mb-12"

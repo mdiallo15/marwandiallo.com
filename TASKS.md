@@ -22,12 +22,6 @@ session. Pick the top unblocked task, do it, commit, move it to "Done".
 
 ## Ready (ordered, top = next)
 
-### T-11 — JSON-LD on home + about (Person / WebSite)
-- **Files:** `app/page.tsx`, `app/about/page.tsx`, reuse helper from T-10.
-- **Do:** `WebSite` + `Person` schema on `/`; `Person` (with `sameAs`
-  GitHub/LinkedIn/X) on `/about`. Same nonce hookup as T-10.
-- **Done when:** Schema validates; build clean.
-
 ### T-12 — Verify external-link rel + open behavior
 - **Files:** `app/layout.tsx` footer, `app/about/page.tsx`, `app/now/page.tsx`,
   any essay-rendered HTML in `lib/writing.ts`.
@@ -178,6 +172,7 @@ session. Pick the top unblocked task, do it, commit, move it to "Done".
 
 ## Done
 
+- **T-11** — JSON-LD on `/` (WebSite + Person) and `/about` (Person with `worksFor` + `sameAs` GitHub/LinkedIn/X) via the same nonce-aware `<JsonLd />` helper from T-10. Both routes opted into `force-dynamic` so the JSON-LD nonce matches CSP. SHA: _(see commit)_
 - **T-10** — `Article` JSON-LD on essays via a nonce-aware `<JsonLd />` server component (`app/_components/json-ld.tsx`) that reads the per-request nonce from `x-nonce`. Schema includes headline, description, datePublished, dateModified (falls back to date), author Person, mainEntityOfPage, url, keywords from tags. Route opted into `force-dynamic` so the JSON-LD nonce matches the CSP header nonce on every request (verified single-GET: both nonces equal). SHA: `98ca59c`
 - **T-09** — Custom 404 page at `app/not-found.tsx`. Eyebrow `404`, title "This page wandered off.", short paragraph, then a four-row link list (Home / Writing / Projects / About) styled like the writing index hover rows. Tokens-only colors so dark mode works automatically. SHA: `63d1752`
 - **T-01** — Verified sitemap + RSS include all 7 essays (no fix needed; dates match frontmatter). SHA: `7b1d7df`

@@ -2,13 +2,41 @@ import Link from "next/link";
 import { getAllPosts } from "@/lib/writing";
 import { getAllProjects } from "@/lib/projects";
 import { HomeFeed } from "./_components/home-feed";
+import { JsonLd } from "./_components/json-ld";
+
+const SITE_URL = "https://marwandiallo.com";
+
+// Dynamic so the JSON-LD <script> nonce matches the per-request CSP nonce.
+export const dynamic = "force-dynamic";
 
 export default function HomePage() {
   const posts = getAllPosts();
   const projects = getAllProjects();
 
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Marwan Diallo",
+    url: SITE_URL,
+    inLanguage: "en",
+  };
+  const personSchema = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: "Marwan Diallo",
+    url: SITE_URL,
+    jobTitle: "Security Architect",
+    sameAs: [
+      "https://github.com/mdiallo15",
+      "https://www.linkedin.com/in/marwandiallo/",
+      "https://x.com/marwanbuilds",
+    ],
+  };
+
   return (
     <div>
+      <JsonLd data={websiteSchema} />
+      <JsonLd data={personSchema} />
       {/* Hero — Fredrika layout: name+tagline left, links right */}
       <section className="mb-16 flex items-start justify-between gap-8">
         <div className="max-w-[560px]">
