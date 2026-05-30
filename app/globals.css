@@ -1457,3 +1457,112 @@ a:hover {
     scroll-behavior: auto \!important;
   }
 }
+
+/* ===========================================================
+   Print stylesheet — readable black-on-white essay output.
+   Strip chrome (nav/footer/theme/cards), expand prose,
+   reveal absolute URLs next to external links.
+   =========================================================== */
+@media print {
+  :root,
+  :root[data-theme="dark"] {
+    background: #fff \!important;
+    color: #000 \!important;
+  }
+  body {
+    background: #fff \!important;
+    color: #000 \!important;
+  }
+  .theme-rocker,
+  .skip-link,
+  footer,
+  nav,
+  .feed-card__visual,
+  .heading-anchor {
+    display: none \!important;
+  }
+  .prose {
+    max-width: none \!important;
+    color: #000 \!important;
+  }
+  .prose a {
+    color: #000 \!important;
+    text-decoration: underline \!important;
+  }
+  .prose a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em;
+    word-break: break-all;
+  }
+  .prose pre {
+    background: #f4f4f4 \!important;
+    border: 1px solid #ccc \!important;
+    page-break-inside: avoid;
+  }
+  .prose h2,
+  .prose h3 {
+    page-break-after: avoid;
+  }
+}
+
+/* ===========================================================
+   Footnotes (remark-gfm output). Styles `<sup>` refs and the
+   trailing `<section data-footnotes>` block in FT-paper voice.
+   =========================================================== */
+.prose .data-footnote-backref,
+.prose sup a[data-footnote-ref],
+.prose sup > a {
+  text-decoration: none;
+  color: var(--color-ink-muted);
+  font-variant-numeric: tabular-nums;
+  padding: 0 2px;
+}
+.prose sup > a:hover,
+.prose .data-footnote-backref:hover {
+  color: var(--color-ink);
+}
+.prose section[data-footnotes] {
+  margin-top: 3rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--color-rule);
+  font-size: 0.88rem;
+  color: var(--color-ink-soft);
+}
+.prose section[data-footnotes] > h2 {
+  font-size: 0.7rem \!important;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted) \!important;
+  margin-bottom: 0.75rem \!important;
+  font-weight: 500 \!important;
+}
+.prose section[data-footnotes] ol {
+  padding-left: 1.25rem;
+}
+.prose section[data-footnotes] li {
+  margin-top: 0.5rem;
+}
+
+.prose pre .copy-code-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 3px 8px;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+  background: var(--color-bg);
+  border: 1px solid var(--color-rule);
+  border-radius: 4px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 120ms ease, color 120ms ease;
+}
+.prose pre:hover .copy-code-btn,
+.prose pre .copy-code-btn:focus-visible {
+  opacity: 1;
+}
+.prose pre .copy-code-btn:hover {
+  color: var(--color-ink);
+}

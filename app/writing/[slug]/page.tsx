@@ -9,6 +9,7 @@ import {
   getRelatedPosts,
 } from "@/lib/writing";
 import { JsonLd } from "@/app/_components/json-ld";
+import { CopyCodeButtons } from "@/app/_components/copy-code";
 
 const SITE_URL = "https://marwandiallo.com";
 
@@ -66,7 +67,7 @@ export default async function WritingPost({ params }: Props) {
   };
 
   return (
-    <article>
+    <article aria-labelledby="essay-title">
       <JsonLd data={articleSchema} />
       <Link
         href="/"
@@ -75,7 +76,7 @@ export default async function WritingPost({ params }: Props) {
         ← Back
       </Link>
       <header className="mb-12">
-        <h1 className="text-[2rem] md:text-[2.4rem] leading-[1.15] tracking-[-0.025em] text-[var(--color-ink)] font-medium">
+        <h1 id="essay-title" className="text-[2rem] md:text-[2.4rem] leading-[1.15] tracking-[-0.025em] text-[var(--color-ink)] font-medium">
           {post.title}
         </h1>
         <div className="mt-4 text-[0.82rem] text-[var(--color-ink-muted)] tabular-nums">
@@ -85,6 +86,7 @@ export default async function WritingPost({ params }: Props) {
           )}
         </div>
       </header>
+      <CopyCodeButtons />
       <div className="prose" dangerouslySetInnerHTML={{ __html: html }} />
       <div className="mt-12">
         <a

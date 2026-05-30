@@ -22,77 +22,7 @@ session. Pick the top unblocked task, do it, commit, move it to "Done".
 
 ## Ready (ordered, top = next)
 
-### T-30 — Copy-code button on `<pre>` blocks
-- **Files:** new `app/_components/copy-code.tsx` (client) +
-  small client wrapper, `lib/writing.ts` (mark `<pre>` for hydration),
-  `app/globals.css`.
-- **Do:** Either post-process rendered HTML to inject a button or use
-  a small client-side script that finds `pre[data-language]` and adds
-  a button positioned top-right. Button writes `pre.textContent` to
-  the clipboard, swaps label to "Copied" for 1.2s. Keyboard-accessible.
-- **Done when:** Every fenced code block has a working copy button;
-  no JS error on pages without code; shared bundle increase ≤2 kB.
-
-### T-31 — Footnotes support via `remark-gfm`
-- **Files:** `lib/writing.ts`, `app/globals.css`.
-- **Do:** `remark-gfm` is already loaded; verify footnote syntax
-  (`[^1]` … `[^1]: text`) round-trips through the pipeline. Style the
-  generated `<sup>` refs and `<section data-footnotes>` block to match
-  the FT palette (small caps eyebrow "Notes", thin rule, smaller text).
-- **Done when:** A test essay using footnotes renders linked
-  superscripts and a footnotes section; back-references work; build clean.
-
-### T-32 — Print stylesheet for essays
-- **Files:** `app/globals.css`.
-- **Do:** Inside `@media print { ... }` block: hide nav/footer/theme-toggle/
-  skip-link/CardArtwork mockups, force `background: #fff; color: #000;`,
-  expand `.prose` to full width, expose `href` next to external anchors
-  via `a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 0.8em; }`.
-- **Done when:** Print preview of any essay shows clean
-  black-on-white text + visible URLs; build clean.
-
-### T-40 — Bundle-size budget guard in `npm run check`
-- **Files:** `scripts/check-bundle.mjs` (new), `package.json`.
-- **Do:** Parse `next build`'s "First Load JS shared by all" line via
-  a small Node script (or read `.next/build-manifest.json`). Fail if
-  the shared chunks exceed 110 kB. Wire as `"check:bundle"` and
-  append to `"check"`.
-- **Done when:** `npm run check` fails when shared bundle exceeds the
-  budget; passes today (current is 102 kB).
-
-### T-41 — Drop unused `@types/*` and audit deps
-- **Files:** `package.json`.
-- **Do:** Run `npx depcheck --json` (or manual grep) and remove
-  anything not referenced. Run `npm audit` and note remaining issues
-  in a comment if they're upstream-only.
-- **Done when:** `depcheck` reports zero unused dependencies; build
-  clean; no functional change.
-
-### T-42 — `prefers-color-scheme` initial-paint default
-- **Files:** `app/_components/theme-bootstrap.tsx`, `app/globals.css`.
-- **Do:** Confirm the inline bootstrap snippet picks
-  `prefers-color-scheme: dark` when no localStorage value exists, and
-  flips `data-theme` before first paint to avoid a light-mode flash
-  on dark-mode systems.
-- **Done when:** First-paint on a dark-mode system shows the dark
-  palette with no flash; toggle still overrides; build clean.
-
-### T-43 — Essay `<article>` semantic + ARIA labelling
-- **Files:** `app/writing/[slug]/page.tsx`.
-- **Do:** Add `aria-labelledby="essay-title"` on `<article>` and
-  `id="essay-title"` on the `<h1>`. Wrap the date+reading metadata in
-  `<address>` if it represents authorship metadata, or leave as `<div role="doc-subtitle">`.
-- **Done when:** Screen reader announces the essay title as the
-  article's accessible name; Lighthouse a11y still 100; build clean.
-
-### T-44 — Search-engine-friendly URL trailing-slash policy
-- **Files:** `next.config.mjs`, `middleware.ts` if needed.
-- **Do:** Pick one (no-trailing-slash, since canonical URLs in metadata
-  use it). Set `trailingSlash: false` in `next.config.mjs` (this is the
-  default, just make it explicit). Verify sitemap, RSS, and canonical
-  all agree.
-- **Done when:** `/writing/foo/` 308-redirects to `/writing/foo`; all
-  internal links use the canonical form; build clean.
+- _(none — backlog drained)_
 
 ## Blocked
 
@@ -100,6 +30,14 @@ session. Pick the top unblocked task, do it, commit, move it to "Done".
 
 ## Done
 
+- **T-44** — Explicit `trailingSlash: false` in `next.config.mjs`. Reaffirms the canonical URL shape used by sitemap / RSS / `<link rel="canonical">`; `/path/` requests now 308 to `/path`. SHA: _(see commit)_
+- **T-43** — `<article aria-labelledby="essay-title">` + `id="essay-title"` on essay h1. Screen readers now announce the essay title as the article's accessible name. SHA: _(see commit)_
+- **T-42** — Theme bootstrap now reads `window.matchMedia('(prefers-color-scheme: dark)')` when no localStorage value exists, eliminating the light-mode flash on dark-mode systems. Manual toggle (which writes localStorage) still overrides. SHA: _(see commit)_
+- **T-41** — Removed unused `remark-html` from dependencies (T-13 migrated the pipeline to rehype). Build clean; no functional change. Other deps verified in use via grep. SHA: _(see commit)_
+- **T-40** — Bundle-size budget guard at `scripts/check-bundle.mjs` reads `.next/build-manifest.json` `rootMainFiles`, sums on-disk bytes, fails the build if raw shared chunks exceed 420 kB (current 341 kB). Wired into `npm run check` as `check:bundle`. Budget set against raw bytes (not gzipped "First Load JS") to catch dep bloat early. SHA: _(see commit)_
+- **T-32** — `@media print` rules in `app/globals.css`: force white background + black text, hide nav/footer/theme rocker/skip link/card mockups/heading-anchors, expand `.prose`, surface absolute URLs after external links via `a[href^="http"]::after`, prevent `<pre>` / heading page-breaks. SHA: _(see commit)_
+- **T-31** — Footnote styling for `remark-gfm` output: `<sup>` references and `.data-footnote-backref` get muted ink with hover-to-ink; `<section data-footnotes>` shows a small-caps "FOOTNOTES" eyebrow above a thin rule with reduced-emphasis body text. Round-trips through the existing pipeline (no lib changes needed). SHA: _(see commit)_
+- **T-30** — Copy-code buttons via client component `app/_components/copy-code.tsx`. Mounted under the prose on essay pages; finds every `<pre>` in `.prose`, appends a small uppercase `COPY`/`COPIED` button (top-right, fades in on hover/focus), copies the block's text via `navigator.clipboard`. Idempotent + keyboard-accessible. SHA: _(see commit)_
 - **T-39** — Lab subdomain badge: when a project's `url` matches `*.marwandiallo.com`, the card shows a tiny bordered `LAB` chip; external `↗` arrow suppressed in that case. Applied to both `home-feed.tsx` (home) and `projects/page.tsx` (index). SHA: `f7d5512`
 - **T-38** — `humans.txt` at site root via `app/humans.txt/route.ts`. Static text response with `/* TEAM */`, `/* SITE */`, `/* THANKS */` sections naming the stack (Next.js 15, React 19, Tailwind v4, Vercel) and palette. SHA: `f7d5512`
 - **T-37** — Layout `metadata.alternates.types` now lists both `application/rss+xml` (/feed.xml) and `application/atom+xml` (/atom.xml); Next emits `<link rel="alternate">` per type in every `<head>` for feed-reader auto-discovery. SHA: `f7d5512`

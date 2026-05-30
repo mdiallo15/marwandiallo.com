@@ -31,6 +31,7 @@ const securityHeaders = [
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false, // remove X-Powered-By: Next.js fingerprint
+  trailingSlash: false,   // canonical URLs have no trailing slash; 308-redirect /foo/ → /foo
   async headers() {
     // Skip strict headers in dev — Next.js HMR needs eval/ws/inline
     // styles that production builds don't. Headers ship in prod only.
