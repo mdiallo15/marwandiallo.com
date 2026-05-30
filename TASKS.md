@@ -22,7 +22,95 @@ session. Pick the top unblocked task, do it, commit, move it to "Done".
 
 ## Ready (ordered, top = next)
 
-- _(none — backlog drained)_
+### T-45 — Restore `npm run lint` non-interactively
+- **Files:** `package.json`, `.eslintrc.*` or `eslint.config.mjs` (new).
+- **Do:** Migrate off the deprecated `next lint` interactive prompt
+  per the Next 16 deprecation notice. Run `npx @next/codemod@canary
+  next-lint-to-eslint-cli .` (or hand-author `eslint.config.mjs`
+  extending `next/core-web-vitals` + `next/typescript`). Re-add
+  `"lint": "eslint ."` and re-include lint in `npm run check`.
+- **Done when:** `npm run lint` runs non-interactively and `npm run
+  check` includes it.
+
+### T-46 — `/now` page lastUpdated stamp
+- **Files:** `app/now/page.tsx`.
+- **Do:** Add a small `Updated <date>` line in the page header so
+  visitors know when the snapshot was last refreshed. Keep the date
+  in a single `const NOW_UPDATED = "2026-05-30"`.
+- **Done when:** `/now` shows the updated stamp; build clean.
+
+### T-47 — Essay TOC on wide viewports
+- **Files:** `app/writing/[slug]/page.tsx`, `lib/writing.ts`
+  (extract headings), `app/globals.css`.
+- **Do:** Parse `h2`/`h3` from the rendered HTML (or from the MDX
+  AST) and render a sticky right-rail TOC at `xl:` breakpoint only
+  (under it, hidden). Active-section highlight is OK but optional.
+- **Done when:** Essays show a TOC on wide screens; small screens
+  unchanged; build clean.
+
+### T-48 — Last-paragraph CTA on essays
+- **Files:** `app/writing/[slug]/page.tsx`, `app/globals.css`.
+- **Do:** Below the Edit-on-GitHub link, a one-line muted "If this
+  resonated, the next essay lives in the feed" with link to
+  `/feed.xml` or `/writing`. Tiny, easy to skip.
+- **Done when:** All essays show the CTA; visually subordinate to
+  prev/next; build clean.
+
+### T-49 — Drop `nonce` from JSON-LD when CSP doesn't require it
+- **Files:** `app/_components/json-ld.tsx`, `middleware.ts`.
+- **Do:** Audit whether `script-src` in CSP needs the nonce on
+  `application/ld+json` — most browsers don't enforce CSP on
+  non-executable script types. If safe, drop the `nonce` attribute
+  and remove `force-dynamic` from `/`, `/about`, `/writing/[slug]`,
+  reverting them to SSG for cache/CDN wins.
+- **Done when:** Routes are SSG again or, if nonce IS required,
+  comment in `json-ld.tsx` cites the spec/test; build clean.
+
+### T-50 — Reduce CardArtwork SVG file count
+- **Files:** `app/_components/card-artwork.tsx`.
+- **Do:** Audit which `slug` cases are actually rendered (essays +
+  projects); delete unused branches. Goal: shrink the component file
+  and trim shared-bundle bytes.
+- **Done when:** Component handles only live slugs; build clean;
+  shared bundle ≤ today's 102 kB.
+
+### T-51 — `/writing` page: filter by tag from query string
+- **Files:** `app/writing/page.tsx`.
+- **Do:** Read `?tag=foo` (server-side via `searchParams`), filter
+  the post list, surface the active tag chip with a clear-filter `×`.
+  Keep `/writing/tag/[tag]` as the canonical SEO route.
+- **Done when:** `/writing?tag=ai` filters correctly; clearing the
+  filter restores full list; build clean.
+
+### T-52 — RSS: full HTML content via `<content:encoded>`
+- **Files:** `app/feed.xml/route.ts`.
+- **Do:** Emit `xmlns:content="http://purl.org/rss/1.0/modules/content/"`
+  and per-item `<content:encoded><![CDATA[...]]></content:encoded>`
+  containing the rendered HTML. Keep `<description>` as the summary.
+- **Done when:** Feed validators (W3C) pass; readers show full
+  article body; build clean.
+
+### T-53 — Sitemap priority + changefreq tuning
+- **Files:** `app/sitemap.ts`.
+- **Do:** Set `priority: 1.0` on `/`, `0.8` on `/writing` +
+  `/projects`, `0.7` on essays, `0.5` on tag pages, `0.3` on
+  `/about`/`/now`. `changeFrequency`: `weekly` for `/`, `/writing`;
+  `monthly` for essays/tags; `yearly` for `/about`.
+- **Done when:** Sitemap renders the fields; build clean.
+
+### T-54 — Per-route `robots` meta hints
+- **Files:** `app/writing/tag/[tag]/page.tsx`, `app/writing/tags/page.tsx`.
+- **Do:** Set `metadata.robots = { index: true, follow: true }`
+  explicitly on essay-list/tag routes. Leave `noindex` off — the
+  tag pages do have value for tag-search queries.
+- **Done when:** Each route's metadata declares `robots`; build clean.
+
+### T-55 — Document `npm run check:bundle` budget in README
+- **Files:** `README.md`.
+- **Do:** Add a short "Bundle budget" subsection under "Scripts"
+  explaining the 420 kB raw / ~120 kB gzipped budget, why it's raw,
+  and how to read/raise it (`scripts/check-bundle.mjs#BUDGET_KB`).
+- **Done when:** README documents the script + budget; build clean.
 
 ## Blocked
 
