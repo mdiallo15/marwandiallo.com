@@ -126,6 +126,47 @@ export function getAllPosts(): PostMeta[] {
     });
 }
 
+/**
+ * Adjacent posts in chronological order (newest first). `previous` is
+ * the older essay, `next` is the newer one. Returns `null` for missing
+ * neighbors at the edges.
+ */
+export function getAdjacentPosts(slug: string): {
+  previous: PostMeta | null;
+  next: PostMeta | null;
+} {
+  const posts = getAllPosts();
+  const i = posts.findIndex((p) => p.slug === slug);
+  if (i === -1) return { previous: null, next: null };
+  // posts[] is newest-first, so the older essay sits at i+1.
+  return {
+    previous: posts[i + 1] ?? null,
+    next: posts[i - 1] ?? null,
+  };
+}
+
+/**
+ * Up to `limit` essays sharing at least one tag with `slug`, ranked by
+ * shared-tag count then date desc. Excludes the current post.
+ */
+export function getRelatedPosts(slug: string, limit = 3): PostMeta[] {
+  const posts = getAllPosts();
+  const current = posts.find((p) => p.slug === slug);
+  if (!current || !current.tags?.length) return [];
+  const currentTags = new Set(current.tags);
+  return posts
+    .filter((p) => p.slug !== slug && p.tags?.some((t) => currentTags.has(t)))
+    .map((p) => ({
+      post: p,
+      shared: (p.tags ?? []).filter((t) => currentTags.has(t)).length,
+    }))
+    .sort((a, b) =>
+      b.shared !== a.shared ? b.shared - a.shared : a.post.date < b.post.date ? 1 : -1,
+    )
+    .slice(0, limit)
+    .map(({ post }) => post);
+}
+
 export function formatDate(iso: string): string {
   const d = new Date(iso);
   return d.toLocaleDateString("en-US", {

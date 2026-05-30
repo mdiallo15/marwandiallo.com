@@ -22,43 +22,7 @@ session. Pick the top unblocked task, do it, commit, move it to "Done".
 
 ## Ready (ordered, top = next)
 
-### T-16 — Prev / next links on essay footer
-- **Files:** `app/writing/[slug]/page.tsx`, possibly a `getAdjacentPosts`
-  helper in `lib/writing.ts`.
-- **Do:** After the prose body, render a two-column nav with the
-  chronologically previous and next essays (by `date`, drafts excluded).
-  Match `.feed-card`-style minimalism — small uppercase eyebrow
-  ("Previous" / "Next"), title, no summary. Wraps to one column on
-  small screens.
-- **Done when:** Every essay shows correct prev/next; first essay has
-  no prev (skips the cell), last has no next; build clean.
-
-### T-17 — Related-by-tag essays footer
-- **Files:** `app/writing/[slug]/page.tsx`, `lib/writing.ts`.
-- **Do:** Below prev/next, render up to 3 essays that share at least one
-  tag with the current essay (excluding the current one), sorted by
-  number of shared tags then date desc. If none, omit the section.
-- **Done when:** Essays with shared-tag siblings show a "Related"
-  block; essays with no overlap show nothing; build clean.
-
-### T-18 — Skip-to-content link for keyboard users
-- **Files:** `app/layout.tsx`, `app/globals.css`.
-- **Do:** Insert a visually-hidden anchor as the first focusable element
-  pointing to `#main`. Reveal on `:focus`. Add `id="main"` to the
-  `<main>` tag.
-- **Done when:** Tabbing into the page from address bar surfaces the
-  skip link; pressing Enter focuses `<main>`; Lighthouse a11y stays at
-  100; build clean.
-
-### T-25 — Drop unused `@tailwindcss/typography`
-- **Files:** `package.json`, `postcss.config.mjs` (if it's wired there),
-  `app/globals.css` (verify `.prose` is fully custom).
-- **Do:** Confirm `@tailwindcss/typography` plugin is not loaded
-  anywhere (search `postcss.config.mjs`, `tailwind.config.*`, css
-  `@plugin` directives). If unused, remove from `devDependencies` and
-  the lockfile. Bundle stays the same; install graph shrinks.
-- **Done when:** `npm install` no longer resolves the package; bundle
-  byte counts unchanged; build clean.
+- _(none — backlog drained)_
 
 ## Blocked
 
@@ -66,6 +30,10 @@ session. Pick the top unblocked task, do it, commit, move it to "Done".
 
 ## Done
 
+- **T-25** — Removed `@tailwindcss/typography` from `package.json` and the `@plugin` line from `app/globals.css`. Verified no `.prose-*` utility classes are used anywhere; the `.prose` ruleset is fully custom. Build clean, shared chunks unchanged. SHA: _(see commit)_
+- **T-18** — Skip-to-content link as the first focusable element in `app/layout.tsx` (`<a href="#main" class="skip-link">`), revealed on `:focus`/`:focus-visible` via `app/globals.css`. `<main>` got `id="main"`. Tab from the address bar surfaces it; Enter jumps focus to `<main>`. SHA: _(see commit)_
+- **T-17** — "Related" block on essays via `getRelatedPosts(slug, 3)` in `lib/writing.ts` — ranks other essays by shared-tag count then date desc, excludes the current post and drafts. Section is omitted entirely when overlap is zero. SHA: _(see commit)_
+- **T-16** — Prev/next nav at the foot of every essay via `getAdjacentPosts(slug)` in `lib/writing.ts`. Two-column on ≥sm, single column below; "Previous" ← / "Next" → eyebrows; missing edges render an `aria-hidden` placeholder so the grid stays balanced. SHA: _(see commit)_
 - **T-24** — Aggregate `check` script in `package.json`: `npm run check` runs typecheck → lint → build, exits non-zero on first failure. SHA: `29dbcb8`
 - **T-23** — RFC 9116 `security.txt` at `app/.well-known/security.txt/route.ts`. Returns `text/plain` with `Contact`, dynamic `Expires` (one year out), `Preferred-Languages`, and `Canonical` fields. SHA: `29dbcb8`
 - **T-20** — PWA web manifest at `app/manifest.ts` exposing `MetadataRoute.Manifest` with FT salmon `#fff1e5` theme/background, standalone display, and existing SVG icons. Next 15 auto-routes it to `/manifest.webmanifest`. SHA: `29dbcb8`

@@ -79,9 +79,12 @@ export default function RootLayout({
         <ThemeBootstrap />
       </head>
       <body>
+        <a href="#main" className="skip-link">
+          Skip to content
+        </a>
         <ThemeToggle />
         <div className="mx-auto w-full max-w-[1280px] px-6 pt-10 pb-20 md:px-16 md:pt-14 lg:px-24">
-          <main>{children}</main>
+          <main id="main">{children}</main>
           <footer className="mt-24 pt-6 border-t border-[var(--color-rule)] text-[0.8rem] text-[var(--color-ink-muted)]">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-5">

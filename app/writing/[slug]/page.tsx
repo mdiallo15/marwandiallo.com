@@ -5,6 +5,8 @@ import {
   getPost,
   formatDate,
   renderMarkdown,
+  getAdjacentPosts,
+  getRelatedPosts,
 } from "@/lib/writing";
 import { JsonLd } from "@/app/_components/json-ld";
 
@@ -41,6 +43,8 @@ export default async function WritingPost({ params }: Props) {
   if (!post) notFound();
 
   const html = await renderMarkdown(post.content);
+  const { previous, next } = getAdjacentPosts(post.slug);
+  const related = getRelatedPosts(post.slug);
 
   const url = `${SITE_URL}/writing/${post.slug}`;
   const articleSchema = {
@@ -81,6 +85,72 @@ export default async function WritingPost({ params }: Props) {
         </div>
       </header>
       <div className="prose" dangerouslySetInnerHTML={{ __html: html }} />
+      {(previous || next) && (
+        <nav
+          aria-label="Adjacent essays"
+          className="mt-20 pt-8 border-t border-[var(--color-rule)] grid gap-6 sm:grid-cols-2"
+        >
+          {previous ? (
+            <Link
+              href={`/writing/${previous.slug}`}
+              className="group block"
+            >
+              <span className="block text-[0.7rem] uppercase tracking-[0.12em] text-[var(--color-ink-muted)]">
+                ← Previous
+              </span>
+              <span className="mt-2 block text-[1rem] leading-[1.4] text-[var(--color-ink)] underline decoration-transparent decoration-1 underline-offset-[3px] transition-[text-decoration-color] group-hover:decoration-[var(--color-ink)]">
+                {previous.title}
+              </span>
+            </Link>
+          ) : (
+            <span aria-hidden />
+          )}
+          {next ? (
+            <Link
+              href={`/writing/${next.slug}`}
+              className="group block sm:text-right"
+            >
+              <span className="block text-[0.7rem] uppercase tracking-[0.12em] text-[var(--color-ink-muted)]">
+                Next →
+              </span>
+              <span className="mt-2 block text-[1rem] leading-[1.4] text-[var(--color-ink)] underline decoration-transparent decoration-1 underline-offset-[3px] transition-[text-decoration-color] group-hover:decoration-[var(--color-ink)]">
+                {next.title}
+              </span>
+            </Link>
+          ) : (
+            <span aria-hidden />
+          )}
+        </nav>
+      )}
+      {related.length > 0 && (
+        <section
+          aria-label="Related essays"
+          className="mt-12 pt-8 border-t border-[var(--color-rule)]"
+        >
+          <h2 className="text-[0.7rem] uppercase tracking-[0.12em] text-[var(--color-ink-muted)] font-medium">
+            Related
+          </h2>
+          <ul className="mt-4 space-y-0">
+            {related.map((r) => (
+              <li key={r.slug}>
+                <Link
+                  href={`/writing/${r.slug}`}
+                  className="group block py-4 border-t border-[var(--color-rule)] last:border-b transition-colors hover:bg-[var(--color-bg-elev)]"
+                >
+                  <div className="grid grid-cols-[1fr_auto] items-baseline gap-4">
+                    <span className="text-[1rem] leading-[1.4] text-[var(--color-ink)] underline decoration-transparent decoration-1 underline-offset-[3px] transition-[text-decoration-color] group-hover:decoration-[var(--color-ink)]">
+                      {r.title}
+                    </span>
+                    <span className="text-[0.72rem] uppercase tracking-[0.08em] text-[var(--color-ink-muted)] tabular-nums whitespace-nowrap">
+                      <time dateTime={r.date}>{formatDate(r.date)}</time>
+                    </span>
+                  </div>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
     </article>
   );
 }
