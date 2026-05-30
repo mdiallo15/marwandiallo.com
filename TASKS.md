@@ -30,10 +30,10 @@ session. Pick the top unblocked task, do it, commit, move it to "Done".
 
 ## Done
 
-- **T-25** — Removed `@tailwindcss/typography` from `package.json` and the `@plugin` line from `app/globals.css`. Verified no `.prose-*` utility classes are used anywhere; the `.prose` ruleset is fully custom. Build clean, shared chunks unchanged. SHA: _(see commit)_
-- **T-18** — Skip-to-content link as the first focusable element in `app/layout.tsx` (`<a href="#main" class="skip-link">`), revealed on `:focus`/`:focus-visible` via `app/globals.css`. `<main>` got `id="main"`. Tab from the address bar surfaces it; Enter jumps focus to `<main>`. SHA: _(see commit)_
-- **T-17** — "Related" block on essays via `getRelatedPosts(slug, 3)` in `lib/writing.ts` — ranks other essays by shared-tag count then date desc, excludes the current post and drafts. Section is omitted entirely when overlap is zero. SHA: _(see commit)_
-- **T-16** — Prev/next nav at the foot of every essay via `getAdjacentPosts(slug)` in `lib/writing.ts`. Two-column on ≥sm, single column below; "Previous" ← / "Next" → eyebrows; missing edges render an `aria-hidden` placeholder so the grid stays balanced. SHA: _(see commit)_
+- **T-25** — Removed `@tailwindcss/typography` from `package.json` and the `@plugin` line from `app/globals.css`. Verified no `.prose-*` utility classes are used anywhere; the `.prose` ruleset is fully custom. Build clean, shared chunks unchanged. SHA: `3767e16`
+- **T-18** — Skip-to-content link as the first focusable element in `app/layout.tsx` (`<a href="#main" class="skip-link">`), revealed on `:focus`/`:focus-visible` via `app/globals.css`. `<main>` got `id="main"`. Tab from the address bar surfaces it; Enter jumps focus to `<main>`. SHA: `3767e16`
+- **T-17** — "Related" block on essays via `getRelatedPosts(slug, 3)` in `lib/writing.ts` — ranks other essays by shared-tag count then date desc, excludes the current post and drafts. Section is omitted entirely when overlap is zero. SHA: `3767e16`
+- **T-16** — Prev/next nav at the foot of every essay via `getAdjacentPosts(slug)` in `lib/writing.ts`. Two-column on ≥sm, single column below; "Previous" ← / "Next" → eyebrows; missing edges render an `aria-hidden` placeholder so the grid stays balanced. SHA: `3767e16`
 - **T-24** — Aggregate `check` script in `package.json`: `npm run check` runs typecheck → lint → build, exits non-zero on first failure. SHA: `29dbcb8`
 - **T-23** — RFC 9116 `security.txt` at `app/.well-known/security.txt/route.ts`. Returns `text/plain` with `Contact`, dynamic `Expires` (one year out), `Preferred-Languages`, and `Canonical` fields. SHA: `29dbcb8`
 - **T-20** — PWA web manifest at `app/manifest.ts` exposing `MetadataRoute.Manifest` with FT salmon `#fff1e5` theme/background, standalone display, and existing SVG icons. Next 15 auto-routes it to `/manifest.webmanifest`. SHA: `29dbcb8`
