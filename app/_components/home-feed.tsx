@@ -136,15 +136,21 @@ function WritingCard({ post }: { post: PostMeta }) {
 }
 
 function ProjectCard({ project }: { project: Project }) {
+  const isLab = !!project.url && /(^|\.)marwandiallo\.com($|\/)/.test(project.url);
   const inner = (
     <>
       <div className="feed-card__top">
         <span className="feed-card__title-top">
           {project.title}
-          {project.url && (
+          {project.url && !isLab && (
             <span aria-hidden className="feed-card__arrow">
               {" "}
               ↗
+            </span>
+          )}
+          {isLab && (
+            <span className="feed-card__chip" aria-label="Lab project on a marwandiallo.com subdomain">
+              LAB
             </span>
           )}
         </span>
@@ -160,7 +166,7 @@ function ProjectCard({ project }: { project: Project }) {
 
   if (project.url) {
     // Same-tab nav for our own subdomains; new tab for external (GitHub, etc.)
-    const isOwn = /(^|\.)marwandiallo\.com($|\/)/.test(project.url);
+    const isOwn = isLab;
     return (
       <li>
         <a

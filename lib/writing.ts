@@ -21,6 +21,7 @@ export interface PostMeta {
   tags?: string[];
   draft?: boolean;
   readingMinutes: number;
+  words: number;
 }
 
 export interface Post extends PostMeta {
@@ -98,6 +99,7 @@ function readPost(slug: string): Post | null {
         tags: Array.isArray(data.tags) ? data.tags.map(String) : undefined,
         draft: Boolean(data.draft),
         readingMinutes: Math.max(1, Math.round(rt.minutes)),
+        words: rt.words,
         content,
       };
     }

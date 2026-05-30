@@ -45,6 +45,7 @@ export const metadata: Metadata = {
     canonical: SITE_URL,
     types: {
       "application/rss+xml": [{ url: "/feed.xml", title: "Marwan Diallo" }],
+      "application/atom+xml": [{ url: "/atom.xml", title: "Marwan Diallo" }],
     },
   },
 };

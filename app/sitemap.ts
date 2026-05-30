@@ -12,7 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     url: `${SITE_URL}/writing/tag/${t.slug}`,
     lastModified: new Date(),
   }));
-  const staticRoutes = ["", "/writing", "/projects", "/about", "/now"].map((p) => ({
+  const staticRoutes = ["", "/writing", "/writing/tags", "/projects", "/about", "/now"].map((p) => ({
     url: `${SITE_URL}${p}`,
     lastModified: new Date(),
   }));

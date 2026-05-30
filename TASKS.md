@@ -22,15 +22,6 @@ session. Pick the top unblocked task, do it, commit, move it to "Done".
 
 ## Ready (ordered, top = next)
 
-### T-29 — Reduce-motion respect
-- **Files:** `app/globals.css`, `app/_components/theme-toggle.tsx`,
-  any component with transition/animation.
-- **Do:** Wrap non-essential transitions in
-  `@media (prefers-reduced-motion: no-preference) { ... }` or add a
-  global override `@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; } }`.
-- **Done when:** Users with reduce-motion get no transitions; default
-  experience unchanged; build clean.
-
 ### T-30 — Copy-code button on `<pre>` blocks
 - **Files:** new `app/_components/copy-code.tsx` (client) +
   small client wrapper, `lib/writing.ts` (mark `<pre>` for hydration),
@@ -59,68 +50,6 @@ session. Pick the top unblocked task, do it, commit, move it to "Done".
   via `a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 0.8em; }`.
 - **Done when:** Print preview of any essay shows clean
   black-on-white text + visible URLs; build clean.
-
-### T-33 — All-tags index page `/writing/tags`
-- **Files:** `app/writing/tags/page.tsx` (new), `lib/writing.ts`
-  (`getAllTags` already exists).
-- **Do:** List every tag with its essay count as a row (`#tag · N`),
-  linking to `/writing/tag/<slug>`. Sort by count desc, then alpha.
-  Match the writing-index visual rhythm. Add to sitemap.
-- **Done when:** `/writing/tags` renders all tags with counts; link
-  appears below the writing index ("Browse by tag →"); build clean.
-
-### T-34 — Essay word-count alongside reading-time
-- **Files:** `lib/writing.ts`, `app/writing/[slug]/page.tsx`,
-  `app/writing/page.tsx`, `app/writing/tag/[tag]/page.tsx`.
-- **Do:** Compute `words` from `reading-time`'s `wordCount` (or split
-  by `/\s+/`). Surface in the essay header as `· 1,240 words` after
-  the date and min. Index pages keep just `N min` to stay tight.
-- **Done when:** Every essay header shows date · N min · N words;
-  thousands separator on word count; build clean.
-
-### T-35 — Edit-on-GitHub link per essay
-- **Files:** `app/writing/[slug]/page.tsx`.
-- **Do:** Below the prose body (above prev/next), a small muted
-  `Edit on GitHub →` anchor linking to
-  `https://github.com/mdiallo15/marwandiallo.com/blob/main/content/writing/<slug>.mdx`.
-  `target="_blank" rel="noopener noreferrer"`.
-- **Done when:** Every essay has the edit link, opens new tab to the
-  raw source; build clean.
-
-### T-36 — Atom feed alongside RSS at `/atom.xml`
-- **Files:** `app/atom.xml/route.ts` (new).
-- **Do:** Emit Atom 1.0 (`application/atom+xml`) with the same posts
-  as `/feed.xml`. `<feed>`, `<title>`, `<id>` = SITE_URL, `<updated>` =
-  newest post date, `<link rel="self">`, per-entry `<id>`/`<title>`/
-  `<link>`/`<published>`/`<updated>`/`<summary>`/`<author>`.
-- **Done when:** `/atom.xml` validates as Atom 1.0; referenced from
-  `<head>` alongside RSS; build clean.
-
-### T-37 — Sitemap + RSS auto-discovery `<link>` tags
-- **Files:** `app/layout.tsx`.
-- **Do:** Add `<link rel="alternate" type="application/rss+xml" href="/feed.xml">`
-  and (after T-36) the Atom variant in `<head>`. Confirm sitemap is
-  surfaced via robots `Sitemap:` (already true) and as a `<link
-  rel="sitemap">` if practical.
-- **Done when:** Feed readers auto-discover the feeds from any page;
-  build clean.
-
-### T-38 — `humans.txt` at site root
-- **Files:** `app/humans.txt/route.ts` (new) or `public/humans.txt`.
-- **Do:** RFC-ish `humans.txt` with `/* TEAM */`, `/* SITE */`,
-  `/* THANKS */` sections. Lists Marwan as author, links GitHub, names
-  the stack (Next.js 15, Tailwind v4, Vercel).
-- **Done when:** `curl /humans.txt` returns the file as `text/plain`;
-  build clean.
-
-### T-39 — Lab project cards: subdomain badge
-- **Files:** `app/_components/home-feed.tsx`, `app/projects/page.tsx`.
-- **Do:** When a project's `url` is on a `*.marwandiallo.com` subdomain,
-  surface a tiny `LAB` chip in the card footer (uppercase, tracking,
-  ink-muted). Reinforces the "own-subdomain → same-tab" rule already
-  in code.
-- **Done when:** Lab subdomain cards show the chip; external `↗`
-  cards don't; build clean.
 
 ### T-40 — Bundle-size budget guard in `npm run check`
 - **Files:** `scripts/check-bundle.mjs` (new), `package.json`.
@@ -171,6 +100,14 @@ session. Pick the top unblocked task, do it, commit, move it to "Done".
 
 ## Done
 
+- **T-39** — Lab subdomain badge: when a project's `url` matches `*.marwandiallo.com`, the card shows a tiny bordered `LAB` chip; external `↗` arrow suppressed in that case. Applied to both `home-feed.tsx` (home) and `projects/page.tsx` (index). SHA: _(see commit)_
+- **T-38** — `humans.txt` at site root via `app/humans.txt/route.ts`. Static text response with `/* TEAM */`, `/* SITE */`, `/* THANKS */` sections naming the stack (Next.js 15, React 19, Tailwind v4, Vercel) and palette. SHA: _(see commit)_
+- **T-37** — Layout `metadata.alternates.types` now lists both `application/rss+xml` (/feed.xml) and `application/atom+xml` (/atom.xml); Next emits `<link rel="alternate">` per type in every `<head>` for feed-reader auto-discovery. SHA: _(see commit)_
+- **T-36** — Atom 1.0 feed at `app/atom.xml/route.ts`. Same posts as RSS, with `<id>`, `<title>`, `<link rel="self">`, per-entry `<published>`/`<updated>`/`<summary>`/`<author>`. `force-static` + 1h s-maxage. SHA: _(see commit)_
+- **T-35** — `Edit on GitHub ↗` link below every essay body (above prev/next), `target="_blank" rel="noopener noreferrer"`, points at the raw `content/writing/<slug>.mdx` on `main`. SHA: _(see commit)_
+- **T-34** — `words` added to `PostMeta` (sourced from `reading-time`'s `words` count). Essay header now reads `date · N min · N,NNN words` with thousands separator; index pages stay terse. SHA: _(see commit)_
+- **T-33** — `/writing/tags` route lists every tag ranked by essay count (ties broken alphabetically). Added "Browse by tag →" link below the writing index and surfaced `/writing/tags` in `app/sitemap.ts`. SHA: _(see commit)_
+- **T-29** — `@media (prefers-reduced-motion: reduce)` global rule appended to `app/globals.css` collapsing all `animation-duration`/`transition-duration` to 0.01ms and disabling smooth scroll. Default experience untouched. SHA: _(see commit)_
 - **T-28** — Added `twitter.site: "@marwanbuilds"` to root metadata alongside the existing `creator` + `card: summary_large_image`. Per-essay metadata already cascades title/description; OG image (per-essay `opengraph-image.tsx`) drives the Twitter preview via `summary_large_image`. SHA: `384dead`
 - **T-27** — Per-route `alternates.canonical` on `/writing`, `/writing/[slug]`, `/writing/tag/[tag]`, `/about`, `/now`, `/projects`. Root layout already pinned `/`. Next resolves relative paths against `metadataBase` so every HTML response now emits one absolute `<link rel="canonical">`. SHA: `384dead`
 - **T-25** — Removed `@tailwindcss/typography` from `package.json` and the `@plugin` line from `app/globals.css`. Verified no `.prose-*` utility classes are used anywhere; the `.prose` ruleset is fully custom. Build clean, shared chunks unchanged. SHA: `3767e16`

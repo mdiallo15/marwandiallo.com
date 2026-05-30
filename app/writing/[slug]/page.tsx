@@ -79,13 +79,23 @@ export default async function WritingPost({ params }: Props) {
           {post.title}
         </h1>
         <div className="mt-4 text-[0.82rem] text-[var(--color-ink-muted)] tabular-nums">
-          <time dateTime={post.date}>{formatDate(post.date)}</time> · {post.readingMinutes} min
+          <time dateTime={post.date}>{formatDate(post.date)}</time> · {post.readingMinutes} min · {post.words.toLocaleString("en-US")} words
           {post.updated && post.updated !== post.date && (
             <span> · updated <time dateTime={post.updated}>{formatDate(post.updated)}</time></span>
           )}
         </div>
       </header>
       <div className="prose" dangerouslySetInnerHTML={{ __html: html }} />
+      <div className="mt-12">
+        <a
+          href={`https://github.com/mdiallo15/marwandiallo.com/blob/main/content/writing/${post.slug}.mdx`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 text-[0.82rem] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors"
+        >
+          Edit on GitHub ↗
+        </a>
+      </div>
       {(previous || next) && (
         <nav
           aria-label="Adjacent essays"

@@ -41,20 +41,26 @@ export default function ProjectsPage() {
 }
 
 function ProjectCard({ project }: { project: Project }) {
+  const isLab = !!project.url && /(^|\.)marwandiallo\.com($|\/)/.test(project.url);
   const inner = (
     <>
       <div className="feed-card__top">
         <span className="feed-card__title-top">
           {project.title}
-          {project.url && (
+          {project.url && !isLab && (
             <span aria-hidden className="feed-card__arrow">
               {" "}
               ↗
             </span>
           )}
+          {isLab && (
+            <span className="feed-card__chip" aria-label="Lab project on a marwandiallo.com subdomain">
+              LAB
+            </span>
+          )}
         </span>
         <span className="feed-card__date tabular-nums">
-          {isoDate(project.date)}
+          <time dateTime={project.date}>{isoDate(project.date)}</time>
         </span>
       </div>
       <span aria-hidden className="feed-card__visual" data-tag={project.tag}>
@@ -64,7 +70,7 @@ function ProjectCard({ project }: { project: Project }) {
   );
 
   if (project.url) {
-    const isOwn = /(^|\.)marwandiallo\.com($|\/)/.test(project.url);
+    const isOwn = isLab;
     return (
       <li>
         <a

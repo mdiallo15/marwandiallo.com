@@ -688,6 +688,18 @@ a:hover {
   color: var(--color-ink);
   transform: translate(2px, -2px);
 }
+.feed-card__chip {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 1px 6px;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  font-weight: 500;
+  color: var(--color-ink-muted);
+  border: 1px solid var(--color-rule);
+  border-radius: 3px;
+  vertical-align: 2px;
+}
 
 /* Visual — colored block below header (no overlay text) */
 .feed-card__visual {
@@ -1428,4 +1440,20 @@ a:hover {
 }
 :root[data-theme="dark"] .card-art .art-authz-status-good {
   fill: #86efac;
+}
+
+/* ===========================================================
+   Reduced motion — collapse transitions/animations for users
+   who prefer reduced motion. Keeps essential opacity/transform
+   changes near-instant rather than fully removing them.
+   =========================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms \!important;
+    animation-iteration-count: 1 \!important;
+    transition-duration: 0.01ms \!important;
+    scroll-behavior: auto \!important;
+  }
 }

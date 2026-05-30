@@ -66,6 +66,14 @@ export default function WritingIndex() {
           </li>
         ))}
       </ul>
+      <div className="mt-10">
+        <Link
+          href="/writing/tags"
+          className="inline-flex items-center gap-1.5 text-[0.85rem] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors"
+        >
+          Browse by tag →
+        </Link>
+      </div>
     </div>
   );
 }
