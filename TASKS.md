@@ -68,25 +68,6 @@ session. Pick the top unblocked task, do it, commit, move it to "Done".
 - **Done when:** `/manifest.webmanifest` returns valid JSON; Lighthouse
   PWA-style installability checks improve; build clean.
 
-### T-21 — `theme-color` meta for browser chrome (light + dark)
-- **Files:** `app/layout.tsx` metadata.
-- **Do:** Add `themeColor` to the exported `metadata` with two entries:
-  `media: "(prefers-color-scheme: light)"` → `#fff1e5`,
-  `media: "(prefers-color-scheme: dark)"` → `#0a0a0a`. Note that the
-  manual toggle still wins inside the page, but the browser address
-  bar will use the system value.
-- **Done when:** Mobile browsers show the correct chrome color; build
-  clean.
-
-### T-22 — Explicit `viewport` export
-- **Files:** `app/layout.tsx`.
-- **Do:** Add the `export const viewport: Viewport = {...}` block per
-  Next 15 conventions (`width: "device-width"`, `initialScale: 1`,
-  `maximumScale: 5`). Keep `theme-color` here if the metadata-side
-  doesn't apply (Next 15 prefers viewport export).
-- **Done when:** Viewport meta is emitted exactly once; no duplicate
-  warnings; build clean.
-
 ### T-23 — Add `/.well-known/security.txt`
 - **Files:** `app/.well-known/security.txt/route.ts` (new) or static
   `public/.well-known/security.txt`.
@@ -114,20 +95,14 @@ session. Pick the top unblocked task, do it, commit, move it to "Done".
 - **Done when:** `npm install` no longer resolves the package; bundle
   byte counts unchanged; build clean.
 
-### T-26 — Reading-time pluralization fix
-- **Files:** `app/writing/page.tsx`, `app/writing/[slug]/page.tsx`,
-  `app/_components/home-feed.tsx`, anywhere `min read` is rendered.
-- **Do:** When `readingMinutes === 1`, render `1 min read`; otherwise
-  `N min read`. Or, more concisely, always `N min` and drop the noun.
-  Pick the one already used by 5/7 callsites and unify.
-- **Done when:** No singular/plural mismatch on any route; build clean.
-
 ## Blocked
 
 - _(none)_
 
 ## Done
 
+- **T-21+T-22** — Added Next 15 `export const viewport: Viewport` to `app/layout.tsx` with `device-width`, `initialScale: 1`, `maximumScale: 5`, and `themeColor` light=`#fff1e5` / dark=`#0a0a0a`. Browser chrome now matches the active palette on mobile. Single source of truth for viewport + theme-color (no more metadata-side `themeColor` conflict). SHA: _(see commit)_
+- **T-26** — Reading-time label unified on `N min` across `app/writing/page.tsx`, `app/writing/tag/[tag]/page.tsx`, and `app/writing/[slug]/page.tsx`. Drops the singular/plural mismatch in essay headers (was `min read`). SHA: _(see commit)_
 - **T-15** — Per-essay dynamic OG image at `app/writing/[slug]/opengraph-image.tsx`. Mirrors the home OG layout (FT salmon `#fff1e5` paper, MD chip, ink/ink-soft/ink-muted) but pulls title, formatted date (prefers `updated`), and up to 3 tags from the post. Uses `next/og` `ImageResponse` on the Node runtime. `generateImageMetadata` was a wrong fit — the parent `[slug]` already parameterizes the route, so dropping it gives a single `og:image` per essay. Verified: `/writing/agent-identity-front/opengraph-image` returns 1200×630 PNG, og:image meta points to the per-essay path. Every direct child of multi-child flex containers carries an explicit `display: flex` per Satori's strict rule. SHA: `04c2ca4`
 - **T-14** — Syntax highlighting via `rehype-pretty-code` + `shiki` in the rehype pipeline (themes: `github-light` + `github-dark`, `keepBackground: false` so our `var(--color-bg-elev)` `<pre>` styling stays). Inline `--shiki-light` / `--shiki-dark` CSS vars per token; dark theme is selected via `:root[data-theme="dark"] .prose code span { color: var(--shiki-dark) !important }` so the manual toggle drives it. Verified at runtime on the only language-tagged fence (`ts` block in `i-built-a-scanner-then-scanned-myself`): `<pre data-language="ts">` with per-token highlight. Untagged fences (terminal output) stay as plain `<pre><code>` against `--color-bg-elev`. Shiki runs server-only; client bundle unchanged. SHA: `18f1aef`
 - **T-13** — Heading anchors on h2/h3. `lib/writing.ts` `renderMarkdown` migrated from `remark-html` to `remark` → `remarkRehype` → `rehypeSlug` → `rehypeAutolinkHeadings` → `rehypeStringify`. Anchor renders as a small `#` glyph appended to each heading, hidden by default, visible on heading hover or `:focus-within`. Added `scroll-margin-top` to h2/h3 so deep links don't land flush at the viewport edge. Verified at runtime: every h2 now has an `id` slug + `<a class="heading-anchor" href="#slug">`. Removed unused `remark-html` import. SHA: `f7459e6`
