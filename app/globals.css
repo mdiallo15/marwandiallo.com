@@ -220,6 +220,22 @@ a:hover {
   line-height: 1.6;
 }
 
+/* rehype-pretty-code emits two color variables per token (light + dark).
+   We keep the light variant by default and swap to dark when our manual
+   toggle sets data-theme="dark" on <html>. */
+.prose pre code {
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  font-size: inherit;
+}
+.prose code[data-line-numbers] {
+  counter-reset: line;
+}
+:root[data-theme="dark"] .prose code span {
+  color: var(--shiki-dark) !important;
+}
+
 .prose hr {
   border: none;
   border-top: 1px solid var(--color-rule);

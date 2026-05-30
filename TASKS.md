@@ -22,17 +22,6 @@ session. Pick the top unblocked task, do it, commit, move it to "Done".
 
 ## Ready (ordered, top = next)
 
-### T-14 — Syntax highlighting for code blocks (Shiki)
-- **Files:** `lib/writing.ts`, `package.json`, `README.md`.
-- **Do:** Add `rehype-pretty-code` + `shiki` to deps. Wire into the
-  rehype pipeline from T-13 with a quiet theme pair (e.g.,
-  `github-light` and `github-dark`) so dark mode picks up the dark
-  variant via `data-theme` attribute selectors. Update `README.md`
-  Stack section to match what is actually installed.
-- **Done when:** Any fenced code block in an essay renders highlighted;
-  switching theme swaps the highlight; build clean; bundle didn't
-  bloat the client (Shiki should be server-side only).
-
 ### T-15 — Per-essay dynamic OG image
 - **Files:** `app/writing/[slug]/opengraph-image.tsx` (new).
 - **Do:** Mirror the design of `app/opengraph-image.tsx` but pull title,
@@ -149,6 +138,7 @@ session. Pick the top unblocked task, do it, commit, move it to "Done".
 
 ## Done
 
+- **T-14** — Syntax highlighting via `rehype-pretty-code` + `shiki` in the rehype pipeline (themes: `github-light` + `github-dark`, `keepBackground: false` so our `var(--color-bg-elev)` `<pre>` styling stays). Inline `--shiki-light` / `--shiki-dark` CSS vars per token; dark theme is selected via `:root[data-theme="dark"] .prose code span { color: var(--shiki-dark) !important }` so the manual toggle drives it. Verified at runtime on the only language-tagged fence (`ts` block in `i-built-a-scanner-then-scanned-myself`): `<pre data-language="ts">` with per-token highlight. Untagged fences (terminal output) stay as plain `<pre><code>` against `--color-bg-elev`. Shiki runs server-only; client bundle unchanged. SHA: _(see commit)_
 - **T-13** — Heading anchors on h2/h3. `lib/writing.ts` `renderMarkdown` migrated from `remark-html` to `remark` → `remarkRehype` → `rehypeSlug` → `rehypeAutolinkHeadings` → `rehypeStringify`. Anchor renders as a small `#` glyph appended to each heading, hidden by default, visible on heading hover or `:focus-within`. Added `scroll-margin-top` to h2/h3 so deep links don't land flush at the viewport edge. Verified at runtime: every h2 now has an `id` slug + `<a class="heading-anchor" href="#slug">`. Removed unused `remark-html` import. SHA: `f7459e6`
 - **T-12** — Audited every `<a href="http">` site-wide. Added `target="_blank" rel="noopener noreferrer"` to layout footer (GitHub/LinkedIn/X), about page Diallo Group link, now page /nownownow link, and home page Diallo Group `<Link>`. Added `decorateExternalLinks()` post-process in `lib/writing.ts` `renderMarkdown` so essay-body http(s) anchors also get the rel attributes (remark-html drops them). Verified at runtime: `/`, `/about`, `/now`, `/writing/agent-identity-front` render zero external `<a>` without `noopener`. Lab subdomain project cards stay same-tab (intentional, own-subdomain decision in `home-feed.tsx`). SHA: `acd2c46`
 - **T-11** — JSON-LD on `/` (WebSite + Person) and `/about` (Person with `worksFor` + `sameAs` GitHub/LinkedIn/X) via the same nonce-aware `<JsonLd />` helper from T-10. Both routes opted into `force-dynamic` so the JSON-LD nonce matches CSP. SHA: `1425bd9`

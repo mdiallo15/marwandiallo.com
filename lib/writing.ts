@@ -7,6 +7,7 @@ import remarkGfm from "remark-gfm";
 import remarkRehype from "remark-rehype";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import rehypePrettyCode from "rehype-pretty-code";
 import rehypeStringify from "rehype-stringify";
 
 const CONTENT_DIR = path.join(process.cwd(), "content", "writing");
@@ -39,6 +40,13 @@ export async function renderMarkdown(md: string): Promise<string> {
         tabIndex: -1,
       },
       content: { type: "text", value: "#" },
+    })
+    .use(rehypePrettyCode, {
+      // Two themes — Shiki emits both as inline CSS variables. The
+      // `[data-theme="dark"]` selector below in globals.css picks the
+      // dark variant when our manual toggle flips. Server-side only.
+      theme: { light: "github-light", dark: "github-dark" },
+      keepBackground: false,
     })
     .use(rehypeStringify, { allowDangerousHtml: true })
     .process(md);
