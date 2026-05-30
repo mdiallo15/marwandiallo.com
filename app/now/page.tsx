@@ -7,6 +7,9 @@ export const metadata: Metadata = {
   alternates: { canonical: "/now" },
 };
 
+const NOW_UPDATED = "2026-05-30"; // ISO date — bump when refreshing this page.
+const NOW_UPDATED_LABEL = "May 2026";
+
 const blocks = [
   {
     label: "Diallo Group",
@@ -45,7 +48,7 @@ export default function NowPage() {
       </Link>
       <section className="mb-14 flex items-end justify-between">
         <h1 className="text-[2rem] md:text-[2.4rem] leading-[1.05] tracking-[-0.025em] text-[var(--color-ink)] font-medium">
-          Now
+          Updated <time dateTime={NOW_UPDATED}>{NOW_UPDATED_LABEL}</time>
         </h1>
         <span className="text-[0.7rem] uppercase tracking-[0.24em] text-[var(--color-ink-muted)] tabular-nums pb-2">
           Apr 2026

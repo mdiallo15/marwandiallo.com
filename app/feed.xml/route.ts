@@ -1,4 +1,4 @@
-import { getAllPosts } from "@/lib/writing";
+import { getAllPosts, getPost, renderMarkdown } from "@/lib/writing";
 
 const SITE_URL = "https://marwandiallo.com";
 
@@ -15,21 +15,26 @@ export const dynamic = "force-static";
 
 export async function GET() {
   const posts = getAllPosts();
-  const items = posts
-    .map((p) => {
-      const url = `${SITE_URL}/writing/${p.slug}`;
-      return `    <item>
+  const items = (
+    await Promise.all(
+      posts.map(async (p) => {
+        const url = `${SITE_URL}/writing/${p.slug}`;
+        const full = getPost(p.slug);
+        const html = full ? await renderMarkdown(full.content) : "";
+        return `    <item>
       <title>${escapeXml(p.title)}</title>
       <link>${url}</link>
       <guid>${url}</guid>
       <pubDate>${new Date(p.date).toUTCString()}</pubDate>
       ${p.summary ? `<description>${escapeXml(p.summary)}</description>` : ""}
+      <content:encoded><![CDATA[${html}]]></content:encoded>
     </item>`;
-    })
-    .join("\n");
+      }),
+    )
+  ).join("\n");
 
   const xml = `<?xml version="1.0" encoding="UTF-8" ?>
-<rss version="2.0">
+<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Marwan Diallo</title>
     <link>${SITE_URL}</link>

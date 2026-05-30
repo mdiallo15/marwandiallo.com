@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: "Tags",
   description: "Browse all essay tags.",
   alternates: { canonical: "/writing/tags" },
+  robots: { index: true, follow: true },
 };
 
 export default function TagsIndex() {

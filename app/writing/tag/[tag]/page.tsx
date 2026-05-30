@@ -23,6 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `${match.tag} — Writing`,
     description: `Essays tagged ${match.tag}.`,
     alternates: { canonical: `/writing/tag/${match.slug}` },
+    robots: { index: true, follow: true },
   };
 }
 
