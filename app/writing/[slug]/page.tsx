@@ -7,6 +7,7 @@ import {
   renderMarkdown,
   getAdjacentPosts,
   getRelatedPosts,
+  extractToc,
 } from "@/lib/writing";
 import { JsonLd } from "@/app/_components/json-ld";
 import { CopyCodeButtons } from "@/app/_components/copy-code";
@@ -45,6 +46,7 @@ export default async function WritingPost({ params }: Props) {
   if (!post) notFound();
 
   const html = await renderMarkdown(post.content);
+  const toc = extractToc(html);
   const { previous, next } = getAdjacentPosts(post.slug);
   const related = getRelatedPosts(post.slug);
 
@@ -87,7 +89,33 @@ export default async function WritingPost({ params }: Props) {
         </div>
       </header>
       <CopyCodeButtons />
-      <div className="prose" dangerouslySetInnerHTML={{ __html: html }} />
+      <div className="xl:grid xl:grid-cols-[1fr_220px] xl:gap-12">
+        <div className="prose" dangerouslySetInnerHTML={{ __html: html }} />
+        {toc.length > 1 && (
+          <aside aria-label="Table of contents" className="hidden xl:block">
+            <div className="sticky top-12">
+              <h2 className="text-[0.7rem] uppercase tracking-[0.12em] text-[var(--color-ink-muted)] font-medium mb-3">
+                Contents
+              </h2>
+              <ol className="space-y-1.5 text-[0.85rem]">
+                {toc.map((item) => (
+                  <li
+                    key={item.id}
+                    className={item.level === 3 ? "pl-3" : ""}
+                  >
+                    <a
+                      href={`#${item.id}`}
+                      className="text-[var(--color-ink-soft)] hover:text-[var(--color-ink)] transition-colors leading-[1.4] block"
+                    >
+                      {item.text}
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </aside>
+        )}
+      </div>
       <div className="mt-12">
         <a
           href={`https://github.com/mdiallo15/marwandiallo.com/blob/main/content/writing/${post.slug}.mdx`}

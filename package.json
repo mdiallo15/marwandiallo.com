@@ -6,9 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "check": "npm run typecheck && npm run build && npm run check:bundle",
+    "check": "npm run typecheck && npm run lint && npm run build && npm run check:bundle",
     "check:bundle": "node scripts/check-bundle.mjs"
   },
   "dependencies": {
@@ -27,6 +27,7 @@
     "shiki": "^4.1.0"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.5",
     "@tailwindcss/postcss": "^4.0.0",
     "@types/node": "^22",
     "@types/react": "19.0.0",

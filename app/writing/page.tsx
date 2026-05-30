@@ -8,8 +8,20 @@ export const metadata: Metadata = {
   alternates: { canonical: "/writing" },
 };
 
-export default function WritingIndex() {
-  const posts = getAllPosts();
+interface Props {
+  searchParams: Promise<{ tag?: string }>;
+}
+
+export default async function WritingIndex({ searchParams }: Props) {
+  const { tag } = await searchParams;
+  const filter = tag?.trim().toLowerCase();
+  const all = getAllPosts();
+  const posts = filter
+    ? all.filter((p) => p.tags?.some((t) => tagSlug(t) === filter))
+    : all;
+  const activeTag = filter
+    ? all.flatMap((p) => p.tags ?? []).find((t) => tagSlug(t) === filter)
+    : null;
   return (
     <div>
       <Link
@@ -26,6 +38,23 @@ export default function WritingIndex() {
           {String(posts.length).padStart(2, "0")} essays
         </span>
       </section>
+      {activeTag && (
+        <div className="mb-8 flex items-center gap-2 text-[0.78rem]">
+          <span className="text-[var(--color-ink-muted)] uppercase tracking-[0.12em]">
+            Filtered:
+          </span>
+          <span className="inline-flex items-center gap-2 rounded-full border border-[var(--color-rule)] px-3 py-1 text-[var(--color-ink)]">
+            #{activeTag}
+            <Link
+              href="/writing"
+              aria-label="Clear tag filter"
+              className="text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors text-[1rem] leading-none"
+            >
+              ×
+            </Link>
+          </span>
+        </div>
+      )}
       <ul className="space-y-0">
         {posts.map((post) => (
           <li

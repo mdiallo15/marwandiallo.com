@@ -338,10 +338,10 @@ function CodeHeadersArtwork() {
         {"}"};
       </text>
       <text x="40" y="160" className="art-code">
-        <tspan className="art-code-comment">// safe by default</tspan>
+        <tspan className="art-code-comment">{"// safe by default"}</tspan>
       </text>
       <text x="40" y="178" className="art-code">
-        <tspan className="art-code-comment">// not opt-in</tspan>
+        <tspan className="art-code-comment">{"// not opt-in"}</tspan>
       </text>
     </svg>
   );

@@ -169,6 +169,39 @@ export function getRelatedPosts(slug: string, limit = 3): PostMeta[] {
     .map(({ post }) => post);
 }
 
+export interface TocItem {
+  id: string;
+  text: string;
+  level: 2 | 3;
+}
+
+/**
+ * Pull headings out of rendered essay HTML for a sticky right-rail TOC.
+ * Captures every h2/h3 with an `id` (rehype-slug always sets one), strips
+ * tags and the trailing `#` anchor glyph (T-13), decodes a few common
+ * entities. Pure string parsing — no DOM, runs on the server.
+ */
+export function extractToc(html: string): TocItem[] {
+  const out: TocItem[] = [];
+  const re = /<h([23])\b[^>]*\bid="([^"]+)"[^>]*>([\s\S]*?)<\/h\1>/gi;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(html))) {
+    const level = Number(m[1]) as 2 | 3;
+    const id = m[2];
+    const text = m[3]
+      .replace(/<a\b[^>]*class="[^"]*heading-anchor[^"]*"[^>]*>[\s\S]*?<\/a>/gi, "")
+      .replace(/<[^>]+>/g, "")
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .trim();
+    if (text) out.push({ id, text, level });
+  }
+  return out;
+}
+
 export function formatDate(iso: string): string {
   const d = new Date(iso);
   return d.toLocaleDateString("en-US", {

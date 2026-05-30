@@ -25,7 +25,6 @@ export async function JsonLd({ data }: Props) {
     <script
       type="application/ld+json"
       nonce={nonce}
-      // eslint-disable-next-line react/no-danger
       dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
     />
   );
