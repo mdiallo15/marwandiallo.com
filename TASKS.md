@@ -22,15 +22,6 @@ session. Pick the top unblocked task, do it, commit, move it to "Done".
 
 ## Ready (ordered, top = next)
 
-### T-09 — Custom not-found page
-- **Files:** `app/not-found.tsx` (new).
-- **Do:** Add a styled 404 component matching the FT salmon aesthetic.
-  Title, one-line "this page wandered off" copy, link back to `/` and
-  `/writing`. No new tokens, no new fonts. Use existing `.prose` and
-  layout classes. Render statically.
-- **Done when:** Visiting an unknown path renders the new page; build
-  clean; page renders cleanly in dark mode (no hard-coded hexes).
-
 ### T-10 — JSON-LD structured data on essays
 - **Files:** `app/writing/[slug]/page.tsx`, optionally a small
   `app/_components/json-ld.tsx` helper.
@@ -198,6 +189,7 @@ session. Pick the top unblocked task, do it, commit, move it to "Done".
 
 ## Done
 
+- **T-09** — Custom 404 page at `app/not-found.tsx`. Eyebrow `404`, title "This page wandered off.", short paragraph, then a four-row link list (Home / Writing / Projects / About) styled like the writing index hover rows. Tokens-only colors so dark mode works automatically. SHA: _(see commit)_
 - **T-01** — Verified sitemap + RSS include all 7 essays (no fix needed; dates match frontmatter). SHA: `7b1d7df`
 - **T-02** — OG image colors aligned to cream palette tokens (`#faf7f0` paper, `#0a0a0a` ink, `#33302e` ink-soft, `#6b6661` ink-muted; dropped legacy red accent). Contrast ≥ 5:1 on all text. SHA: `7b1d7df`
 - **T-03** — `/writing` index: real hover affordance (row wash + title underline) since `--color-accent` matches `--color-ink` in light mode; bumped row padding and title size for breathing room with lighter palette. SHA: `b490e33`
