@@ -30,10 +30,10 @@ session. Pick the top unblocked task, do it, commit, move it to "Done".
 
 ## Done
 
-- **T-51** — `/writing` accepts `?tag=foo`: server-side filter via `tagSlug()` match, active-tag chip with `×` clear-link back to `/writing`. Canonical SEO route `/writing/tag/[tag]` untouched. SHA: _(pending)_
-- **T-50** — Audited `card-artwork.tsx` `slug` cases against `content/writing/*.mdx` + `lib/projects.ts`: all 16 branches map to live slugs. Nothing dead to remove; component left as-is. Verify-only. SHA: _(pending)_
-- **T-47** — Sticky right-rail TOC at `xl:` breakpoint via new `extractToc(html)` helper in `lib/writing.ts` (regex-parses `<h2>`/`<h3>` ids + text from rendered HTML). Essay layout becomes `xl:grid xl:grid-cols-[1fr_220px]`; small screens unchanged. SHA: _(pending)_
-- **T-45** — Migrated to flat ESLint config: hand-authored `eslint.config.mjs` extending `next/core-web-vitals` + `next/typescript` via `@eslint/eslintrc` `FlatCompat`. `package.json#scripts.lint` now `eslint .`; re-added to `npm run check`. Disabled `react/no-unescaped-entities` (project voice uses apostrophes liberally) + `import/no-anonymous-default-export` (postcss config). SHA: _(pending)_
+- **T-51** — `/writing` accepts `?tag=foo`: server-side filter via `tagSlug()` match, active-tag chip with `×` clear-link back to `/writing`. Canonical SEO route `/writing/tag/[tag]` untouched. SHA: `46f6930`
+- **T-50** — Audited `card-artwork.tsx` `slug` cases against `content/writing/*.mdx` + `lib/projects.ts`: all 16 branches map to live slugs. Nothing dead to remove; component left as-is. Verify-only. SHA: `46f6930`
+- **T-47** — Sticky right-rail TOC at `xl:` breakpoint via new `extractToc(html)` helper in `lib/writing.ts` (regex-parses `<h2>`/`<h3>` ids + text from rendered HTML). Essay layout becomes `xl:grid xl:grid-cols-[1fr_220px]`; small screens unchanged. SHA: `46f6930`
+- **T-45** — Migrated to flat ESLint config: hand-authored `eslint.config.mjs` extending `next/core-web-vitals` + `next/typescript` via `@eslint/eslintrc` `FlatCompat`. `package.json#scripts.lint` now `eslint .`; re-added to `npm run check`. Disabled `react/no-unescaped-entities` (project voice uses apostrophes liberally) + `import/no-anonymous-default-export` (postcss config). SHA: `46f6930`
 - **T-55** — README "Scripts" section + "Bundle budget" subsection documenting the 420 kB raw / ~110 kB gzipped budget enforced by `scripts/check-bundle.mjs#BUDGET_KB`, and how to raise it. SHA: `23d6a8f`
 - **T-54** — Explicit `metadata.robots = { index: true, follow: true }` on `/writing/tags` and `/writing/tag/[tag]` so the tag-search routes are indexed without ambiguity. SHA: `23d6a8f`
 - **T-53** — Sitemap tuned: `/` priority 1.0 weekly, `/writing` + `/projects` 0.8, essays 0.7 monthly, tag pages 0.5 monthly, `/about`/`/now` 0.3 yearly/monthly. Drops the unspecified default for crawlers that respect the hint. SHA: `23d6a8f`
