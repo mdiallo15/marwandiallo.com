@@ -2,19 +2,22 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 import {
-  getAllPostSlugs,
   getPost,
   formatDate,
   renderMarkdown,
 } from "@/lib/writing";
+import { JsonLd } from "@/app/_components/json-ld";
+
+const SITE_URL = "https://marwandiallo.com";
 
 interface Props {
   params: Promise<{ slug: string }>;
 }
 
-export function generateStaticParams() {
-  return getAllPostSlugs().map((slug) => ({ slug }));
-}
+// Dynamic so the per-request CSP nonce on the JSON-LD <script> tag matches
+// the nonce middleware injects in the response header. SSG would freeze a
+// build-time nonce that CSP would then block.
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
@@ -39,8 +42,27 @@ export default async function WritingPost({ params }: Props) {
 
   const html = await renderMarkdown(post.content);
 
+  const url = `${SITE_URL}/writing/${post.slug}`;
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: post.title,
+    description: post.summary,
+    datePublished: post.date,
+    dateModified: post.updated ?? post.date,
+    author: {
+      "@type": "Person",
+      name: "Marwan Diallo",
+      url: SITE_URL,
+    },
+    mainEntityOfPage: { "@type": "WebPage", "@id": url },
+    url,
+    keywords: post.tags?.join(", "),
+  };
+
   return (
     <article>
+      <JsonLd data={articleSchema} />
       <Link
         href="/"
         className="inline-flex items-center gap-1.5 text-[0.85rem] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors mb-12"
