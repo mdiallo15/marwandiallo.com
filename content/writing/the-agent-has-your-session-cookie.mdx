@@ -1,0 +1,86 @@
+---
+title: "The Agent Has Your Session Cookie"
+date: "2026-05-31"
+summary: "Browser-resident AI agents inherit the human's authenticated session by design. The threat model that follows is not prompt injection. It's session theft with consent, against an identity stack that assumes the browser is the user. A short note on what DPoP, CAEP, and the still-unfinished sender-constraint story actually fix."
+tags: ["security", "ai", "agents", "browser", "identity"]
+---
+
+The browser is the modern user agent. Every modern IAM stack — passkeys, SSO, conditional access, continuous evaluation — assumes that the entity in front of the keyboard is the entity the cookie was issued to. That assumption was already shaky against malware-in-the-browser, but the population of exceptions was small enough to handle as a fraud problem. With browser-resident AI agents (Claude's Computer Use, OpenAI's Operator, Microsoft Copilot in Edge, Arc's Browse for Me, the Anthropic and OpenAI MCP browser clients), the exception is now a product category, and the population is every employee with the extension installed.
+
+I've spent the last few months auditing what these agents actually do once they're inside the active browser context. The short version is that the threat model the security community keeps repeating — *prompt injection*, *data exfiltration*, *jailbreak* — is the wrong frame for the most common failure mode. The most common failure mode is more pedestrian: the agent inherits the human's session, behaves as the human inside that session, and the IAM stack has no way to tell the difference.
+
+This is a field note on what the agent can see, what current defenses do and don't catch, and what the standards bodies have shipped or are still drafting.
+
+## What the agent actually has
+
+A browser-resident agent operates in one of two modes:
+
+**Extension-loaded.** The agent is a Chrome / Edge extension granted `<all_urls>` host permission, `cookies` permission, `storage` permission, and usually `webRequest` or `declarativeNetRequest`. With that grant, the agent can read `document.cookie` for every domain (except `HttpOnly` cookies — more on that below), enumerate `localStorage` and `sessionStorage` across origins, watch every fetch the page makes, and inject script into any page DOM. The user clicks "Install" once, and from then on every authenticated session the user opens is in scope.
+
+**CDP-driven.** The agent runs out-of-process and drives the browser via [Chrome DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/) or a Playwright/Puppeteer wrapper. CDP is strictly more powerful than the extension API: `Network.getAllCookies` returns every cookie in the profile **including `HttpOnly`** because CDP runs at the browser-process level, not in the page's renderer. `Runtime.evaluate` runs arbitrary JavaScript in any frame's isolated world. `Page.captureScreenshot` returns the rendered DOM. `Storage.getCookies` ignores `Secure`, `SameSite`, and `Partitioned` because those flags constrain browser navigation, not the API. None of the cookie flags help.
+
+The threshold between these modes matters because it determines what `HttpOnly` buys you. Against an extension-loaded agent, `HttpOnly` on the session cookie is real defense — the agent cannot read the cookie value out of `document.cookie`, only ride the session by making fetch calls from the page's origin. Against a CDP-driven agent, `HttpOnly` is irrelevant; the cookie value is exfiltrable in plain text and replayable from anywhere.
+
+Most enterprise deployments of browser agents today are CDP-driven (the Anthropic and OpenAI desktop apps both spawn a headed Chromium), because the extension surface is too narrow for the tasks the agent is being sold to do. The IAM team is usually told "the agent uses your browser session" and infers that the cookie flags they spent two quarters fixing still mean what they meant. They don't.
+
+## Why CSP, SameSite, and CORS don't help
+
+The instinct, watching a security-aware team encounter this for the first time, is to reach for the browser-side defenses they already trust. None of them apply.
+
+**SameSite.** SameSite cookies protect against cross-site request forgery — a third-party origin trying to ride the session by causing the user's browser to issue a request. The agent is in the user's browser, in the user's profile, navigating from the user's first-party origin. Every request the agent issues is same-site by construction.
+
+**CORS.** CORS controls which origins are allowed to read responses from cross-origin fetches. The agent is making fetches from the user's authenticated origin to that origin's own API. CORS is not in the path.
+
+**CSP.** Content Security Policy controls what the page is allowed to load and execute. The agent operates above CSP — extension content scripts run in an isolated world that CSP does not constrain; CDP `Runtime.evaluate` runs in a context CSP does not apply to. A perfectly strict CSP with nonces on every script tag and `'unsafe-inline'` excluded does not slow the agent down.
+
+**MFA.** The user already cleared MFA when they signed in. The session cookie or the access token in `localStorage` was the artifact MFA produced. The agent inherits it.
+
+**Conditional Access.** Entra Conditional Access (or Okta sign-on policy) evaluated at sign-in. The session token in the browser is the deliverable. The agent uses the deliverable.
+
+The browser-side defenses are not broken. They are answering different questions. The question they don't answer is "is the entity making this request the same entity that originally authenticated?"
+
+## What does work — and where it's still being written
+
+Three primitives are at different stages of helping.
+
+**Continuous Access Evaluation Protocol (CAEP).** [Drafted under the Shared Signals Working Group at OpenID Foundation](https://openid.net/specs/openid-caep-1_0-02.html), CAEP gives an IdP and a resource server a publish-subscribe channel for session-state changes — token revocation, credential change, session risk elevation. Microsoft implemented CAE in Entra against Microsoft 365 services in 2020; Google has it in Workspace; Okta is shipping it through 2026. The promise is that if the IdP decides the session is risky, the resource server hears about it within a minute and rejects further use of the token.
+
+CAEP is the right primitive for the agent case **only if the IdP has a signal to fire on**. Risk signals today are mostly geo-velocity and impossible-travel. An agent acting on the user's behalf from the user's machine generates none of those signals. The work in front of the standard is defining "this is an automation acting in a user session" as a first-class risk signal that an IdP can publish.
+
+**Demonstrating Proof-of-Possession (DPoP).** [RFC 9449](https://datatracker.ietf.org/doc/html/rfc9449) binds an access token to a key the legitimate client holds. Every request signs a JWT proof with that key. The resource server checks the proof matches the key the token was bound to at issuance. A stolen token is useless without the private key.
+
+DPoP is the cleanest defense against CDP-extracted tokens — the agent gets the bearer string out of `localStorage`, takes it to a different machine, and the resource server rejects it because the proof doesn't match. It is not a defense against the agent operating in the user's session on the user's machine, where the agent can also sign DPoP proofs with the same key (the key is in the browser's `IndexedDB` or `CryptoKey` store, and the agent has access to both). DPoP raises the cost of token exfiltration. It does not raise the cost of in-session impersonation.
+
+**FIDO2 device-bound session credentials.** Google published [Device Bound Session Credentials (DBSC)](https://github.com/w3c/webappsec-dbsc) as a W3C proposal in 2024 and shipped it to Chrome Stable in mid-2025. DBSC binds the browser session itself to a TPM-resident key. The session cookie is short-lived and the browser refreshes it by signing a challenge with the TPM. A cookie copied out of the browser stops working at the next refresh; the new cookie can only be obtained by something that can touch the TPM. CDP can drive the live browser, but it can't extract a session that survives outside it.
+
+DBSC is the most promising of the three for the agent-in-the-session case, because it changes the fundamental "the cookie is the credential" assumption that everything else in this essay assumes. It is also browser-specific (Chrome and Edge ship it; Safari and Firefox have not committed to a timeline), server-side-opt-in (the relying party has to advertise support in the cookie response), and currently only protects a subset of session shapes. Worth tracking. Not yet a control you can lean on.
+
+## A defensible posture today
+
+The combination I'd actually recommend to a security team that has decided agents are coming whether they like it or not:
+
+1. **Treat the browser profile as a privileged credential store.** Block CDP and remote debugging on managed browsers via group policy — Chrome enterprise policy `RemoteDebuggingAllowed=false`, Edge equivalent. Extensions get an allow-list and a review process. Agents that demand CDP access run in a separate profile that does not have SSO to anything sensitive.
+2. **Issue agent-specific OAuth clients.** When the agent needs to act on the user's behalf against an internal API, it does so through RFC 8693 token exchange (see [RFC 8693 in Practice](/writing/rfc-8693-in-practice)), with the agent as the `act` and a scope set the user has explicitly consented to. Not through the user's session cookie.
+3. **Adopt DPoP on every API that handles sensitive data.** It does not solve the in-session case, but it removes the entire class of "agent exfiltrates bearer token, attacker replays from elsewhere" failures.
+4. **Wire up CAEP signals** between the IdP and resource servers, and publish "automation-in-session" as a signal as soon as your IdP supports it. Entra and Okta both have it on their roadmap. Push the timeline.
+5. **Track DBSC.** When the platform support is broad enough — realistically 2027 — make it a requirement for sensitive sessions. Until then, treat it as a hedge, not a control.
+6. **Log differently.** Resource server logs that record only "user X did action Y" are now ambiguous. Add a header for client attestation (the agent declares itself; trust-but-verify), tag the session with the user agent string at issuance, and alert on user-agent drift mid-session. Crude, but a starting point.
+
+## Standards mapping
+
+- **OAuth 2.0 Security BCP (RFC 9700) §2.6** — sender-constrained tokens. DPoP and mTLS are the two implementations.
+- **RFC 9449** — DPoP.
+- **W3C DBSC draft** — device-bound sessions; Chrome stable since 2025.
+- **OpenID CAEP 1.0 / Shared Signals Framework** — the publish-subscribe channel between IdP and RS for session-state changes.
+- **NIST SP 800-63B §4.3.1** — session secrets shall be erased on the client at session termination, and the relying party shall provide a mechanism for the user to terminate the session. Neither requirement contemplates an agent that *is* the client and outlives the user's attention.
+- **MITRE ATT&CK T1539** — Steal Web Session Cookie. The agent case is a consensual instance of the same technique class.
+
+## Scope
+
+This is the browser-resident-agent case. It does not cover server-side agents (Anthropic API, OpenAI API) calling tools through an MCP server — those have their own delegation story and DPoP/mTLS are straightforwardly applicable. It also does not cover the prompt-injection failure mode, which is real but well-covered elsewhere. The argument here is that the identity-side failure mode is more common, less discussed, and less defended.
+
+## Closing
+
+Every defense in the browser-security stack of the last decade assumed the browser was the user. That assumption was a useful approximation. It is now a product surface, and the IAM stack has not caught up. DPoP raises the cost of exfiltration. CAEP gives the IdP and RS a phone line. DBSC ties the session to silicon. None of them are deployed at the breadth that would make the agent-in-the-session case a solved problem in 2026.
+
+If you have a browser-agent pilot in flight, the fifteen-minute test is this: pick a sensitive internal app, sign in as a normal user, take the session cookie out of the browser's cookie store, paste it into curl on a second machine, and see what happens. If the request succeeds, the entire defense you're relying on against the agent is "the agent decided not to do that." That is not a defense.
