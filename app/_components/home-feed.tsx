@@ -17,8 +17,14 @@ interface Props {
   projects: Project[];
 }
 
+function isLabProject(project: Project): boolean {
+  return !!project.url && /(^|\.)marwandiallo\.com($|\/)/.test(project.url);
+}
+
 export function HomeFeed({ posts, projects }: Props) {
   const [tab, setTab] = useState<Tab>("all");
+  const newestWritingSlug = posts[0]?.slug;
+  const newestLabSlug = projects.find(isLabProject)?.slug;
 
   const all = useMemo<FeedItem[]>(() => {
     const merged: FeedItem[] = [
@@ -73,9 +79,17 @@ export function HomeFeed({ posts, projects }: Props) {
       <ul className="mt-7 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {filtered.map((item) =>
           item.kind === "writing" ? (
-            <WritingCard key={`w-${item.data.slug}`} post={item.data} />
+            <WritingCard
+              key={`w-${item.data.slug}`}
+              post={item.data}
+              isNew={item.data.slug === newestWritingSlug}
+            />
           ) : (
-            <ProjectCard key={`p-${item.data.slug}`} project={item.data} />
+            <ProjectCard
+              key={`p-${item.data.slug}`}
+              project={item.data}
+              isNew={item.data.slug === newestLabSlug}
+            />
           ),
         )}
       </ul>
@@ -113,7 +127,7 @@ function isoDate(iso: string): string {
   return iso.slice(0, 10);
 }
 
-function WritingCard({ post }: { post: PostMeta }) {
+function WritingCard({ post, isNew }: { post: PostMeta; isNew: boolean }) {
   return (
     <li>
       <Link
@@ -127,7 +141,12 @@ function WritingCard({ post }: { post: PostMeta }) {
             <time dateTime={post.date}>{isoDate(post.date)}</time>
           </span>
         </div>
-        <span aria-hidden className="feed-card__visual">
+        <span
+          aria-hidden
+          className="feed-card__visual"
+          {...(isNew ? { "data-new": "true" } : {})}
+        >
+          {isNew && <span className="feed-card__new-badge">New</span>}
           <CardArtwork slug={post.slug} />
         </span>
       </Link>
@@ -135,8 +154,8 @@ function WritingCard({ post }: { post: PostMeta }) {
   );
 }
 
-function ProjectCard({ project }: { project: Project }) {
-  const isLab = !!project.url && /(^|\.)marwandiallo\.com($|\/)/.test(project.url);
+function ProjectCard({ project, isNew }: { project: Project; isNew: boolean }) {
+  const isLab = isLabProject(project);
   const inner = (
     <>
       <div className="feed-card__top">
@@ -158,7 +177,13 @@ function ProjectCard({ project }: { project: Project }) {
           <time dateTime={project.date}>{isoDate(project.date)}</time>
         </span>
       </div>
-      <span aria-hidden className="feed-card__visual" data-tag={project.tag}>
+      <span
+        aria-hidden
+        className="feed-card__visual"
+        data-tag={project.tag}
+        {...(isNew ? { "data-new": "true" } : {})}
+      >
+        {isNew && <span className="feed-card__new-badge">New</span>}
         <CardArtwork slug={project.slug} />
       </span>
     </>

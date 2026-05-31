@@ -13,8 +13,13 @@ function isoDate(iso: string): string {
   return iso.slice(0, 10);
 }
 
+function isLabProject(project: Project): boolean {
+  return !!project.url && /(^|\.)marwandiallo\.com($|\/)/.test(project.url);
+}
+
 export default function ProjectsPage() {
   const projects = getAllProjects();
+  const newestLabSlug = projects.find(isLabProject)?.slug;
   return (
     <div>
       <Link
@@ -33,15 +38,19 @@ export default function ProjectsPage() {
       </section>
       <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {projects.map((project) => (
-          <ProjectCard key={project.slug} project={project} />
+          <ProjectCard
+            key={project.slug}
+            project={project}
+            isNew={project.slug === newestLabSlug}
+          />
         ))}
       </ul>
     </div>
   );
 }
 
-function ProjectCard({ project }: { project: Project }) {
-  const isLab = !!project.url && /(^|\.)marwandiallo\.com($|\/)/.test(project.url);
+function ProjectCard({ project, isNew }: { project: Project; isNew: boolean }) {
+  const isLab = isLabProject(project);
   const inner = (
     <>
       <div className="feed-card__top">
@@ -63,7 +72,13 @@ function ProjectCard({ project }: { project: Project }) {
           <time dateTime={project.date}>{isoDate(project.date)}</time>
         </span>
       </div>
-      <span aria-hidden className="feed-card__visual" data-tag={project.tag}>
+      <span
+        aria-hidden
+        className="feed-card__visual"
+        data-tag={project.tag}
+        {...(isNew ? { "data-new": "true" } : {})}
+      >
+        {isNew && <span className="feed-card__new-badge">New</span>}
         <CardArtwork slug={project.slug} />
       </span>
     </>

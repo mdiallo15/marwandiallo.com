@@ -731,6 +731,22 @@ a:hover {
   bottom: -50px;
   right: -40px;
 }
+.feed-card__new-badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+  padding: 0.28rem 0.45rem;
+  border-radius: 999px;
+  background: rgba(255, 241, 229, 0.96);
+  border: 1px solid rgba(10, 10, 10, 0.1);
+  color: var(--color-ink);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-transform: uppercase;
+}
 
 /* Essay — light grey */
 .feed-card[data-kind="writing"] .feed-card__visual {
