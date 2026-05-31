@@ -1,0 +1,135 @@
+---
+title: "The Schannel Registry Trap"
+date: "2026-05-30"
+summary: "Windows TLS configuration is split across a registry tree, a per-process .NET override, and a runtime cache. Each layer reports the truth about itself and lies about the others. A short field note on how teams convince themselves a domain controller is hardened when it isn't."
+tags: ["security", "windows", "tls", "vulnerability-management"]
+---
+
+A Windows host can be configured to refuse TLS 1.0 and still negotiate TLS 1.0 the next time a service starts. That is not a contradiction. It is the documented behavior of the Schannel security support provider, the .NET framework, and the way Windows services cache cryptographic settings at process start. Each layer reports the truth about itself. Together they describe a host that doesn't exist.
+
+I went into the registry to settle the disagreement at the end of the [BEAST essay](/writing/no-vulnerabilities-found) — an agent-based scanner that said the domain controller was clean, a network probe that said it wasn't. The probe was right. What I want to write down here is the shape of the trap that made it possible for the host to look hardened from one angle and unhardened from another, because the same shape shows up on almost every Windows TLS finding I've worked since.
+
+## Where Windows keeps the answer
+
+Windows TLS is provided by Schannel, the SSP that ships with the OS. Its configuration lives under one registry root:
+
+```text
+HKLM\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols
+```
+
+Underneath that key is a subkey per protocol version — `SSL 2.0`, `SSL 3.0`, `TLS 1.0`, `TLS 1.1`, `TLS 1.2`, `TLS 1.3` — and under each protocol two subkeys, `Server` and `Client`. The server keys govern how the host negotiates TLS as a service. The client keys govern how it negotiates TLS as an outbound caller (LDAPS to another DC, WinRM to Azure Arc, a PowerShell `Invoke-RestMethod`).
+
+Inside each `Server` or `Client` subkey, two `REG_DWORD` values control whether the protocol is allowed:
+
+- `Enabled` — `0` means the protocol is disabled even if a calling app asks for it.
+- `DisabledByDefault` — `1` means the protocol is not in the default set offered when a calling app does not explicitly name a protocol.
+
+The combination is what trips people up. Microsoft's own [TLS registry settings reference](https://learn.microsoft.com/en-us/windows-server/security/tls/tls-registry-settings) is correct but reads like a truth table that nobody actually reads as a truth table. So teams set `DisabledByDefault = 1` for TLS 1.0 and TLS 1.1, observe that the registry now says the right thing, and move on. The host will still negotiate those protocols if any service on it opens a Schannel context with an explicit protocol list that includes them — which legacy line-of-business services and older .NET runtimes both do.
+
+## The first layer of the trap
+
+Setting only `DisabledByDefault` does not disable a protocol. It removes it from the default offer. To actually refuse it, both values must be set: `Enabled = 0` and `DisabledByDefault = 1`, on both the `Server` and `Client` subkey, for every protocol version you want gone.
+
+The four-key shape for disabling TLS 1.0 server-side looks like this:
+
+```text
+HKLM\...\SCHANNEL\Protocols\TLS 1.0\Server
+    Enabled            REG_DWORD = 0x00000000
+    DisabledByDefault  REG_DWORD = 0x00000001
+
+HKLM\...\SCHANNEL\Protocols\TLS 1.0\Client
+    Enabled            REG_DWORD = 0x00000000
+    DisabledByDefault  REG_DWORD = 0x00000001
+```
+
+Multiply by `SSL 2.0`, `SSL 3.0`, `TLS 1.1`. That is sixteen values to disable the four deprecated protocols on one host. Miss one — for example, leave `Client\Enabled` unset on TLS 1.1 — and an outbound LDAPS call from that DC to another DC can still negotiate TLS 1.1 if the peer offers it. The host is still in the audit-finding population. The local-scanning agent doesn't see it because the registry "looks right" to a check that only reads `DisabledByDefault`.
+
+A second wrinkle: the parent `Protocols` key was historically created by the OS for some versions and not for others. On a stock Windows Server 2022 image the `TLS 1.0` and `TLS 1.1` subkeys do not exist. Their absence does not mean the protocol is disabled — it means the OS will use its built-in defaults, which include those protocols as enabled. "Not present" reads as "secure" to a junior eye and is the opposite.
+
+## The second layer — Schannel cipher suites
+
+Cipher suite ordering and inclusion are configured in a different place entirely:
+
+```text
+HKLM\SOFTWARE\Policies\Microsoft\Cryptography\Configuration\SSL\00010002
+    Functions  REG_MULTI_SZ
+```
+
+`Functions` is an ordered list of cipher suite identifiers. The order matters: Schannel picks the first mutually supported suite from the host's list against the client's offer. Group Policy at `Computer Configuration > Administrative Templates > Network > SSL Configuration Settings > SSL Cipher Suite Order` writes the same value.
+
+The trap here is that this policy controls Schannel's ordering for the OS as a TLS server, but it does not constrain what the host can negotiate as a TLS client, and it does not prevent an application that consumes its own crypto provider from offering whatever it wants. .NET applications that target older framework versions can ship their own cipher preference. The OS-level list and the actual handshake on the wire are not the same population.
+
+## The third layer — .NET strong crypto
+
+This is where the cleanest detection misses live. The .NET Framework has its own switch, `SchUseStrongCrypto`, set per CLR version:
+
+```text
+HKLM\SOFTWARE\Microsoft\.NETFramework\v4.0.30319
+    SchUseStrongCrypto             REG_DWORD = 0x00000001
+    SystemDefaultTlsVersions       REG_DWORD = 0x00000001
+
+HKLM\SOFTWARE\WOW6432Node\Microsoft\.NETFramework\v4.0.30319
+    SchUseStrongCrypto             REG_DWORD = 0x00000001
+    SystemDefaultTlsVersions       REG_DWORD = 0x00000001
+```
+
+Without these values, a .NET 4.5 or 4.6 application running on the host will use the .NET default TLS configuration, which is TLS 1.0 client-side, regardless of what the Schannel keys say. With `SystemDefaultTlsVersions = 1`, the application asks the OS for the system default — which is the Schannel configuration the OS team thought they had locked down.
+
+Two 32/64-bit pairs (`WOW6432Node` is the 32-bit view), per framework version, on both `Server` and `Client` semantics depending on the app. Microsoft documents this under [Transport Layer Security best practices with the .NET Framework](https://learn.microsoft.com/en-us/dotnet/framework/network-programming/tls). Most TLS-hardening guides for Windows do not even mention it.
+
+## The fourth layer — the running process
+
+Schannel reads its configuration when an `SSPI` security context is acquired, which for most services happens at service start. Set `Enabled = 0` on TLS 1.0, do not restart the affected services, and the running processes continue to negotiate TLS 1.0 until they're recycled. A scan run twenty minutes after the registry change shows the old behavior. A scan run after a reboot shows the new behavior. The registry, the scanner, and the host all disagree about what is true, and they are all telling the truth about the layer they observe.
+
+For a domain controller specifically: `lsass.exe`, `ntds.exe`, `iisadmin` if AD CS web enrollment is on the box, and any third-party agent that opens its own listening socket. A reboot is the cleanest way to make the change deterministic. Microsoft documents the requirement at the top of every Schannel hardening article and teams skip it.
+
+## What the trap looks like end-to-end
+
+Put the four layers together and the failure mode is consistent. A team:
+
+1. Sets `DisabledByDefault = 1` on TLS 1.0 and TLS 1.1, on `Server` only.
+2. Leaves `Client` and `Enabled` alone because the audit finding cited "TLS 1.0 service offering".
+3. Updates the SSL cipher suite GPO and waits for `gpupdate /force`.
+4. Does not set `SchUseStrongCrypto` because the .NET hardening is owned by the app team.
+5. Does not reboot, because the change window is small.
+6. Runs the local-scanning agent the next morning, observes that the OVAL check now passes, closes the finding.
+
+Two months later an external network scan negotiates TLS 1.1 against the same host. The host has not been re-hardened. It was never hardened in the first place. The local check examined the value the team set and was correct about it. The team examined the local check and trusted it. The wire is the only oracle that matters, and nobody asked the wire.
+
+## How to actually verify
+
+Two free tools settle the question without a paid scanner.
+
+The first is `Test-NetConnection` plus `Get-TlsCipherSuite` for a quick local look at what the OS will negotiate from its own perspective. Useful but limited — the host is allowed to negotiate something different than what it thinks it can.
+
+The second, and the one I'd actually trust, is [`testssl.sh`](https://testssl.sh/) from a workstation that can reach the target port. It opens real Schannel handshakes, walks every protocol and cipher, and prints the negotiated result. For LDAPS on a DC:
+
+```bash
+testssl.sh --protocols --severity HIGH dc01.example.local:636
+```
+
+For Schannel debugging on the host itself, enable Schannel event logging:
+
+```text
+HKLM\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL
+    EventLogging  REG_DWORD = 0x00000007
+```
+
+Every TLS negotiation then writes a `Schannel` event to the System log with the protocol and cipher that were selected. Noisy on a busy host, indispensable when you're trying to confirm that a registry change took effect on a specific service.
+
+## Standards mapping
+
+- **PCI-DSS 4.0 §4.2.1** — strong cryptography for transmission of cardholder data over open public networks. TLS 1.0 and TLS 1.1 do not qualify. The host has to actually refuse them on the wire, not just claim to.
+- **NIST SP 800-52 Rev. 2 §3.1** — TLS servers shall be configured to support TLS 1.2 at a minimum and should support TLS 1.3. Earlier versions shall not be supported.
+- **CIS Microsoft Windows Server 2022 Benchmark §18.4 (Network/SSL Configuration)** — provides the exact registry values and the order in which to apply them, and explicitly calls out the reboot requirement.
+- **CWE-326** — Inadequate Encryption Strength. CWE-327 — Use of a Broken or Risky Cryptographic Algorithm. Both apply to a host still negotiating TLS 1.0 or 1.1 regardless of how the team got there.
+
+## Scope
+
+This is the Schannel side. It does not cover OpenSSL on Windows (which most third-party agents bundle and which respects none of these keys), nor IIS-specific bindings, nor application protocols layered on top of TLS like LDAPS channel binding or SMB signing — those have their own registry trees and their own traps. It also does not cover Windows 11 / Server 2025, where TLS 1.0 and 1.1 are disabled by default and the failure mode shifts to applications hard-coding the old protocols and breaking.
+
+## Closing
+
+The lesson is not that Windows TLS is hard. It's that "the configuration says X" and "the host does X" are two different claims, and one local scanner can be perfectly correct about the first and silent about the second. Treat the wire as the oracle. Get a handshake from outside the host before you close the finding, and reboot before you trust the change.
+
+If you're holding an open finding right now, run `testssl.sh` against the affected port from a workstation and compare what it reports to what your registry says. That is a fifteen-minute check and it almost always finds something.
