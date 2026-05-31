@@ -38,12 +38,22 @@ export function CardArtwork({ slug }: Props) {
       return <AuthzArtwork />;
     case "agent-identity-front":
       return <AgentIdentityFrontArtwork />;
+    case "ldaps-channel-binding-deprecation":
+      return <LdapsArtwork />;
     case "no-vulnerabilities-found":
       return <ScannerGapArtwork />;
+    case "rfc-8693-in-practice":
+      return <TokenExchangeArtwork />;
+    case "the-agent-has-your-session-cookie":
+      return <SessionCookieArtwork />;
+    case "the-schannel-registry-trap":
+      return <SchannelArtwork />;
+    case "what-your-sbom-doesnt-say":
+      return <SbomArtwork />;
     case "agent-identity-lab":
       return <AgentIdentityLabArtwork />;
     default:
-      return null;
+      return <GenericCardArtwork />;
   }
 }
 
@@ -1468,6 +1478,240 @@ function ScannerGapArtwork() {
         opacity="0.7"
       >
         the gap is the finding
+      </text>
+    </svg>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Essay: browser-resident agent inherits the user's session cookie           */
+/* Browser window + agent + cookie + session line                             */
+/* -------------------------------------------------------------------------- */
+function SessionCookieArtwork() {
+  return (
+    <svg
+      viewBox="0 0 320 200"
+      className="card-art"
+      aria-hidden
+      preserveAspectRatio="xMidYMid meet"
+    >
+      <rect x="22" y="24" width="276" height="152" rx="10" className="art-panel" />
+      <rect x="22" y="24" width="276" height="24" rx="10" className="art-panel-bar" />
+      <circle cx="38" cy="36" r="3.5" fill="#fb7185" />
+      <circle cx="50" cy="36" r="3.5" fill="#fbbf24" />
+      <circle cx="62" cy="36" r="3.5" fill="#34d399" />
+      <text x="160" y="40" textAnchor="middle" className="art-tab">
+        browser session
+      </text>
+
+      <rect x="42" y="64" width="102" height="84" rx="8" fill="rgba(255,255,255,0.55)" stroke="currentColor" />
+      <text x="93" y="84" textAnchor="middle" fontSize="10" fill="currentColor" opacity="0.75">
+        user tab
+      </text>
+      <circle cx="76" cy="104" r="12" fill="currentColor" opacity="0.15" />
+      <rect x="98" y="96" width="28" height="12" rx="6" fill="currentColor" opacity="0.2" />
+      <rect x="56" y="124" width="74" height="6" rx="3" fill="currentColor" opacity="0.16" />
+
+      <line x1="146" y1="106" x2="198" y2="106" stroke="currentColor" strokeWidth="1.2" strokeDasharray="4 4" />
+      <polygon points="198,102 206,106 198,110" fill="currentColor" opacity="0.7" />
+      <circle cx="176" cy="92" r="16" fill="#dbeafe" stroke="#2563eb" />
+      <text x="176" y="96" textAnchor="middle" fontSize="9" fill="#1d4ed8" fontWeight="700">
+        sid
+      </text>
+
+      <rect x="212" y="72" width="66" height="68" rx="10" fill="rgba(255,255,255,0.55)" stroke="currentColor" />
+      <rect x="228" y="86" width="34" height="24" rx="5" fill="currentColor" opacity="0.12" />
+      <circle cx="238" cy="97" r="2.5" fill="currentColor" opacity="0.55" />
+      <circle cx="252" cy="97" r="2.5" fill="currentColor" opacity="0.55" />
+      <line x1="245" y1="80" x2="245" y2="86" stroke="currentColor" />
+      <circle cx="245" cy="78" r="2" fill="currentColor" />
+      <text x="245" y="126" textAnchor="middle" fontSize="9" fill="currentColor" opacity="0.78">
+        agent
+      </text>
+      <text x="160" y="162" textAnchor="middle" fontSize="10" fill="currentColor" opacity="0.62">
+        same browser, same cookie, different actor
+      </text>
+    </svg>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Essay: Windows Schannel registry trap                                      */
+/* Registry tree + TLS lock + split configuration                             */
+/* -------------------------------------------------------------------------- */
+function SchannelArtwork() {
+  return (
+    <svg
+      viewBox="0 0 320 200"
+      className="card-art"
+      aria-hidden
+      preserveAspectRatio="xMidYMid meet"
+    >
+      <text x="26" y="40" fontSize="11" fill="currentColor" opacity="0.7">HKLM</text>
+      <line x1="54" y1="42" x2="54" y2="142" stroke="currentColor" strokeWidth="1.2" opacity="0.35" />
+      <rect x="70" y="30" width="78" height="22" rx="5" fill="rgba(255,255,255,0.55)" stroke="currentColor" />
+      <text x="109" y="44" textAnchor="middle" fontSize="9" fill="currentColor">SCHANNEL</text>
+      <rect x="92" y="66" width="70" height="20" rx="5" fill="rgba(255,255,255,0.45)" stroke="currentColor" opacity="0.9" />
+      <text x="127" y="79" textAnchor="middle" fontSize="8" fill="currentColor">Protocols</text>
+      <rect x="92" y="98" width="82" height="20" rx="5" fill="rgba(255,255,255,0.45)" stroke="currentColor" opacity="0.9" />
+      <text x="133" y="111" textAnchor="middle" fontSize="8" fill="currentColor">.NET override</text>
+      <rect x="92" y="130" width="74" height="20" rx="5" fill="rgba(255,255,255,0.45)" stroke="currentColor" opacity="0.9" />
+      <text x="129" y="143" textAnchor="middle" fontSize="8" fill="currentColor">runtime cache</text>
+
+      <g transform="translate(238, 98)">
+        <rect x="-26" y="0" width="52" height="40" rx="8" fill="#0f766e" opacity="0.18" stroke="#0f766e" />
+        <rect x="-14" y="-20" width="28" height="24" rx="12" fill="none" stroke="#0f766e" strokeWidth="6" />
+        <text x="0" y="26" textAnchor="middle" fontSize="10" fill="#115e59" fontWeight="700">TLS</text>
+      </g>
+      <line x1="176" y1="108" x2="208" y2="108" stroke="currentColor" strokeWidth="1.2" strokeDasharray="4 4" />
+      <text x="238" y="160" textAnchor="middle" fontSize="10" fill="currentColor" opacity="0.62">
+        each layer tells a different truth
+      </text>
+    </svg>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Essay: RFC 8693 in practice                                                */
+/* Subject token exchanged into actor token                                   */
+/* -------------------------------------------------------------------------- */
+function TokenExchangeArtwork() {
+  return (
+    <svg
+      viewBox="0 0 320 200"
+      className="card-art"
+      aria-hidden
+      preserveAspectRatio="xMidYMid meet"
+    >
+      <rect x="30" y="74" width="86" height="50" rx="8" fill="#dbeafe" stroke="#2563eb" />
+      <text x="73" y="94" textAnchor="middle" fontSize="9" fill="#1d4ed8" fontWeight="700">
+        subject_token
+      </text>
+      <text x="73" y="112" textAnchor="middle" fontSize="8" fill="#1d4ed8" opacity="0.8">
+        user session
+      </text>
+
+      <rect x="122" y="58" width="76" height="82" rx="10" fill="rgba(255,255,255,0.55)" stroke="currentColor" strokeWidth="1.6" />
+      <text x="160" y="82" textAnchor="middle" fontSize="10" fill="currentColor" fontWeight="700">
+        RFC 8693
+      </text>
+      <text x="160" y="98" textAnchor="middle" fontSize="8" fill="currentColor" opacity="0.75">
+        token exchange
+      </text>
+      <text x="160" y="120" textAnchor="middle" fontSize="8" fill="currentColor" opacity="0.55" fontFamily="monospace">
+        act=sub agent
+      </text>
+
+      <rect x="206" y="74" width="84" height="50" rx="8" fill="#dcfce7" stroke="#16a34a" />
+      <text x="248" y="94" textAnchor="middle" fontSize="9" fill="#15803d" fontWeight="700">
+        actor_token
+      </text>
+      <text x="248" y="112" textAnchor="middle" fontSize="8" fill="#15803d" opacity="0.82">
+        narrowed scope
+      </text>
+
+      <line x1="116" y1="99" x2="122" y2="99" stroke="currentColor" strokeWidth="1.3" />
+      <line x1="198" y1="99" x2="206" y2="99" stroke="currentColor" strokeWidth="1.3" />
+      <polygon points="122,95 130,99 122,103" fill="currentColor" />
+      <polygon points="206,95 214,99 206,103" fill="currentColor" />
+      <text x="160" y="164" textAnchor="middle" fontSize="10" fill="currentColor" opacity="0.62">
+        delegation only works if the actor is explicit
+      </text>
+    </svg>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Essay: LDAPS channel binding deprecation                                   */
+/* LDAP bind path + CBT requirement                                           */
+/* -------------------------------------------------------------------------- */
+function LdapsArtwork() {
+  return (
+    <svg
+      viewBox="0 0 320 200"
+      className="card-art"
+      aria-hidden
+      preserveAspectRatio="xMidYMid meet"
+    >
+      <rect x="24" y="64" width="84" height="72" rx="8" className="art-panel" />
+      <text x="66" y="87" textAnchor="middle" fontSize="10" fill="currentColor" opacity="0.8">client</text>
+      <rect x="38" y="98" width="56" height="8" rx="4" fill="currentColor" opacity="0.15" />
+      <rect x="38" y="114" width="44" height="8" rx="4" fill="currentColor" opacity="0.1" />
+
+      <line x1="108" y1="100" x2="154" y2="100" stroke="currentColor" strokeWidth="1.4" strokeDasharray="5 4" />
+      <polygon points="154,96 162,100 154,104" fill="currentColor" />
+      <text x="132" y="88" textAnchor="middle" fontSize="8" fill="currentColor" opacity="0.6">bind</text>
+
+      <g transform="translate(184, 100)">
+        <rect x="-18" y="-8" width="36" height="26" rx="6" fill="#0f766e" opacity="0.18" stroke="#0f766e" />
+        <rect x="-10" y="-26" width="20" height="20" rx="10" fill="none" stroke="#0f766e" strokeWidth="5" />
+        <text x="0" y="34" textAnchor="middle" fontSize="8" fill="#115e59">CBT</text>
+      </g>
+
+      <rect x="228" y="56" width="70" height="88" rx="10" fill="rgba(255,255,255,0.55)" stroke="currentColor" />
+      <text x="263" y="80" textAnchor="middle" fontSize="10" fill="currentColor" fontWeight="700">domain</text>
+      <text x="263" y="94" textAnchor="middle" fontSize="10" fill="currentColor" fontWeight="700">controller</text>
+      <rect x="242" y="106" width="42" height="8" rx="4" fill="currentColor" opacity="0.14" />
+      <rect x="242" y="120" width="30" height="8" rx="4" fill="currentColor" opacity="0.1" />
+      <text x="160" y="164" textAnchor="middle" fontSize="10" fill="currentColor" opacity="0.62">
+        the breakage sits in the quiet appliance tail
+      </text>
+    </svg>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Essay: SBOM semantics gaps                                                 */
+/* Package graph + scanner mismatch                                           */
+/* -------------------------------------------------------------------------- */
+function SbomArtwork() {
+  return (
+    <svg
+      viewBox="0 0 320 200"
+      className="card-art"
+      aria-hidden
+      preserveAspectRatio="xMidYMid meet"
+    >
+      <rect x="34" y="44" width="78" height="44" rx="8" fill="#e9d5ff" stroke="#7c3aed" />
+      <text x="73" y="63" textAnchor="middle" fontSize="10" fill="#6d28d9" fontWeight="700">SPDX</text>
+      <text x="73" y="78" textAnchor="middle" fontSize="8" fill="#6d28d9" opacity="0.8">pkg:a@1.2.3</text>
+
+      <rect x="208" y="44" width="78" height="44" rx="8" fill="#fde68a" stroke="#d97706" />
+      <text x="247" y="63" textAnchor="middle" fontSize="10" fill="#b45309" fontWeight="700">CycloneDX</text>
+      <text x="247" y="78" textAnchor="middle" fontSize="8" fill="#b45309" opacity="0.8">component a</text>
+
+      <circle cx="160" cy="116" r="28" fill="rgba(255,255,255,0.55)" stroke="currentColor" strokeWidth="1.6" />
+      <line x1="180" y1="136" x2="204" y2="160" stroke="currentColor" strokeWidth="6" strokeLinecap="round" opacity="0.4" />
+      <text x="160" y="112" textAnchor="middle" fontSize="9" fill="currentColor" opacity="0.62">same file?</text>
+      <text x="160" y="124" textAnchor="middle" fontSize="11" fill="currentColor" fontWeight="700">not quite</text>
+
+      <line x1="112" y1="88" x2="142" y2="102" stroke="currentColor" strokeDasharray="4 4" opacity="0.5" />
+      <line x1="208" y1="88" x2="178" y2="102" stroke="currentColor" strokeDasharray="4 4" opacity="0.5" />
+      <text x="160" y="178" textAnchor="middle" fontSize="10" fill="currentColor" opacity="0.62">
+        semantics drift becomes finding drift
+      </text>
+    </svg>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Fallback for future cards without a dedicated piece yet                    */
+/* -------------------------------------------------------------------------- */
+function GenericCardArtwork() {
+  return (
+    <svg
+      viewBox="0 0 320 200"
+      className="card-art"
+      aria-hidden
+      preserveAspectRatio="xMidYMid meet"
+    >
+      <rect x="28" y="32" width="264" height="136" rx="12" fill="rgba(255,255,255,0.45)" stroke="currentColor" opacity="0.55" />
+      <rect x="56" y="68" width="92" height="8" rx="4" fill="currentColor" opacity="0.18" />
+      <rect x="56" y="86" width="156" height="8" rx="4" fill="currentColor" opacity="0.13" />
+      <rect x="56" y="104" width="128" height="8" rx="4" fill="currentColor" opacity="0.1" />
+      <circle cx="232" cy="98" r="26" fill="currentColor" opacity="0.08" />
+      <text x="160" y="150" textAnchor="middle" fontSize="10" fill="currentColor" opacity="0.55">
+        artwork pending
       </text>
     </svg>
   );
