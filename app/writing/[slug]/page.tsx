@@ -87,6 +87,11 @@ export default async function WritingPost({ params }: Props) {
             <span> · updated <time dateTime={post.updated}>{formatDate(post.updated)}</time></span>
           )}
         </div>
+        {post.experienceWindow && (
+          <p className="mt-2 text-[0.78rem] text-[var(--color-ink-muted)]">
+            From work across {post.experienceWindow}
+          </p>
+        )}
       </header>
       <CopyCodeButtons />
       <div className="xl:grid xl:grid-cols-[1fr_220px] xl:gap-12">

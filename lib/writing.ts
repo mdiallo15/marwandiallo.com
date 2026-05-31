@@ -17,6 +17,7 @@ export interface PostMeta {
   title: string;
   date: string; // ISO
   updated?: string; // ISO
+  experienceWindow?: string;
   summary?: string;
   tags?: string[];
   draft?: boolean;
@@ -95,6 +96,9 @@ function readPost(slug: string): Post | null {
         title: String(data.title ?? slug),
         date: String(data.date ?? new Date().toISOString()),
         updated: data.updated ? String(data.updated) : undefined,
+        experienceWindow: data.experienceWindow
+          ? String(data.experienceWindow)
+          : undefined,
         summary: data.summary ? String(data.summary) : undefined,
         tags: Array.isArray(data.tags) ? data.tags.map(String) : undefined,
         draft: Boolean(data.draft),
