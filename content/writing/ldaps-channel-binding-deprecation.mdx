@@ -8,7 +8,7 @@ tags: ["security", "windows", "identity", "vulnerability-management"]
 
 A domain controller will accept an LDAPS bind from any client that presents a valid user credential over a TLS channel. It does not, by default, check whether the credential the client presents inside the TLS tunnel was actually obtained over that tunnel. That gap is what Channel Binding for TLS (CBT, [RFC 5929](https://datatracker.ietf.org/doc/html/rfc5929)) closes: the bind request carries a token derived from the TLS endpoint, and the server refuses the bind if the token doesn't match the channel it arrived on.
 
-Microsoft has been pushing customers toward CBT enforcement on LDAPS since [ADV190023](https://msrc.microsoft.com/update-guide/vulnerability/ADV190023) in March 2020. The enforcement date has now slipped at least three times. The most recent guidance — the [March 2026 LDAP channel binding enforcement update](https://learn.microsoft.com/en-us/troubleshoot/windows-server/active-directory/2020-ldap-channel-binding-and-ldap-signing-requirements) — flips the default on new DC builds and leaves existing forests in audit mode with a stronger nudge. The reason the date keeps moving is the same reason every Schannel hardening deadline moves: the third-party tail is long, mostly off-Microsoft, and quiet until something breaks.
+Microsoft has been pushing customers toward CBT enforcement on LDAPS since [ADV190023](https://msrc.microsoft.com/update-guide/vulnerability/ADV190023) in March 2020. The enforcement date has now slipped at least three times. The current guidance keeps pushing customers toward inventory, audit mode, and staged enforcement rather than a single global cutover date. The reason the date keeps moving is the same reason every Schannel hardening deadline moves: the third-party tail is long, mostly off-Microsoft, and quiet until something breaks.
 
 This is a field note on the actual registry switch, the third-party offenders that keep showing up, and the audit-mode log you can read today to find them before the deadline you'll actually face.
 
@@ -81,7 +81,7 @@ The order I'd recommend, having walked a few environments through it:
 2. **Pull Event 3039 / 3074** to a central log store. Identify every unique client IP and user.
 3. **Map each client to an owner.** This is the part that takes calendar time. Most of the IPs will be appliances no team has touched in years.
 4. **For each client, the decision tree is short.** Patchable client → patch and reconfigure. End-of-life appliance → replace or move off LDAPS. Application without a known owner → escalate; do not leave it as the reason enforcement slips again.
-5. **Flip `LdapEnforceChannelBinding` to `1`** on one DC in each site as a canary. Let it run a week. Watch for `LDAP_STRONG_AUTH_REQUIRED` (event 2889 on the client side, 2887 on the DC).
+5. **Flip `LdapEnforceChannelBinding` to `1`** on one DC in each site as a canary. Let it run a week. Watch for `LDAP_STRONG_AUTH_REQUIRED` rejects and Directory Service failures from clients that still miss CBT.
 6. **Flip to `2`** on the canary. Then the rest of the fleet.
 7. **Set `LDAPServerIntegrity = 2`** in the same change window. Force port-389 signing.
 

@@ -5,7 +5,7 @@ summary: "SPDX and CycloneDX round-trip on paper. In practice the same SBOM prod
 tags: ["security", "supply-chain", "vulnerability-management", "sbom"]
 ---
 
-A software bill of materials is supposed to be the inventory the vulnerability scanner reads from. The pitch is clean: generate the SBOM at build time, store it with the artifact, scan it once a day against the latest CVE feed, get a current list of exposures without re-touching the binary. Two open standards exist, [SPDX 3.0](https://spdx.dev/) and [CycloneDX 1.6](https://cyclonedx.org/), and every modern build tool emits one or both.
+A software bill of materials is supposed to be the inventory the vulnerability scanner reads from. The pitch is clean: generate the SBOM at build time, store it with the artifact, scan it once a day against the latest CVE feed, get a current list of exposures without re-touching the binary. Two major open standards dominate the conversation: SPDX (with 3.0 as the current revision, but tooling still catching up) and [CycloneDX 1.6](https://cyclonedx.org/). Most modern build tools emit at least one.
 
 The pitch survives until you run the same SBOM through two different scanners and get two different vulnerability lists. Which I did, recently, against a routine Java service. Same artifact. Same day. Same NVD snapshot. Two scanners. Findings differed by roughly 30%. The disagreement wasn't a bug in either scanner. It was the SBOM not saying the thing the vulnerability database needed to hear.
 
