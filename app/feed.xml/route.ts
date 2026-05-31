@@ -34,6 +34,7 @@ export async function GET() {
   ).join("\n");
 
   const xml = `<?xml version="1.0" encoding="UTF-8" ?>
+<?xml-stylesheet type="text/xsl" href="/feed.xsl"?>
 <rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Marwan Diallo</title>
