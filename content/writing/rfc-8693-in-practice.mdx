@@ -1,0 +1,98 @@
+---
+title: "RFC 8693 in Practice"
+date: "2026-05-15"
+summary: "Token exchange is the cleanest pattern for delegating identity to an AI agent, and every major IdP implements it differently. Field notes from wiring it into Entra, Okta, and Auth0 — what the spec leaves to interpretation, what breaks first, and what to standardize before the second agent ships."
+tags: ["security", "identity", "oauth", "ai", "agents"]
+---
+
+The passwordless and agent essays both ended at the same wall: a human authenticates with a passkey, and then the agent the human delegated to needs a token of its own — one that says "this is the agent, acting for that user, with this narrower scope, against this audience, expiring in the next ten minutes." [RFC 8693](https://datatracker.ietf.org/doc/html/rfc8693) is the OAuth 2.0 token-exchange grant that names this pattern. It has been a Proposed Standard since January 2020. I've now wired it into three different IdPs in production, and the honest report is that it is the right primitive and the implementations are far enough apart that "RFC 8693 support" on a vendor data sheet is closer to a hint than a contract.
+
+This is a short field note on what actually happens when you reach for it.
+
+## What the grant does
+
+A token-exchange call hits the token endpoint with `grant_type=urn:ietf:params:oauth:grant-type:token-exchange` and presents a `subject_token` (the identity being acted on) and optionally an `actor_token` (the identity doing the acting). The IdP returns a new access token whose `sub` is still the original subject, whose `act` claim names the actor, and whose `aud` and `scope` are narrowed to the downstream API the caller asked for. Two parties in one token, with the chain of delegation visible.
+
+For an AI agent calling a downstream API on a user's behalf, that shape is exactly what you want. The audited entity in the resource server's logs is the user (the agent didn't somehow become them). The actor is the agent, by name. The scopes are whatever the user consented to delegate, no more. The token is short-lived. Revoke the agent and the chain breaks at the next exchange.
+
+A minimal call against an RFC-compliant endpoint:
+
+```http
+POST /oauth2/token HTTP/1.1
+Host: idp.example.com
+Authorization: Basic <agent-client-credentials>
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=urn:ietf:params:oauth:grant-type:token-exchange
+&subject_token=<user-id-token>
+&subject_token_type=urn:ietf:params:oauth:token-type:id_token
+&actor_token=<agent-access-token>
+&actor_token_type=urn:ietf:params:oauth:token-type:access_token
+&audience=https://api.example.com
+&scope=tickets:read tickets:write
+```
+
+The response is a standard token response. The new access token carries an `act` claim per [RFC 8693 §4.1](https://datatracker.ietf.org/doc/html/rfc8693#section-4.1):
+
+```json
+{
+  "iss":   "https://idp.example.com",
+  "sub":   "user-7f3a",
+  "aud":   "https://api.example.com",
+  "scope": "tickets:read tickets:write",
+  "exp":   1700000600,
+  "act":   { "sub": "agent-helpdesk-bot" }
+}
+```
+
+That is the contract. From here, the implementations diverge.
+
+## Three IdPs, three interpretations
+
+**Entra ID.** Microsoft ships the [on-behalf-of (OBO) flow](https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-on-behalf-of-flow), which predates RFC 8693 and behaves like it on the surface. The wire form uses `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer` and `requested_token_use=on_behalf_of`. Not the RFC's grant type. The returned token has the user as `oid` but does not include an `act` claim in the format the RFC specifies — Entra surfaces the calling app via `azp` / `appid` instead. Resource servers that parse `act` per the spec see nothing and have to special-case Microsoft. Microsoft has open guidance saying RFC 8693 support is on the roadmap; the OBO flow is what's in production today.
+
+**Okta.** Implements the RFC grant directly under [token exchange](https://developer.okta.com/docs/guides/set-up-token-exchange/) on Customer Identity Cloud (Auth0) and on Workforce Identity Cloud. Subject token type and actor token type are the RFC URNs. The returned access token includes an `act` claim. The two product lines disagree on which custom authorizer hooks fire during an exchange call: a pre-token hook that mutates claims on the subject's original login does not necessarily re-run on the exchanged token. You discover this when a downstream API starts rejecting the exchanged token because a claim that was added in the hook is now missing.
+
+**Auth0 (pre-Okta and on the Okta CIC tenant).** The RFC grant type is supported. Actor tokens are accepted but the platform does not validate them against the `azp` of the subject token by default — meaning a client that holds any valid access token can present itself as the actor for any user's id_token it has obtained, unless you put a rule in the pre-token-issuance hook to enforce the binding. That is not a bug in the spec; the RFC explicitly leaves "what counts as a valid actor" to the AS. It is a bug in the default policy on most tenants.
+
+The shape of the lesson: the grant type, the token types, and the `act` claim shape are the parts the RFC actually pins down. Everything that determines whether the exchange is **safe** — actor validation, audience restriction, scope down-narrowing, refresh behavior on exchanged tokens, revocation cascade — is implementation-defined. Three vendors, three different defaults.
+
+## What breaks first
+
+Resource servers. Specifically the JWT validation library on the resource server.
+
+Most validators I've audited check `iss`, `aud`, `exp`, signature, and the user-identifier claim. None of them check `act` unless somebody wrote a custom rule. Which means an exchanged token, with the agent's `act` claim, is treated as if the user themselves had called the API. The audit log records the user. The rate-limiting bucket is the user's. The "who did this" question becomes unanswerable post-hoc.
+
+The mitigation is a one-screen rule at the resource server: if `act` is present, require it to name a known actor, log both `sub` and `act.sub`, attribute the action to the actor, and apply the actor's rate-limit bucket. That rule does not exist by default in any of the JWT libraries I've used (`jose`, `pyjwt`, `Microsoft.IdentityModel.Tokens`, `golang-jwt`). It is a thirty-line custom validator and almost nobody writes it.
+
+The second thing that breaks is refresh. RFC 8693 §4.1 lets the AS issue a refresh token alongside the exchanged access token. Some IdPs do, some don't, and the ones that do treat the refresh token as if it represented the user's session for full re-authentication purposes — meaning the agent can mint a new access token after the user has revoked the agent's original delegation. Always set `requested_token_use` (or the vendor equivalent) such that the exchanged token does not come with a refresh token. Make the agent come back through the delegation flow.
+
+## A defensible default
+
+If I were standing up this pattern fresh today, the constraints I'd write into the platform before the second agent ships:
+
+1. **Agent clients are confidential** with client certificates or attested keys, not shared secrets. The actor in `act` has to be cryptographically tied to the client that presented the request.
+2. **Audience pinning is mandatory.** Every exchanged token is bound to exactly one downstream API. No `aud` arrays. Agents that need to call two APIs do two exchanges.
+3. **Scopes are a subset of the user's consented scopes**, never a superset. The AS enforces this at exchange time; the resource server enforces it again as defense in depth.
+4. **No refresh tokens on exchanged tokens.** Ever. Re-exchange after expiry; that's the entire point of short lifetimes.
+5. **Resource servers parse `act`.** If the claim is present and the actor is not on the allow-list for that API, reject with `403`. Log both identities.
+6. **Revocation cascades.** Revoking the agent's client at the IdP invalidates every outstanding exchanged token that names it as actor. This is not the default on any IdP I've worked with; it's a custom job.
+
+None of those are in the RFC. All of them have to be true for the pattern to do what people think it does.
+
+## Standards mapping
+
+- **RFC 8693** — the grant itself, the token type URNs, the `act` claim format.
+- **RFC 7519 §4.1.6 / RFC 8693 §4.1** — `act` is a nested JWT claim; can chain (`act.act` for an agent calling another agent on a user's behalf).
+- **NIST SP 800-63C §5.5** — assertion presenter binding. The actor in `act` has to be the entity that presented the token to the resource server, or you've lost the delegation chain.
+- **OAuth 2.0 Security BCP (RFC 9700) §2.6** — sender-constrained tokens. DPoP or mTLS on exchanged tokens removes the "bearer token replay" failure mode entirely.
+
+## Scope
+
+This is the AS / RS side. It does not cover what the user sees at consent time (which matters and is mostly bad today), and it does not cover step-up authentication when the agent's request exceeds the user's original assurance level. Both deserve their own field notes.
+
+## Closing
+
+Token exchange is the right primitive for AI-agent delegation. It is also a primitive whose security properties depend almost entirely on choices the spec leaves to the AS and the RS. "Our IdP supports RFC 8693" tells you the grant type works. It tells you nothing about whether the agent that runs against it is auditable, revocable, or scoped.
+
+If you have an agent in production today against a token-exchange IdP, the fifteen-minute test is this: revoke the agent's client at the IdP, then call the downstream API with a token the agent minted ten seconds before. If the call succeeds, the cascade isn't there yet, and the agent is still operating after you fired it.

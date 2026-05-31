@@ -1,0 +1,79 @@
+---
+title: "What Your SBOM Doesn't Say"
+date: "2026-05-31"
+summary: "SPDX and CycloneDX round-trip on paper. In practice the same SBOM produces different vulnerability findings depending on which scanner reads it, because the two formats disagree about identity, scope, and license in ways that change what a vulnerability database can match against."
+tags: ["security", "supply-chain", "vulnerability-management", "sbom"]
+---
+
+A software bill of materials is supposed to be the inventory the vulnerability scanner reads from. The pitch is clean: generate the SBOM at build time, store it with the artifact, scan it once a day against the latest CVE feed, get a current list of exposures without re-touching the binary. Two open standards exist, [SPDX 3.0](https://spdx.dev/) and [CycloneDX 1.6](https://cyclonedx.org/), and every modern build tool emits one or both.
+
+The pitch survives until you run the same SBOM through two different scanners and get two different vulnerability lists. Which I did, recently, against a routine Java service. Same artifact. Same day. Same NVD snapshot. Two scanners. Findings differed by roughly 30%. The disagreement wasn't a bug in either scanner. It was the SBOM not saying the thing the vulnerability database needed to hear.
+
+This is a short note on the four places SPDX and CycloneDX diverge in ways that change scanner behavior, and what to do about it.
+
+## The component identity problem
+
+Both formats describe a software component. Both use a name and version. Where they differ is in the identifier the scanner uses to look the component up.
+
+**CycloneDX** uses [Package URL (purl)](https://github.com/package-url/purl-spec) as the primary identifier. A `purl` is structured (`pkg:maven/org.apache.logging.log4j/log4j-core@2.14.1`), namespaced by ecosystem, and unambiguous about which registry the component came from.
+
+**SPDX** uses `SPDXID` (a document-local string), `PackageName`, `PackageVersion`, and an optional `ExternalRefs` field that can hold a `purl`, a `cpe22Type`, a `cpe23Type`, or a vendor-specific identifier. The `purl` in `ExternalRefs` is optional. Many generators omit it.
+
+The vulnerability databases the scanners read from are keyed differently. NVD is keyed on [CPE](https://nvd.nist.gov/products/cpe), which is a versioned-vendor-product-tuple format that pre-dates purl and frequently disagrees with it about a component's identity (NVD might list `cpe:2.3:a:apache:log4j:2.14.1` and `cpe:2.3:a:apache_software_foundation:log4j:2.14.1` as separate entries). [OSV.dev](https://osv.dev/) is keyed on purl. GitHub Advisory Database is keyed on purl with CPE as a secondary mapping. Vendor advisories are keyed on whatever the vendor uses.
+
+The failure mode is consistent: an SBOM with purl matches OSV cleanly and misses NVD-only advisories. An SBOM with CPE matches NVD cleanly and misses OSV-native advisories. An SBOM with both is rare, because most generators emit one or the other based on the source format the build tool reads.
+
+CycloneDX defaults to purl-first. SPDX defaults to leaving identifiers optional. Two scanners reading the same SPDX file can disagree on the component's identity before either one of them has reached the CVE feed.
+
+## The scope problem
+
+CycloneDX has a [`scope`](https://cyclonedx.org/docs/1.6/json/#components_items_scope) field on every component with three legal values: `required`, `optional`, `excluded`. The semantic is whether the component is in the runtime classpath, in an optional path, or explicitly removed from the build.
+
+SPDX 3.0 introduced relationship types (`DEPENDS_ON`, `DEV_DEPENDENCY_OF`, `OPTIONAL_DEPENDENCY_OF`, etc.) to express something similar. The two vocabularies don't map one-to-one. CycloneDX `optional` is closer to SPDX `OPTIONAL_DEPENDENCY_OF` than to anything else, but `excluded` doesn't have a clean SPDX equivalent — SPDX expresses "this was considered and dropped" with `NoAssertion` or omission, both of which lose information.
+
+Scanners use scope to suppress findings on `dev` or `test` dependencies. Translating an SPDX SBOM into the CycloneDX-shaped finding pipeline of a scanner like Grype or Trivy often loses scope entirely, and every dependency comes back as `required`. The scan output goes from twelve actionable findings to forty, and the team that has to triage the difference learns to ignore the scanner.
+
+## The license problem
+
+CycloneDX uses [SPDX license expressions](https://spdx.org/licenses/) (`Apache-2.0`, `MIT OR Apache-2.0`, `(MIT AND BSD-3-Clause)`) as strings. One field, one grammar, defined by the SPDX project.
+
+SPDX itself uses three fields: `PackageLicenseConcluded` (the SBOM author's assertion of the effective license), `PackageLicenseDeclared` (what the package metadata claims), and `PackageLicenseInfoFromFiles` (what was found by scanning the source). The three can disagree. Tools that consume SPDX have to pick one, and they pick differently.
+
+This doesn't affect vulnerability findings. It affects everything else a security team does with an SBOM — license policy enforcement, third-party risk review, M&A diligence. The most common failure I see is "the SBOM says Apache-2.0" being a different fact depending on which scanner extracted it from which field. SPDX-to-CycloneDX converters typically pick `PackageLicenseConcluded` and silently drop the other two, which is usually right and is sometimes the wrong call.
+
+## The VEX problem
+
+Vulnerability Exploitability eXchange documents are the assertions that say "this CVE is in our SBOM but doesn't apply to us because we don't call the vulnerable function." Both CycloneDX (native `vulnerabilities` array with `analysis.state`) and SPDX (via [OpenVEX](https://github.com/openvex/spec) attached as an external reference) support them. The shapes are different.
+
+CycloneDX VEX uses six `state` values: `resolved`, `resolved_with_pedigree`, `exploitable`, `in_triage`, `false_positive`, `not_affected`. OpenVEX uses four: `not_affected`, `affected`, `fixed`, `under_investigation`. The mapping is lossy: CycloneDX's `resolved_with_pedigree` (the vulnerability is fixed and the fix has a documented provenance chain) has no OpenVEX equivalent, and OpenVEX's `under_investigation` is wider than CycloneDX's `in_triage`.
+
+In practice, a team that emits CycloneDX VEX and a downstream consumer that reads OpenVEX will see VEX statements either dropped or coerced to the nearest state. The asserted suppression doesn't suppress, and the team that filed the VEX statement sees the finding re-appear in the consumer's report and assumes the scanner is broken. The scanner isn't broken. The translation is.
+
+## What to do about it
+
+The pragmatic posture for an SBOM that has to round-trip cleanly:
+
+1. **Emit purl on every component, in both formats.** In SPDX, that means populating `ExternalRefs` with a `purl` for every package the build tool can identify. In CycloneDX, it's already the default; make sure the build doesn't strip it.
+2. **Emit CPE alongside purl** for components that map to NVD entries cleanly. The `cpe` field exists in both formats. The duplication is the price of matching both keying conventions.
+3. **Preserve scope.** Don't let the build pipeline collapse dev-dependencies into the runtime SBOM. If the scanner can't read scope, fix the scanner's input, not the SBOM.
+4. **Pick one VEX format and stay in it.** Don't try to translate between CycloneDX-native VEX and OpenVEX. The lossy mappings will burn you. Decide on one shape, emit it, and require downstream consumers to read it.
+5. **Treat the SBOM as a build artifact, not a one-time deliverable.** Regenerate on every build. Sign with [Sigstore](https://www.sigstore.dev/) or in-toto. Store next to the artifact in the registry, not in a separate compliance tracker that drifts.
+6. **Diff your scanners.** Run two against the same SBOM monthly. The delta is the population of things one format isn't telling the other.
+
+## Standards mapping
+
+- **NTIA Minimum Elements for an SBOM (July 2021)** — supplier, component name, version, unique identifier, dependency relationship, author, timestamp. Both SPDX and CycloneDX cover the minimum; the divergence above is at the next level of detail.
+- **NIST SP 800-161 Rev. 1** — supply chain risk management; SBOMs are the input to the C-SCRM process described there.
+- **CISA SBOM Sharing Lifecycle Report (2023)** — the producer/consumer split and the assumptions that break when SBOMs are shared across organizational boundaries.
+- **ISO/IEC 5962:2021** — the SPDX 2.2 specification as an ISO standard. SPDX 3.0 is a substantial revision; tooling support is still catching up.
+- **CycloneDX OWASP Project** — current spec at cyclonedx.org; the OWASP Foundation owns the format.
+
+## Scope
+
+This is the SBOM-to-scanner path. It does not cover SBOM generation accuracy (which is its own swamp, especially for native binaries and statically-linked Go), nor signing and attestation chains, nor the legal posture around sharing SBOMs with customers under NDA versus publicly. Each of those is a separate field note.
+
+## Closing
+
+An SBOM is a claim about what your software is made of. A vulnerability scan is a question against that claim. Both formats answer the question. They answer slightly different questions, and the gap is where findings get lost.
+
+If you ship an SBOM today, run it through two scanners this week and look at the delta. The components that appear in one report and not the other are the population of things your inventory isn't actually telling the world about. Fix the SBOM, not the scanner.

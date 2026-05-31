@@ -1,0 +1,104 @@
+---
+title: "LDAPS Channel Binding and the Long Deprecation"
+date: "2026-05-22"
+summary: "Microsoft has been moving LDAP channel binding from 'available' to 'required' for nearly seven years. The enforcement timeline keeps slipping because the third-party tail is large and quiet. A short note on what the registry key actually does, how to find the appliances that will break, and what to do before the DC stops accepting them."
+tags: ["security", "windows", "identity", "vulnerability-management"]
+---
+
+A domain controller will accept an LDAPS bind from any client that presents a valid user credential over a TLS channel. It does not, by default, check whether the credential the client presents inside the TLS tunnel was actually obtained over that tunnel. That gap is what Channel Binding for TLS (CBT, [RFC 5929](https://datatracker.ietf.org/doc/html/rfc5929)) closes: the bind request carries a token derived from the TLS endpoint, and the server refuses the bind if the token doesn't match the channel it arrived on.
+
+Microsoft has been pushing customers toward CBT enforcement on LDAPS since [ADV190023](https://msrc.microsoft.com/update-guide/vulnerability/ADV190023) in March 2020. The enforcement date has now slipped at least three times. The most recent guidance — the [March 2026 LDAP channel binding enforcement update](https://learn.microsoft.com/en-us/troubleshoot/windows-server/active-directory/2020-ldap-channel-binding-and-ldap-signing-requirements) — flips the default on new DC builds and leaves existing forests in audit mode with a stronger nudge. The reason the date keeps moving is the same reason every Schannel hardening deadline moves: the third-party tail is long, mostly off-Microsoft, and quiet until something breaks.
+
+This is a field note on the actual registry switch, the third-party offenders that keep showing up, and the audit-mode log you can read today to find them before the deadline you'll actually face.
+
+## What the registry key does
+
+The relevant value lives under the NTDS service key:
+
+```text
+HKLM\SYSTEM\CurrentControlSet\Services\NTDS\Parameters
+    LdapEnforceChannelBinding  REG_DWORD
+```
+
+Three values, three behaviors, documented in [KB 4034879](https://support.microsoft.com/topic/use-the-ldapenforcechannelbinding-registry-entry-to-make-ldap-authentication-over-ssl-tls-more-secure-e9ecfa27-5e57-8519-6ba3-d2c06b21812e):
+
+- `0` — channel binding is not enforced. The DC accepts binds with no CBT token, with a wrong CBT token, and with a correct CBT token. This is the legacy default.
+- `1` — partial enforcement. Clients that **claim** to support CBT (via the supported SASL mechanism advertisement) must present a correct token. Clients that don't claim support are allowed through. The carve-out exists for a long list of third-party LDAP clients that pre-date CBT and never advertised it.
+- `2` — full enforcement. Every authenticated LDAPS bind must present a correct CBT token. Binds without one are rejected with `LDAP_STRONG_AUTH_REQUIRED` (decimal 8).
+
+`1` is the value Microsoft considers safe to deploy on most forests today. `2` is the target state. The March 2026 guidance moves new DCs to `1` by default and recommends `2` for environments that have completed inventory. Existing DCs are not auto-flipped.
+
+A second value is in the same key and matters in parallel:
+
+```text
+HKLM\SYSTEM\CurrentControlSet\Services\NTDS\Parameters
+    LDAPServerIntegrity  REG_DWORD
+```
+
+`1` is "negotiate signing" (legacy default). `2` is "require signing". This governs LDAP signing on the unencrypted port 389 path, where TLS isn't in the picture and CBT doesn't apply. The two settings are independent and both have to be addressed; teams routinely fix one and forget the other.
+
+## What breaks under enforcement
+
+The clients that consistently fail are the ones not written against the modern Win32 LDAP API:
+
+- **JNDI on the JDK.** Pre-JDK 11.0.4 versions silently omit the CBT token; later versions added support but require an explicit `java.naming.ldap.tls.channel.binding=true` property to send it. Apps deployed before that flag was a thing — most enterprise Java LDAP integrations — bind cleanly today and fail under enforcement.
+- **OpenLDAP-based clients on Linux appliances.** Storage controllers, NAS heads, print servers, IP-phone provisioning servers, and a long list of network appliances bundle OpenLDAP. CBT in OpenLDAP requires the SASL mechanism to be configured with `gs2-cb-flag`, which most appliance vendors don't expose.
+- **Older .NET Framework LDAP code.** `System.DirectoryServices.Protocols` on pre-4.7.2 frameworks does not negotiate CBT even on a TLS bind. Library upgrade is the only fix.
+- **Embedded MFP / scan-to-network LDAP lookups.** Multifunction printers that look up email addresses via LDAPS are a common offender; firmware updates are vendor-specific and often nonexistent for end-of-life models.
+
+The pattern is consistent: anything that does LDAPS without going through `wldap32.dll` is suspect, and a lot of corporate infrastructure does LDAPS without going through `wldap32.dll`.
+
+## Find the offenders before the deadline
+
+The audit-mode behavior is the gift. With `LdapEnforceChannelBinding = 0` on the DC, two events fire under the **Directory Service** log when channel binding is enabled with the right diagnostic level:
+
+```text
+HKLM\SYSTEM\CurrentControlSet\Services\NTDS\Diagnostics
+    16 LDAP Interface Events  REG_DWORD = 0x00000002
+```
+
+With diagnostic level `2`, the DC logs:
+
+- **Event 3039** — a client connected via LDAP over SSL/TLS but did not present a CBT token, or presented one that did not match the channel. The event includes the client IP and, where available, the bound user.
+- **Event 3074** — an LDAP bind was performed without signing on port 389 where signing would have been required if `LDAPServerIntegrity = 2`.
+
+A one-line query against the DS log gives the population for the next six months of work:
+
+```powershell
+Get-WinEvent -LogName 'Directory Service' -FilterXPath "*[System[EventID=3039]]" |
+    Select-Object TimeCreated, @{n='Client';e={$_.Properties[0].Value}}, @{n='User';e={$_.Properties[1].Value}} |
+    Sort-Object Client -Unique
+```
+
+Run that against every DC for a week and you have the appliance inventory you need. Most environments are surprised by what they find — the count is usually two to three times what the network team thinks.
+
+## What to do
+
+The order I'd recommend, having walked a few environments through it:
+
+1. **Turn on audit logging** (`16 LDAP Interface Events = 2`) on every DC. No enforcement change. Wait two weeks.
+2. **Pull Event 3039 / 3074** to a central log store. Identify every unique client IP and user.
+3. **Map each client to an owner.** This is the part that takes calendar time. Most of the IPs will be appliances no team has touched in years.
+4. **For each client, the decision tree is short.** Patchable client → patch and reconfigure. End-of-life appliance → replace or move off LDAPS. Application without a known owner → escalate; do not leave it as the reason enforcement slips again.
+5. **Flip `LdapEnforceChannelBinding` to `1`** on one DC in each site as a canary. Let it run a week. Watch for `LDAP_STRONG_AUTH_REQUIRED` (event 2889 on the client side, 2887 on the DC).
+6. **Flip to `2`** on the canary. Then the rest of the fleet.
+7. **Set `LDAPServerIntegrity = 2`** in the same change window. Force port-389 signing.
+
+The whole sequence is six to ten weeks for a forest of any size. The temptation to skip audit mode and go straight to `1` everywhere is real and is how teams end up with broken backup software, broken phone systems, and a Sev1 on the change window.
+
+## Standards mapping
+
+- **CIS Microsoft Windows Server 2022 Benchmark §2.3.11.1, §2.3.11.2** — both LDAP signing required and LDAP channel binding required are Level 1 recommendations. Audit-only is not a passing posture.
+- **NIST SP 800-53 Rev. 5 IA-2(8), SC-23** — replay resistance and session authenticity. CBT is the LDAPS-specific implementation of SC-23.
+- **CWE-300** — Channel Accessible by Non-Endpoint ("Person-in-the-Middle"). The class of bug CBT closes.
+- **MITRE ATT&CK T1557.001** — LLMNR/NBT-NS Poisoning and SMB Relay. The same NTLM-relay primitive used in `ntlmrelayx -t ldaps://dc01` is what CBT defeats on the LDAPS leg.
+
+## Scope
+
+This is the LDAPS leg. It does not address LDAP signing-only paths to port 389 (covered by `LDAPServerIntegrity`), and it does not address the SMB signing or Kerberos PAC validation hardening that usually ship in the same change window. Those are separate keys and separate cans.
+
+## Closing
+
+Channel binding is one of the cleanest defensive primitives in Windows: the spec is small, the registry switch is one DWORD, the failure mode is loud, and the audit logs name every offender for free. The reason enforcement keeps slipping is not technical. It's that "patch every appliance that does LDAPS" is a calendar problem nobody owns.
+
+If you have not turned on `16 LDAP Interface Events = 2` on your DCs, do that today. The inventory it produces in two weeks is the document the rest of the work runs from.
