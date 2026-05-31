@@ -6,7 +6,7 @@ summary: "Token exchange is the cleanest pattern for delegating identity to an A
 tags: ["security", "identity", "oauth", "ai", "agents"]
 ---
 
-The same wall shows up across the passkey and agent-identity pieces on this site: a human authenticates with a passkey, and then the agent the human delegated to needs a token of its own — one that says "this is the agent, acting for that user, with this narrower scope, against this audience, expiring in the next ten minutes." [RFC 8693](https://datatracker.ietf.org/doc/html/rfc8693) is the OAuth 2.0 token-exchange grant that names this pattern. It has been a Proposed Standard since January 2020. I've now wired it into three different IdPs in production, and the honest report is that it is the right primitive and the implementations are far enough apart that "RFC 8693 support" on a vendor data sheet is closer to a hint than a contract.
+The same wall shows up any time a human authenticates with a passkey and then delegates work to an agent: the agent needs a token of its own — one that says "this is the agent, acting for that user, with this narrower scope, against this audience, expiring in the next ten minutes." [RFC 8693](https://datatracker.ietf.org/doc/html/rfc8693) is the OAuth 2.0 token-exchange grant that names this pattern. It has been a Proposed Standard since January 2020. I've now wired it into three different IdPs in production, and the honest report is that it is the right primitive and the implementations are far enough apart that "RFC 8693 support" on a vendor data sheet is closer to a hint than a contract.
 
 This is a short field note on what actually happens when you reach for it.
 

@@ -8,7 +8,7 @@ tags: ["security", "windows", "tls", "vulnerability-management"]
 
 A Windows host can be configured to refuse TLS 1.0 and still negotiate TLS 1.0 the next time a service starts. That is not a contradiction. It is the documented behavior of the Schannel security support provider, the .NET framework, and the way Windows services cache cryptographic settings at process start. Each layer reports the truth about itself. Together they describe a host that doesn't exist.
 
-I went into the registry to settle the disagreement in the [BEAST essay](/writing/no-vulnerabilities-found) — an agent-based scanner that said the domain controller was clean, a network probe that said it wasn't. The probe was right. What I want to write down here is the shape of the trap that made it possible for the host to look hardened from one angle and unhardened from another, because the same shape shows up on almost every Windows TLS finding I've worked since.
+I went into the registry to settle a disagreement between an agent-based scanner that said the domain controller was clean and a network probe that said it wasn't. The probe was right. The scanner-coverage side of that problem is in [*When 'No Vulnerabilities Found' Means 'We Didn't Look There'*](/writing/no-vulnerabilities-found). What I want to write down here is the shape of the trap that made it possible for the host to look hardened from one angle and unhardened from another, because the same shape shows up on almost every Windows TLS finding I've worked since.
 
 ## Where Windows keeps the answer
 
