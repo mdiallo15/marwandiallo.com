@@ -20,12 +20,15 @@ export default function TopicsIndex() {
       >
         ← Back
       </Link>
-      <ContextLinks
-        items={[
-          { href: "/writing", label: "All writing" },
-          { href: "/projects", label: "All projects" },
-        ]}
-      />
+      <div className="mb-10">
+        <ContextLinks
+          items={[
+            { href: "/topics", label: "All topics" },
+            { href: "/writing", label: "All writing" },
+            { href: "/projects", label: "All projects" },
+          ]}
+        />
+      </div>
       <section className="mb-14">
         <h1 className="text-[2rem] md:text-[2.4rem] leading-[1.05] tracking-[-0.025em] text-[var(--color-ink)] font-medium">
           Topics
@@ -60,6 +63,15 @@ export default function TopicsIndex() {
           </li>
         ))}
       </ul>
+      <div className="mt-10">
+        <ContextLinks
+          items={[
+            { href: "/topics", label: "Topics" },
+            { href: "/writing", label: "All writing" },
+            { href: "/projects", label: "All projects" },
+          ]}
+        />
+      </div>
     </div>
   );
 }

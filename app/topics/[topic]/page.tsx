@@ -43,13 +43,15 @@ export default async function TopicPage({ params }: Props) {
       >
         ← Topics
       </Link>
-      <ContextLinks
-        items={[
-          { href: "/topics", label: "All topics" },
-          { href: "/writing", label: "All writing" },
-          { href: "/projects", label: "All projects" },
-        ]}
-      />
+      <div className="mb-10">
+        <ContextLinks
+          items={[
+            { href: "/topics", label: "All topics" },
+            { href: "/writing", label: "All writing" },
+            { href: "/projects", label: "All projects" },
+          ]}
+        />
+      </div>
       <section className="mb-14 flex items-end justify-between gap-6">
         <div>
           <h1 className="text-[2rem] md:text-[2.4rem] leading-[1.05] tracking-[-0.025em] text-[var(--color-ink)] font-medium">
@@ -144,6 +146,15 @@ export default async function TopicPage({ params }: Props) {
           </ul>
         </section>
       )}
+      <div className="mt-10">
+        <ContextLinks
+          items={[
+            { href: "/topics", label: "Topics" },
+            { href: "/writing", label: "All writing" },
+            { href: "/projects", label: "All projects" },
+          ]}
+        />
+      </div>
     </div>
   );
 }

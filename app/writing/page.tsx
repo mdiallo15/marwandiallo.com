@@ -33,13 +33,14 @@ export default async function WritingIndex({ searchParams }: Props) {
       >
         ← Back
       </Link>
-      <ContextLinks
-        items={[
-          { href: "/topics", label: "Topics" },
-          { href: "/writing/tags", label: "Tags" },
-          { href: "/projects", label: "Labs" },
-        ]}
-      />
+      <div className="mb-10">
+        <ContextLinks
+          items={[
+            { href: "/topics", label: "All topics" },
+            { href: "/writing", label: "All writing" },
+          ]}
+        />
+      </div>
       <section className="mb-14 flex items-end justify-between">
         <h1 className="text-[2rem] md:text-[2.4rem] leading-[1.05] tracking-[-0.025em] text-[var(--color-ink)] font-medium">
           Writing
@@ -116,6 +117,15 @@ export default async function WritingIndex({ searchParams }: Props) {
           </li>
         ))}
       </ul>
+      <div className="mt-10">
+        <ContextLinks
+          items={[
+            { href: "/topics", label: "Topics" },
+            { href: "/writing", label: "All writing" },
+            { href: "/projects", label: "All projects" },
+          ]}
+        />
+      </div>
     </div>
   );
 }
