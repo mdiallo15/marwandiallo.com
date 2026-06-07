@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { getAllPosts, formatDate, tagSlug } from "@/lib/writing";
 import { getAllTopicsWithCounts } from "@/lib/topic-browse";
+import { ContextLinks } from "@/app/_components/context-links";
 
 export const metadata: Metadata = {
   title: "Writing",
@@ -32,6 +33,13 @@ export default async function WritingIndex({ searchParams }: Props) {
       >
         ← Back
       </Link>
+      <ContextLinks
+        items={[
+          { href: "/topics", label: "Topics" },
+          { href: "/writing/tags", label: "Tags" },
+          { href: "/projects", label: "Labs" },
+        ]}
+      />
       <section className="mb-14 flex items-end justify-between">
         <h1 className="text-[2rem] md:text-[2.4rem] leading-[1.05] tracking-[-0.025em] text-[var(--color-ink)] font-medium">
           Writing
@@ -108,22 +116,6 @@ export default async function WritingIndex({ searchParams }: Props) {
           </li>
         ))}
       </ul>
-      <div className="mt-10">
-        <div className="flex flex-wrap gap-6">
-          <Link
-            href="/topics"
-            className="inline-flex items-center gap-1.5 text-[0.85rem] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors"
-          >
-            Browse by topic →
-          </Link>
-          <Link
-            href="/writing/tags"
-            className="inline-flex items-center gap-1.5 text-[0.85rem] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors"
-          >
-            Browse by tag →
-          </Link>
-        </div>
-      </div>
     </div>
   );
 }

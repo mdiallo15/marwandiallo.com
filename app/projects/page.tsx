@@ -4,6 +4,7 @@ import { getAllProjects, type Project } from "@/lib/projects";
 import { CardArtwork } from "@/app/_components/card-artwork";
 import { getAllTopicsWithCounts } from "@/lib/topic-browse";
 import { getTopic } from "@/lib/topic-taxonomy";
+import { ContextLinks } from "@/app/_components/context-links";
 
 export const metadata: Metadata = {
   title: "Projects",
@@ -31,6 +32,12 @@ export default function ProjectsPage() {
       >
         ← Back
       </Link>
+      <ContextLinks
+        items={[
+          { href: "/topics", label: "Topics" },
+          { href: "/writing", label: "All writing" },
+        ]}
+      />
       <section className="mb-14 flex items-end justify-between">
         <h1 className="text-[2rem] md:text-[2.4rem] leading-[1.05] tracking-[-0.025em] text-[var(--color-ink)] font-medium">
           Projects

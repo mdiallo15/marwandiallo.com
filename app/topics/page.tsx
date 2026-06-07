@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getAllTopicsWithCounts } from "@/lib/topic-browse";
+import { ContextLinks } from "@/app/_components/context-links";
 
 export const metadata: Metadata = {
   title: "Topics",
@@ -19,6 +20,12 @@ export default function TopicsIndex() {
       >
         ← Back
       </Link>
+      <ContextLinks
+        items={[
+          { href: "/writing", label: "All writing" },
+          { href: "/projects", label: "All projects" },
+        ]}
+      />
       <section className="mb-14">
         <h1 className="text-[2rem] md:text-[2.4rem] leading-[1.05] tracking-[-0.025em] text-[var(--color-ink)] font-medium">
           Topics

@@ -5,6 +5,7 @@ import { formatDate } from "@/lib/writing";
 import { getProjectsByTopic, getPostsByTopic } from "@/lib/topic-browse";
 import { getAllTopicsWithCounts } from "@/lib/topic-browse";
 import { getTopic, isTopicSlug } from "@/lib/topic-taxonomy";
+import { ContextLinks } from "@/app/_components/context-links";
 
 interface Props {
   params: Promise<{ topic: string }>;
@@ -42,6 +43,13 @@ export default async function TopicPage({ params }: Props) {
       >
         ← Topics
       </Link>
+      <ContextLinks
+        items={[
+          { href: "/topics", label: "All topics" },
+          { href: "/writing", label: "All writing" },
+          { href: "/projects", label: "All projects" },
+        ]}
+      />
       <section className="mb-14 flex items-end justify-between gap-6">
         <div>
           <h1 className="text-[2rem] md:text-[2.4rem] leading-[1.05] tracking-[-0.025em] text-[var(--color-ink)] font-medium">

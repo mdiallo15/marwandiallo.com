@@ -1,8 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import Link from "next/link";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { NavLinks } from "./_components/nav-links";
 import { ThemeToggle } from "./_components/theme-toggle";
 import { ThemeBootstrap } from "./_components/theme-bootstrap";
 
@@ -88,16 +86,6 @@ export default function RootLayout({
         </a>
         <ThemeToggle />
         <div className="mx-auto w-full max-w-[1280px] px-6 pt-10 pb-20 md:px-16 md:pt-14 lg:px-24">
-          <header className="mb-12 flex items-center justify-between gap-8 text-[0.9rem]">
-            <Link
-              href="/"
-              className="shrink-0 text-[var(--color-ink)] hover:text-[var(--color-accent)] transition-colors"
-              aria-label="Marwan Diallo home"
-            >
-              MD
-            </Link>
-            <NavLinks />
-          </header>
           <main id="main">{children}</main>
           <footer className="mt-24 pt-6 border-t border-[var(--color-rule)] text-[0.8rem] text-[var(--color-ink-muted)]">
             <div className="flex flex-wrap items-center justify-between gap-4">
