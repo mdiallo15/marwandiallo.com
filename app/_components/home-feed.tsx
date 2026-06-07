@@ -5,7 +5,6 @@ import Link from "next/link";
 import type { PostMeta } from "@/lib/writing";
 import type { Project } from "@/lib/projects";
 import { CardArtwork } from "./card-artwork";
-import { ContextLinks } from "./context-links";
 
 type Tab = "all" | "writing" | "building";
 
@@ -63,25 +62,17 @@ export function HomeFeed({ posts, projects }: Props) {
 
   return (
     <section className="mb-24">
-      <div className="mb-7 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div className="seg-tabs" role="tablist" aria-label="Feed filter">
-          <span aria-hidden className="seg-tabs__indicator" data-tab={tab} />
-          <TabButton tab="all" active={tab} onClick={setTab}>
-            All
-          </TabButton>
-          <TabButton tab="writing" active={tab} onClick={setTab}>
-            Writing
-          </TabButton>
-          <TabButton tab="building" active={tab} onClick={setTab}>
-            Building
-          </TabButton>
-        </div>
-        <ContextLinks
-          items={[
-            { href: "/writing", label: "All writing" },
-            { href: "/projects", label: "All projects" },
-          ]}
-        />
+      <div className="seg-tabs" role="tablist" aria-label="Feed filter">
+        <span aria-hidden className="seg-tabs__indicator" data-tab={tab} />
+        <TabButton tab="all" active={tab} onClick={setTab}>
+          All
+        </TabButton>
+        <TabButton tab="writing" active={tab} onClick={setTab}>
+          Writing
+        </TabButton>
+        <TabButton tab="building" active={tab} onClick={setTab}>
+          Building
+        </TabButton>
       </div>
 
       <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">

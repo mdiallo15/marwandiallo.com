@@ -1,8 +1,10 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { getAllPosts, formatDate, tagSlug } from "@/lib/writing";
+import { getAllPosts, tagSlug, type PostMeta } from "@/lib/writing";
 import { getAllTopicsWithCounts } from "@/lib/topic-browse";
+import { getTopic } from "@/lib/topic-taxonomy";
 import { ContextLinks } from "@/app/_components/context-links";
+import { CardArtwork } from "@/app/_components/card-artwork";
 
 export const metadata: Metadata = {
   title: "Writing",
@@ -77,44 +79,9 @@ export default async function WritingIndex({ searchParams }: Props) {
           </span>
         </div>
       )}
-      <ul className="space-y-0">
+      <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {posts.map((post) => (
-          <li
-            key={post.slug}
-            className="group border-t border-[var(--color-rule)] last:border-b py-6 transition-colors hover:bg-[var(--color-bg-elev)]"
-          >
-            <Link
-              href={`/writing/${post.slug}`}
-              className="block"
-            >
-              <div className="grid grid-cols-[1fr_auto] items-baseline gap-4">
-                <span className="text-[1.05rem] leading-[1.35] text-[var(--color-ink)] underline decoration-transparent decoration-1 underline-offset-[3px] transition-[text-decoration-color] group-hover:decoration-[var(--color-ink)]">
-                  {post.title}
-                </span>
-                <span className="text-[0.72rem] uppercase tracking-[0.08em] text-[var(--color-ink-muted)] tabular-nums whitespace-nowrap">
-                  <time dateTime={post.date}>{formatDate(post.date)}</time> · {post.readingMinutes} min
-                </span>
-              </div>
-              {post.summary && (
-                <p className="mt-2.5 text-[0.92rem] leading-[1.6] text-[var(--color-ink-soft)] max-w-[58ch]">
-                  {post.summary}
-                </p>
-              )}
-            </Link>
-            {post.tags && post.tags.length > 0 && (
-              <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-[0.7rem] uppercase tracking-[0.12em] text-[var(--color-ink-muted)]">
-                {post.tags.map((t) => (
-                  <Link
-                    key={t}
-                    href={`/writing/tag/${tagSlug(t)}`}
-                    className="inline-flex items-center min-h-[28px] min-w-[28px] py-1.5 hover:text-[var(--color-ink)] transition-colors"
-                  >
-                    #{t}
-                  </Link>
-                ))}
-              </div>
-            )}
-          </li>
+          <WritingCard key={post.slug} post={post} />
         ))}
       </ul>
       <div className="mt-10">
@@ -127,5 +94,32 @@ export default async function WritingIndex({ searchParams }: Props) {
         />
       </div>
     </div>
+  );
+}
+
+function isoDate(iso: string): string {
+  return iso.slice(0, 10);
+}
+
+function WritingCard({ post }: { post: PostMeta }) {
+  return (
+    <li>
+      <Link href={`/writing/${post.slug}`} className="feed-card" data-kind="writing">
+        <div className="feed-card__top">
+          <span className="feed-card__title-top">{post.title}</span>
+          <span className="feed-card__date tabular-nums">
+            <time dateTime={post.date}>{isoDate(post.date)}</time>
+          </span>
+        </div>
+        {post.topic && (
+          <span className="mt-2 inline-flex text-[0.68rem] uppercase tracking-[0.12em] text-[var(--color-ink-muted)]">
+            {getTopic(post.topic)?.label ?? post.topic}
+          </span>
+        )}
+        <span aria-hidden className="feed-card__visual">
+          <CardArtwork slug={post.slug} />
+        </span>
+      </Link>
+    </li>
   );
 }
