@@ -9,6 +9,7 @@ import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypePrettyCode from "rehype-pretty-code";
 import rehypeStringify from "rehype-stringify";
+import { isTopicSlug, type TopicSlug } from "@/lib/topic-taxonomy";
 
 const CONTENT_DIR = path.join(process.cwd(), "content", "writing");
 
@@ -17,6 +18,7 @@ export interface PostMeta {
   title: string;
   date: string; // ISO
   updated?: string; // ISO
+  topic?: TopicSlug;
   experienceWindow?: string;
   summary?: string;
   tags?: string[];
@@ -96,6 +98,10 @@ function readPost(slug: string): Post | null {
         title: String(data.title ?? slug),
         date: String(data.date ?? new Date().toISOString()),
         updated: data.updated ? String(data.updated) : undefined,
+        topic:
+          typeof data.topic === "string" && isTopicSlug(data.topic)
+            ? data.topic
+            : undefined,
         experienceWindow: data.experienceWindow
           ? String(data.experienceWindow)
           : undefined,

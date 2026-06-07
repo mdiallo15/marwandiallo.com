@@ -2,6 +2,8 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { getAllProjects, type Project } from "@/lib/projects";
 import { CardArtwork } from "@/app/_components/card-artwork";
+import { getAllTopicsWithCounts } from "@/lib/topic-browse";
+import { getTopic } from "@/lib/topic-taxonomy";
 
 export const metadata: Metadata = {
   title: "Projects",
@@ -20,6 +22,7 @@ function isLabProject(project: Project): boolean {
 export default function ProjectsPage() {
   const projects = getAllProjects();
   const newestLabSlug = projects.find(isLabProject)?.slug;
+  const topics = getAllTopicsWithCounts().filter((topic) => topic.projectCount > 0);
   return (
     <div>
       <Link
@@ -36,6 +39,17 @@ export default function ProjectsPage() {
           {String(projects.length).padStart(2, "0")} shipped
         </span>
       </section>
+      <div className="mb-8 flex flex-wrap gap-2 text-[0.75rem] uppercase tracking-[0.12em] text-[var(--color-ink-muted)]">
+        {topics.map((topic) => (
+          <Link
+            key={topic.slug}
+            href={`/topics/${topic.slug}`}
+            className="rounded-full border border-[var(--color-rule)] px-3 py-2 hover:text-[var(--color-ink)] hover:border-[var(--color-ink-muted)] transition-colors"
+          >
+            {topic.label}
+          </Link>
+        ))}
+      </div>
       <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {projects.map((project) => (
           <ProjectCard
@@ -72,6 +86,9 @@ function ProjectCard({ project, isNew }: { project: Project; isNew: boolean }) {
           <time dateTime={project.date}>{isoDate(project.date)}</time>
         </span>
       </div>
+      <span className="mt-2 inline-flex text-[0.68rem] uppercase tracking-[0.12em] text-[var(--color-ink-muted)]">
+        {getTopic(project.topic)?.label ?? project.topic}
+      </span>
       <span
         aria-hidden
         className="feed-card__visual"

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getAllPosts, formatDate, tagSlug } from "@/lib/writing";
+import { getAllTopicsWithCounts } from "@/lib/topic-browse";
 
 export const metadata: Metadata = {
   title: "Writing",
@@ -22,6 +23,7 @@ export default async function WritingIndex({ searchParams }: Props) {
   const activeTag = filter
     ? all.flatMap((p) => p.tags ?? []).find((t) => tagSlug(t) === filter)
     : null;
+  const topics = getAllTopicsWithCounts().filter((topic) => topic.writingCount > 0);
   return (
     <div>
       <Link
@@ -38,6 +40,17 @@ export default async function WritingIndex({ searchParams }: Props) {
           {String(posts.length).padStart(2, "0")} essays
         </span>
       </section>
+      <div className="mb-8 flex flex-wrap gap-2 text-[0.75rem] uppercase tracking-[0.12em] text-[var(--color-ink-muted)]">
+        {topics.map((topic) => (
+          <Link
+            key={topic.slug}
+            href={`/topics/${topic.slug}`}
+            className="rounded-full border border-[var(--color-rule)] px-3 py-2 hover:text-[var(--color-ink)] hover:border-[var(--color-ink-muted)] transition-colors"
+          >
+            {topic.label}
+          </Link>
+        ))}
+      </div>
       {activeTag && (
         <div className="mb-8 flex items-center gap-2 text-[0.78rem]">
           <span className="text-[var(--color-ink-muted)] uppercase tracking-[0.12em]">
@@ -96,12 +109,20 @@ export default async function WritingIndex({ searchParams }: Props) {
         ))}
       </ul>
       <div className="mt-10">
-        <Link
-          href="/writing/tags"
-          className="inline-flex items-center gap-1.5 text-[0.85rem] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors"
-        >
-          Browse by tag →
-        </Link>
+        <div className="flex flex-wrap gap-6">
+          <Link
+            href="/topics"
+            className="inline-flex items-center gap-1.5 text-[0.85rem] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors"
+          >
+            Browse by topic →
+          </Link>
+          <Link
+            href="/writing/tags"
+            className="inline-flex items-center gap-1.5 text-[0.85rem] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors"
+          >
+            Browse by tag →
+          </Link>
+        </div>
       </div>
     </div>
   );
