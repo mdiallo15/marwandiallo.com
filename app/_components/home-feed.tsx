@@ -62,17 +62,33 @@ export function HomeFeed({ posts, projects }: Props) {
 
   return (
     <section className="mb-24">
-      <div className="seg-tabs" role="tablist" aria-label="Feed filter">
-        <span aria-hidden className="seg-tabs__indicator" data-tab={tab} />
-        <TabButton tab="all" active={tab} onClick={setTab}>
-          All
-        </TabButton>
-        <TabButton tab="writing" active={tab} onClick={setTab}>
-          Writing
-        </TabButton>
-        <TabButton tab="building" active={tab} onClick={setTab}>
-          Building
-        </TabButton>
+      <div className="mb-7 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="seg-tabs" role="tablist" aria-label="Feed filter">
+          <span aria-hidden className="seg-tabs__indicator" data-tab={tab} />
+          <TabButton tab="all" active={tab} onClick={setTab}>
+            All
+          </TabButton>
+          <TabButton tab="writing" active={tab} onClick={setTab}>
+            Writing
+          </TabButton>
+          <TabButton tab="building" active={tab} onClick={setTab}>
+            Building
+          </TabButton>
+        </div>
+        <div className="flex flex-wrap justify-end gap-6 text-[0.78rem] uppercase tracking-[0.16em] text-[var(--color-ink-muted)]">
+          <Link
+            href="/writing"
+            className="hover:text-[var(--color-ink)] transition-colors"
+          >
+            All writing →
+          </Link>
+          <Link
+            href="/projects"
+            className="hover:text-[var(--color-ink)] transition-colors"
+          >
+            All projects →
+          </Link>
+        </div>
       </div>
 
       <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
