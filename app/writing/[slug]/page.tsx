@@ -122,15 +122,7 @@ export default async function WritingPost({ params }: Props) {
         )}
       </div>
       <div className="mt-12">
-        <a
-          href={`https://github.com/mdiallo15/marwandiallo.com/blob/main/content/writing/${post.slug}.mdx`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 text-[0.82rem] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors"
-        >
-          Edit on GitHub ↗
-        </a>
-        <p className="mt-3 text-[0.82rem] text-[var(--color-ink-muted)]">
+        <p className="text-[0.82rem] text-[var(--color-ink-muted)]">
           If this resonated, the next essay lives in{" "}
           <Link href="/writing" className="underline decoration-[var(--color-rule)] underline-offset-[3px] hover:text-[var(--color-ink)] hover:decoration-[var(--color-ink)] transition-colors">
             the feed
