@@ -1,0 +1,118 @@
+---
+title: "The Provider Has Your Context Window"
+date: "2026-06-07"
+topic: "ai-security"
+draft: true
+summary: "Connecting an agent to your email, files, and CRM is not a read-access decision. It is a copy decision. The sensitive corpus the agent reads ends up aggregated inside a third party that can be served a warrant or breached, and a provider's stated values are not a control you can audit."
+tags: ["security", "ai", "agents", "privacy", "surveillance"]
+---
+
+When you connect an AI agent to your email, your files, your calendar, and your support desk, you are not granting it read access to those systems. You are granting it the right to copy what it reads into infrastructure you do not run, on a schedule you do not set, for a retention period you cannot see. The permission dialog says "Allow access." The thing it actually authorizes is aggregation.
+
+Most of the security conversation about agents has been about the two failures that are easy to demo: prompt injection and over-permissioned tokens. Both are real. Both are also, in a sense, the loud version of the problem. The quiet version is that a single provider ends up holding a working copy of your most sensitive data, joined across systems that were never joined before, and that copy is now reachable by two parties you did not invite into the room — a government with a lawful order, and whoever breaches the provider next.
+
+This is a field note on where the data actually lands, who can compel it, and why "we trust the vendor" is a sentence, not a control.
+
+## What the connector actually moves
+
+The mechanism is the [Model Context Protocol](https://modelcontextprotocol.io), introduced by Anthropic in November 2024 and since adopted by OpenAI and Google as the common way an agent reads files, calls functions, and pulls records from external systems. As a piece of engineering it is clean: one interface instead of fifty bespoke integrations. The protocol is not the problem. What it enables is.
+
+Before MCP-style connectors, your HR complaints lived in one system, your draft layoff list in a spreadsheet, your customer PII in a CRM, and your legal correspondence in a mailbox. They were separated by login boundaries, by teams, by the simple friction of nobody having a reason to pull all four into one place. An agent's entire value proposition is to dissolve that friction. You ask it one question and it reads across all four to answer. The join that makes the agent useful is the same join that makes it a surveillance surface.
+
+I reviewed an agent rollout for a client earlier this year — a support-desk assistant wired through connectors to Gmail, Drive, Slack, and a ticketing system. Nothing about the deployment was reckless. Within the first week the agent had read fragments of an HR investigation, a draft reduction-in-force list, and the personal data of several thousand customers — and each of those passed through, and under the tenant's retention settings briefly persisted in, a third party's pipeline. Not because anything failed. Because that is what the agent was asked to do, and doing it meant moving all of it through infrastructure the client did not run.
+
+## Where it lands, and for how long
+
+The context window itself is ephemeral. The plumbing around it is not. A request to a hosted model does not begin and end in memory; it passes through, and is often retained by, a set of systems most buyers never enumerate:
+
+```text
+agent request
+  → prompt + retrieved content       (request logs)
+  → safety / abuse classification     (moderation retention, often 30 days)
+  → eval / quality sampling           (if not contractually excluded)
+  → fine-tuning corpus                (only if opted in — but check the default)
+  → sub-processors                    (the vendors your vendor uses)
+```
+
+Each of those is a different retention clock and a different access-control boundary, and the defaults vary by tier. The corpus your agent assembles is only as protected as the least careful default in that chain.
+
+## Trained on, kept, and producible
+
+The strongest counter-argument is worth stating plainly, because it is partly right. A serious provider does not treat connector content the way it treats a pasted prompt. Anthropic, for one, says the data it may use to improve its models is the conversation itself and [does not include raw content from connectors](https://privacy.claude.com/en/articles/10023580-is-my-data-used-for-model-training) like Google Drive or MCP servers — unless that content is copied directly into the chat. Model training on consumer plans is something you opt into rather than out of, and commercial plans are governed by [separate terms](https://privacy.anthropic.com/en/articles/7996868-is-my-data-used-for-model-training) that default to no training. If your only worry is whether your email ends up in the next model's weights, the honest answer for a careful provider on the right plan is: probably not, and you can verify the setting.
+
+But training is one axis, and it is not the axis the surveillance and breach concern rides on. Three different questions hide inside "is my data safe with this provider," and they have different answers:
+
+- **Is it trained on?** Often controllable. Opt-out on consumer, off by default on commercial, raw connector content excluded by policy.
+- **Is it kept?** Partly, and separately from training. Even with training off, inputs and outputs are retained for a window — Anthropic's API default is [deletion within 30 days](https://privacy.claude.com/en/articles/7996866-how-long-do-you-store-personal-data), stretched to two years for content flagged against the Usage Policy, with classifier scores held up to seven, and longer where the law requires it.
+- **Can it be produced?** This one has no settings toggle. Every retention tier Anthropic publishes — including the [zero-data-retention arrangement](https://privacy.claude.com/en/articles/8956058-i-have-a-zero-data-retention-agreement-with-anthropic-what-products-does-it-apply-to) available only to approved enterprise API customers — carves out an exception to comply with the law. Zero retention is zero retention "except where needed to comply with law or combat misuse." That is not a loophole someone slipped in; it is the unavoidable shape of operating under a legal system. The most privacy-forward configuration a major provider offers still bends to a lawful order.
+
+So the connector distinction is real, and it defuses one fear. It does nothing about the other two. Your sensitive corpus does not have to enter a training set to be retained for a window, and it does not have to be retained for a window to be reachable while it is — by an order, or by whoever breaches the pipeline during it.
+
+## The order you will never see
+
+Here is the part that does not depend on a breach.
+
+A US-based provider holding stored content can be compelled to produce it. The mechanism is the Stored Communications Act — [18 U.S.C. §2703](https://www.law.cornell.edu/uscode/text/18/2703) — which lets the government require a provider to disclose stored communications and records by warrant, court order, or subpoena depending on the data and its age. The [CLOUD Act](https://www.justice.gov/criminal/cloud-act) extended the reach in 2018: a US provider can be compelled to produce data it controls regardless of whether that data sits on a server in Virginia or in Frankfurt.
+
+The agent did not change that law. It changed what is available to be produced. Before, an order served on a hosted-model provider returned model usage. Now it can return the joined contents of the systems you connected — because you arranged for those contents to flow there. Your sensitive corpus has become a third party's stored records, and stored records can be served. The subpoena does not arrive at your office. It arrives at the provider, and in many cases you are never told.
+
+For data that crosses borders the conflict gets sharper. EU personal data sitting with a US provider sits inside a genuine clash of legal orders: [Article 48 of the GDPR](https://gdpr-info.eu/art-48-gdpr/) says a third-country authority's demand for that data is only enforceable through a mutual legal-assistance treaty, while US law may compel the same provider to hand it over directly. The provider is caught between two governments. You are the data that gets argued over.
+
+## It already happened, and "deleted" did not save it
+
+This is not hypothetical. In the *New York Times* copyright litigation against OpenAI, a federal court in 2025 ordered OpenAI to preserve and segregate ChatGPT output-log data it would otherwise have deleted — including conversations users had affirmatively deleted, and content from API customers. OpenAI [objected publicly](https://openai.com/index/response-to-nyt-data-demands/), framing the order as a conflict with its users' privacy expectations and its own deletion commitments. Set aside who is right in that fight. The operative fact for anyone deploying an agent is simpler: a court reached into a provider's pipeline and converted "deleted" into "retained and produced," for millions of users who had no part in the case and no notice that it touched them.
+
+That is the whole argument in one event. Deletion is a setting the provider honors until something with subpoena power tells it not to. Zero retention is a contract that yields to "comply with the law." Neither is a property of the system; both are postures that a legal order overrides. The agent's role is upstream of all of it — it decided what corpus was sitting there to be frozen in the first place.
+
+## The same shape, different exposure
+
+The risk is structural, so it does not disappear by picking a different logo. But the magnitude and the governance around it vary enough to matter, and that variance is exactly where the decision lives.
+
+**Anthropic** is a [public benefit corporation](https://en.wikipedia.org/wiki/Anthropic) whose charter obliges its board to weigh a public mission alongside profit, and in early 2026 it declined to drop model safeguards under direct federal pressure and absorbed being cut from a procurement path rather than comply. Real signal — and still a US provider under the same Stored Communications Act and CLOUD Act as everyone else.
+
+**OpenAI** spent 2025 [restructuring toward a more conventional for-profit](https://en.wikipedia.org/wiki/OpenAI) and is the provider that actually got hit with the preservation order above. Larger consumer footprint, more litigation surface, and a governance trajectory moving toward shareholder return rather than away from it.
+
+**DeepSeek** is the case that should end any "just pick a trustworthy vendor" reflex. It is headquartered in [Hangzhou and registered with the PRC Ministry of Public Security](https://en.wikipedia.org/wiki/DeepSeek), its consumer privacy policy places user data on servers in China, and Chinese law obliges companies to cooperate with state intelligence work. It also posted some of the steepest adoption curves in the market. "High usage" and "low exposure" are independent variables; a free, capable, wildly popular assistant can sit inside the jurisdiction with the fewest barriers between your corpus and a state.
+
+The point is not a vendor ranking, and it is not that a careful choice buys you out of the problem. It is that the exposure is real for all of them and only graded across them — a US public benefit corporation that visibly resists, a US for-profit under active orders, and a PRC-domiciled service under a legal regime built for state access are three genuinely different risk levels for the same connected mailbox. Choosing well changes which government, under which law, with which posture, holds the reachable copy. It does not change the fact that someone does.
+
+## "We trust the vendor" is not auditable
+
+The reasonable objection is that providers differ, and they do — the previous section is an argument for taking that difference seriously, not for ignoring it. Anthropic's public-benefit structure and its willingness to absorb a procurement loss rather than weaken safeguards is a real governance signal, and it is a better posture than a provider with no such constraint.
+
+But notice what kind of thing that signal is. It is a governance posture. It is not a contract you can hold up in an audit, it is not a configuration you can verify in a console, and it does not survive an acquisition, a board change, or a new administration leaning on a procurement lever. The preservation order is the proof: OpenAI's own deletion and retention commitments were real, written down, and honored — right up until a court said otherwise, at which point the commitment was simply not where the control lived. Three providers can all implement the same MCP connector and differ enormously in retention defaults, government-cooperation history, and corporate incentive — and those differences are real, worth weighing, and the wrong place to put your last line of defense. A control you cannot test is a hope. Hopes belong in the risk register, not the control matrix.
+
+## The concentration is the exposure
+
+Step back from your own corpus to the shape of the market, because that is where "mass" stops being rhetoric. A handful of providers now sit downstream of the connected mailboxes, drives, and ticket queues of a large share of the organizations deploying agents. Each connection is one company's decision; the aggregate is a concentration none of them chose and none of them controls. That concentration is the surveillance surface. A single order served on one provider can reach across many customers at once — and the provider, not you, decides how hard to fight it. A single breach of that provider is not one company's incident; it is the joined, cross-system corpora of everyone connected to it, exposed in one place, already correlated for whoever gets in.
+
+That is the difference between a leak and surveillance. A stolen database is a list. A stolen agent pipeline is your HR investigation next to your customer list next to your legal mail next to the draft layoff plan — pre-joined, because joining them is what the agent was for. Safety-forward vendors are not exempt from being the target: Anthropic itself disclosed in late 2025 that state-linked actors had used its model to run automated attacks on dozens of organizations. The lesson is not that one vendor is unsafe. It is that the aggregation point is valuable to attackers and to governments for the same reason it is valuable to you — everything is in one place, and the work of correlating it is already done.
+
+## A defensible posture today
+
+What I would actually hold a team to before an agent touches sensitive systems:
+
+1. **Scope the connector, not the org.** An agent that answers support tickets does not need the whole Drive and the whole mailbox. Grant per-folder, per-label, per-record scopes, and make the broad grant the exception that needs sign-off.
+2. **Keep the data in your boundary where you can.** Prefer deployments that process inside your tenant or VPC, with bring-your-own-key, contractual zero retention, and training disabled by default. Verify those settings; do not infer them from the marketing tier name.
+3. **Put the provider in your data map.** Name it as a sub-processor in the DPIA, write down which data classes flow to it, and map the §2703 / CLOUD Act exposure explicitly so a legal hold or a foreign-transfer question has an answer before it is asked.
+4. **Log the egress, not just the action.** Most agent logging records "the assistant answered ticket 4417." Record what corpus left your boundary to produce that answer, so a future breach or order has a blast-radius you can actually compute.
+5. **Decide per data class, in advance.** Some categories — active HR investigations, legal correspondence, unreleased financials, regulated health data — should never enter an agent context at all, regardless of vendor. Make that an explicit allow-list, not a case-by-case judgment call under deadline.
+
+## Standards mapping
+
+- **18 U.S.C. §2703 (Stored Communications Act) / CLOUD Act** — the compulsion mechanism. Compelled disclosure of stored content and records held by a US provider, extraterritorial reach included.
+- **Litigation-hold / preservation orders** — the *NYT v. OpenAI* preservation order is the worked example: civil discovery, not even a criminal warrant, was enough to override user deletion and retention commitments at scale.
+- **GDPR Articles 44–48** — international transfers and third-country authority orders. Article 48 is the specific conflict-of-laws hook for an agent moving EU data to a US provider; the analysis inverts, and worsens, for a provider domiciled under PRC data and intelligence law.
+- **NIST SP 800-53 Rev. 5** — AC-4 (information flow enforcement), SC-7 (boundary protection), AU-2 (event logging), SI-12 (information handling and retention). The agent crosses all four.
+- **NIST AI RMF (AI 100-1)** — the Map and Govern functions are where data provenance and third-party data exposure are supposed to be reasoned about before deployment.
+- **OWASP Top 10 for LLM Applications** — LLM06, sensitive information disclosure, names the failure class; the aggregation problem is the deployment-side version of it.
+
+## Scope
+
+This note is about data exposure through hosted agent access. It does not cover prompt injection, which inherits a session rather than aggregating a corpus and is covered in [The Agent Has Your Session Cookie](/writing/the-agent-has-your-session-cookie). It does not cover training-data memorization, model-weight theft, or the labor and economic questions around agents, each of which deserves its own treatment. And it assumes a US-headquartered provider; the analysis shifts, but does not disappear, under other jurisdictions.
+
+## Closing
+
+The thing that makes an agent worth deploying is that it reads across everything at once. That is also the thing that turns it into a surveillance and breach surface, because the corpus it assembles outlives the question that prompted it and lands somewhere you do not control. The vendor's values may be sincere and may even hold, but sincerity is not a control you can test, and a warrant does not need your permission.
+
+Before you connect the next system, ask one question about the data behind it: would you be comfortable with that corpus sitting inside a third party, reachable by an order you will never see and a breach you cannot predict? If the answer is no, the connector is the decision, not the prompt. Decide it there.
